@@ -1,0 +1,3 @@
+#!/bin/sh
+
+PICHAYON_API_SETTINGS=$(pwd)/pichayon-api.cfg DEBUG=1 AUTHLIB_INSECURE_TRANSPORT=true pichayon-api -d
