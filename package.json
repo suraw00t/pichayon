@@ -1,7 +1,7 @@
 {
   "jspm": {
     "directories": {
-      "baseURL": "prichayon/web/static"
+      "baseURL": "pichayon/web/static"
     },
     "dependencies": {
       "clean-css": "npm:clean-css@^4.1.9",
