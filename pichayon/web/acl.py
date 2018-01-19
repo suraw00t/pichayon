@@ -10,10 +10,8 @@ class User(UserMixin):
 
         self.roles = []
         
-        print('got profile', profile)
         for k,v in profile.items():
             k = k.replace('-', '_')
-            print('set', k , v)
             setattr(self, k, v)
 
     def to_session_dict(self):
