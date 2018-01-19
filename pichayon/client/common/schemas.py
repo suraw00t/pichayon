@@ -18,6 +18,8 @@ field_map = {
         'object': fields.Relationship,
         }
 
+def dasherize(text):
+    return text.replace('_', '-')
 
 class ResourceSchemaFactory:
     def create_schema(resource_name, schemas):
@@ -27,12 +29,13 @@ class ResourceSchemaFactory:
 
             class Meta:
                 type_ = resource_name
+                inflect = dasherize
 
         resource_schema = ResourceSchema()
         for name, des in schemas['properties'].items():
             field_type = des['type']
             field_obj = None
-            # print('n,d:', name, des)
+            # print('n, d:', name, des)
             if field_type == 'array' or 'array' in field_type:
                 sub_type = des['items']['type']
                 if sub_type == 'object':

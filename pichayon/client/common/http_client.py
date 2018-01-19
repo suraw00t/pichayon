@@ -7,10 +7,10 @@ logger = logging.getLogger(__name__)
 
 class HTTPClient:
     def __init__(self,
-                 api_url,
+                 api_base_url,
                  access_token=None):
 
-        self.api_url = api_url
+        self.api_base_url = api_base_url
         self.access_token = access_token
         self.session = requests.session()
 
@@ -21,7 +21,8 @@ class HTTPClient:
         if 'data' in kwargs:
             kwargs['data'] = json.dumps(kwargs['data'])
 
-        logger.debug(method + url + '\nargs:' + str(kwargs))
+        print(method + url + '\nargs:' + str(kwargs))
+        # logger.debug(method + url + '\nargs:' + str(kwargs))
         response = self.session.request(method, 
                                     url,
                                     **kwargs)
@@ -37,7 +38,13 @@ class HTTPClient:
         if self.access_token:
             kwargs['headers']['Authorization'] = 'Bearer {}'.format(self.access_token)
 
-        return self.request(self.api_url + url, 
+        request_url = self.api_base_url 
+        if self.api_base_url[-1] == '/' and url[0] == '/':
+            request_url = self.api_base_url[:-1] + url
+        else:
+            request_url = self.api_base_url + url
+
+        return self.request(request_url, 
                             method,
                             **kwargs)
 
@@ -54,27 +61,13 @@ class HTTPClient:
         return self._cs_request(url, 'DELETE', **kwargs)
 
 
-class HHServiceHTTPClient(HTTPClient):
+class PichayonHTTPClient(HTTPClient):
     def __init__(self,
-                 name=None,
-                 password=None,
-                 host='127.0.0.1',
-                 port=8080,
-                 secure_connection=False,
+                 api_base_url,
                  access_token=None):
 
-        self.name = name
-        self.password = password
-        self.host = host
-        self.port = port
-        self.secure_connection = secure_connection
+        self.api_base_url = api_base_url
         self.access_token = access_token
         self.user_id = None
 
-        self.scheme = 'http'
-        if self.secure_connection:
-            self.scheme = 'https'
-
-        self.api_url = '%s://%s:%d' % (self.scheme, self.host, self.port)
-
-        super().__init__(self.api_url, access_token)
+        super().__init__(self.api_base_url, access_token)

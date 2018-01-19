@@ -3,17 +3,28 @@ from flask_login import LoginManager, UserMixin, current_user, login_url
 from flask_allows import Allows
 
 class User(UserMixin):
-    token = None
-    profile = None
-
-    def __init__(self, profile={}, token={}):
+    def __init__(self, profile={}, oauth2_token={}, token={}):
         self.token = token
-        for k,v in profile.items():
-            setattr(self, k, v)
-
+        self.oauth2_token = oauth2_token
         self.profile = profile
 
+        self.roles = []
+        
+        print('got profile', profile)
+        for k,v in profile.items():
+            k = k.replace('-', '_')
+            print('set', k , v)
+            setattr(self, k, v)
+
+    def to_session_dict(self):
+        return dict(profile=self.profile,
+                    token=self.token,
+                    oauth2_token=self.oauth2_token)
+
     def has_roles(self, roles=[]):
+        for role in roles:
+            if role in self.roles:
+                return True
         return False
 
 allows = Allows(identity_loader=lambda: current_user)
@@ -31,8 +42,6 @@ def is_staff(ident, request):
     return 'staff' in ident.roles
 
 
-
-
 def init_acl(app):
     # initial login manager
     login_manager = LoginManager(app)
@@ -41,13 +50,18 @@ def init_acl(app):
     def load_user(user_id):
         # user = models.User.objects.with_id(user_id)
         # return user
-        return User()
+        if user_id not in session:
+            return User()
+
+        return User(profile=session[user_id]['profile'],
+                    oauth2_token=session[user_id]['oauth2_token'],
+                    token=session[user_id]['token'])
 
     @login_manager.unauthorized_handler
     def unauthorized_callback():
         if request.method == 'GET':
-            response = redirect(login_url('accounts.login',
+            response = redirect(login_url('web.accounts.login',
                                            request.url))
             return response
 
-        return redirect(url_for('accounts.login'))
+        return redirect(url_for('web.accounts.login'))

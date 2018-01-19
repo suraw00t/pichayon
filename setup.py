@@ -8,16 +8,28 @@ with open(os.path.join(here, 'README.md')) as f:
 with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
 
-requires = [
-    'flask',
-    'flask-mongoengine',
-    'flask-login',
-    'flask-allows',
-    'flask-jwt-extended',
-    'authlib',
-    'apispec',
-    'marshmallow'
-   ]
+requires_api = [
+        'flask',
+        'flask-mongoengine',
+        'flask-jwt-extended',
+        'authlib',
+        'marshmallow',
+        'apispec',
+        'marshmallow-jsonapi',
+        ]
+
+requires_web = [
+        'flask',
+        'flask-login',
+        'flask-allows',
+        'authlib',
+        'python-dateutil',
+        'marshmallow-jsonapi',
+        'marshmallow'
+        ]
+
+requires_all = set(requires_api + requires_web)
+requires = requires_all
 
 init = os.path.join(os.path.dirname(__file__), 'pichayon', '__init__.py')
 version_line = list(filter(lambda l: l.startswith(

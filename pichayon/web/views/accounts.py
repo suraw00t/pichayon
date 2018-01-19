@@ -4,7 +4,8 @@ from flask import (Blueprint,
                    url_for,
                    redirect,
                    session,
-                   request)
+                   request,
+                   g)
 
 from flask_login import (login_user,
                          logout_user,
@@ -18,13 +19,19 @@ module = Blueprint('web.accounts', __name__)
 cache = dict()
 
 
-def get_user_and_remember(token):
-    client = oauth2.oauth2_client
-    result = client.principal.get('profile')
-    print('got: ', result.json())
-    profile = result.json()
+def get_user_and_remember(oauth2_token):
 
-    user = acl.User(profile=profile, token=token)
+    pichayon_client = g.get_pichayon_client()
+    result = pichayon_client.authenticate(oauth2_token)
+
+    pichayon_client.access_token = result.access_token
+    user = pichayon_client.users.get(result.user['id'])
+
+    user = acl.User(profile=user.data,
+                    oauth2_token=oauth2_token,
+                    token=user.data)
+
+    session[user.id] = user.to_session_dict()
 
     login_user(user)
 
@@ -50,10 +57,12 @@ def login_principal():
 
 @module.route('/authorized-principal')
 def authorized_principal():
+    print('login cache: ', cache)
     if request.args.get('state') in cache:
         sdata = cache.pop(request.args.get('state'))
         session.update(sdata)
 
+    print('login session:', session)
     client = oauth2.oauth2_client
 
     try:
@@ -69,5 +78,7 @@ def authorized_principal():
 @module.route('/logout')
 @login_required
 def logout():
+    if current_user.id in session:
+        session.pop(current_user.id)
     logout_user()
     return redirect(url_for('web.site.index'))

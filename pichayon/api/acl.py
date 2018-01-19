@@ -1,40 +1,39 @@
-from flask import redirect, url_for, request, session
-from flask_login import LoginManager, UserMixin, current_user, login_url
-from flask_allows import Allows
+from flask import abort
+from flask_jwt_extended import JWTManager
 
-from . import models
+from pichayon.api import models
 
-allows = Allows(identity_loader=lambda: current_user)
-
-
-def is_admin(ident, request):
-    return 'admin' in ident.roles
+from .renderers import render_json
 
 
-def is_developer(ident, request):
-    return 'developer' in ident.roles
+def init_jwt(app):
+    jwt = JWTManager(app)
 
+    @jwt.user_claims_loader
+    def add_claims_to_access_token(user):
+            return {'roles': user.roles}
 
-def is_staff(ident, request):
-    return 'staff' in ident.roles
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+            return str(user.id)
 
+    @jwt.user_loader_callback_loader
+    def user_loader_callback(identity):
+        try:
+            user = models.User.objects.with_id(identity)
+        except Exception as e:
+            errors = [
+                        {
+                            'status': '403',
+                            'title': 'The user might not have the necessary permissions for a resource',
+                            'detail': 'The user might not have the necessary permissions for a resource'
+                        }
+                    ]
 
+            response_dict = dict(errors=errors)
+            response = render_json(response_dict)
+            response.status_code = 403
+            abort(response)
 
-
-def init_acl(app):
-    # initial login manager
-    login_manager = LoginManager(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        user = models.User.objects.with_id(user_id)
+        # print('user jwt', user)
         return user
-
-    @login_manager.unauthorized_handler
-    def unauthorized_callback():
-        if request.method == 'GET':
-            response = redirect(login_url('accounts.login',
-                                           request.url))
-            return response
-
-        return redirect(url_for('accounts.login'))

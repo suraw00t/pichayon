@@ -84,12 +84,15 @@ class BaseManager:
     __resource_class__ = None
     __resource_url__ = None
 
-    def __init__(self, api, schema):
+    def __init__(self, api, schema=None, json_schema=None):
         self.api = api
-        self.schema_data = schema
-        self.schema = schemas.ResourceSchemaFactory.create_schema(
-                self.__resource_class__.__resource_name__,
-                schema)
+
+        self.schema = schema
+        self.json_schema = json_schema
+        if self.json_schema:
+            self.schema = schemas.ResourceSchemaFactory.create_schema(
+                    self.__resource_class__.__resource_name__,
+                    json_schema)
 
         self.call_method = dict(
                 GET=self.api.http_client.get,
@@ -117,7 +120,7 @@ class BaseManager:
         load_schema = self.schema.load
         if schema:
             load_schema = schema.load
-
+       
         if schema_many:
             resource_data = load_schema(response, many=True).data
         else:

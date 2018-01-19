@@ -4,6 +4,7 @@ from . import views
 from . import acl
 from . import models
 from . import oauth2
+from . import renderers
 
 def create_app():
     app = Flask(__name__)
@@ -11,7 +12,8 @@ def create_app():
     app.config.from_envvar('PICHAYON_API_SETTINGS', silent=True)
 
     models.init_db(app)
-    acl.init_acl(app)
+    acl.init_jwt(app)
+    renderers.init_json_encoder(app)
     oauth2.init_oauth2(app)
     
     views.register_blueprint(app)
