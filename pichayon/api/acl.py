@@ -1,9 +1,29 @@
 from flask import abort
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, current_user
+from flask_allows import Allows
 
 from pichayon.api import models
 
 from .renderers import render_json
+
+
+allows = Allows(identity_loader=lambda: current_user)
+
+
+def is_admin(ident, request):
+    return 'admin' in ident.roles
+
+
+def is_student(ident, request):
+    return 'student' in ident.roles
+
+
+def is_lecturer(ident, request):
+    return 'lecturer' in ident.roles
+
+
+def is_staff(ident, request):
+    return 'staff' in ident.roles
 
 
 def init_jwt(app):
@@ -25,8 +45,10 @@ def init_jwt(app):
             errors = [
                         {
                             'status': '403',
-                            'title': 'The user might not have the necessary permissions for a resource',
-                            'detail': 'The user might not have the necessary permissions for a resource'
+                            'title': 'The user might not have the necessary \
+                                    permissions for a resource',
+                            'detail': 'The user might not have the necessary \
+                                    permissions for a resource'
                         }
                     ]
 

@@ -9,7 +9,6 @@
             {#
             <a href="#!user"><img class="circle" src="images/yuna.jpg"></a>
             #}
-            {{current_user.name}}
             <a href="#!name"><span class="white-text name">{{ current_user.first_name }} {{ current_user.last_name }}</span></a>
             <a href="#!email"><span class="white-text email">{{ current_user.email }}</span></a>
         </div>
@@ -21,7 +20,9 @@
         <li><a class="collapsible-header waves-effect waves-cyan"><i class="material-icons">supervisor_account</i>Admin <i class="material-icons right" id="more">expand_more</i></a>
           <div class="collapsible-body">
             <ul>
-              <li><a style="padding-left:32px;" href="{{ url_for('web.dashboard.index') }}"><i class="material-icons">dashboard</i>Dashboard</a></li>
+              <li><a style="padding-left:32px;" href="{{ url_for('web.dashboard.admin.index') }}"><i class="material-icons">dashboard</i>Dashboard</a></li>
+              <li><a style="padding-left:32px;" href="{{ url_for('web.dashboard.admin.groups.index') }}"><i class="material-icons">group</i>Groups</a></li>
+              <!-- <li><a style="padding-left:32px;" href="{{ url_for('web.dashboard.index') }}"><i class="material-icons">mdi-social-group</i>Groups</a></li>-->
             </ul>
           </div>
         </li>

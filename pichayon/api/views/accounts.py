@@ -30,10 +30,9 @@ def get_principal_user():
                            email=data.get('email'),
                            username=data.get('username'),
                            status='active')
-        roles = []
         for role in ['student', 'lecturer', 'staff', 'admin']:
             if role in data.get('roles', []):
-                roles.append(role)
+                user.roles.append(role)
 
         user.save()
 

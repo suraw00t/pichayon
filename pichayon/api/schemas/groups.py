@@ -4,14 +4,17 @@ from marshmallow_jsonapi.flask import Schema
 
 from . import common
 
-class RoomSchema(Schema):
+
+class GroupSchema(Schema):
 
     id = fields.String()
     name = ma.fields.String(required=True,
-                            validator=ma.validate.Length(min=3, max=20))
-    status = fields.String(requred=True, default='disactive')
+                            validator=ma.validate.Length(min=3))
+    description = fields.String()
+    created_date = fields.DateTime()
+    updated_date = fields.DateTime()
 
     class Meta:
-        type_ = 'rooms'
-        strict=True
+        type_ = 'groups'
+        strict = True
         inflect = common.dasherize

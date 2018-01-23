@@ -4,11 +4,6 @@ from .common import base
 
 class Room(base.Resource):
     __resource_name__ = 'rooms'
-    # @property
-    # def roles(self):
-    #     user_roles = [roles.Role(self.manager.api.roles, r)
-    #                   for r in self._info['roles']]
-    #     return user_roles
 
 
 class RoomManager(base.Manager):

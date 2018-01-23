@@ -21,7 +21,7 @@ class HTTPClient:
         if 'data' in kwargs:
             kwargs['data'] = json.dumps(kwargs['data'])
 
-        print(method + url + '\nargs:' + str(kwargs))
+        # print(method + url + '\nargs:' + str(kwargs))
         # logger.debug(method + url + '\nargs:' + str(kwargs))
         response = self.session.request(method, 
                                     url,

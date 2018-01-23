@@ -15,7 +15,7 @@ class UserSchema(Schema):
     last_name = fields.String(title='last-name', required=True)
     status = fields.String(requred=True, default='distactive')
 
-    roles = fields.List(fields.String(), dump_only=True)
+    roles = fields.List(fields.String())
 
     class Meta:
         type_ = 'users'

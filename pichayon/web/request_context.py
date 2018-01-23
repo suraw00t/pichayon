@@ -55,8 +55,10 @@ def get_pichayon_client():
     pichayon_api_base_url = app.config.get('PICHAYON_API_BASE_URL')
 
     if not user.is_authenticated:
-        return Client(api_base_url=pichayon_api_base_url,
-                      json_schemas=json_schemas)
+        client = Client(api_base_url=pichayon_api_base_url,
+                        json_schemas=json_schemas)
+        app.config['PICHAYON_SCHEMAS'] = client.json_schemas
+        return client
 
     access_token = user.token.get('access-token', None)
     expires_at = datetime.datetime.utcfromtimestamp(
@@ -78,21 +80,18 @@ def refresh_token():
     app = current_app
     user = current_user
 
-    schemas = app.config.get('PICHAYON_SCHEMAS', None)
-    host = app.config.get('PICHAYON_HOST')
-    port = app.config.get('PICHAYON_PORT')
-    secure = app.config.get('PICHAYON_SECURE')
+    json_schemas = app.config.get('PICHAYON_SCHEMAS', None)
+    pichayon_api_base_url = app.config.get('PICHAYON_API_BASE_URL')
     refresh_token = user.token.get('refresh-token', None)
+
 
     if not refresh_token:
         raise Exception()
 
-    client = Client(host=host,
-                    port=port,
-                    secure_connection=secure,
+    client = Client(api_base_url=pichayon_api_base_url,
                     access_token=refresh_token,
-                    schemas=schemas)
+                    json_schemas=json_schemas)
 
     resource = client.refresh_token()
     user.token.update(resource.data)
-    session['token'] = resource.data
+    session[user.id]['token'] = resource.data

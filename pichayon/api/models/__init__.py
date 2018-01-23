@@ -1,8 +1,7 @@
 from .users import User
-# from .users import User, AuthCode
-# from .oauth2 import OAuth2Token
+from .groups import Group
 
-__all__ = [User]
+__all__ = [User, Group]
 
 from flask_mongoengine import MongoEngine
 

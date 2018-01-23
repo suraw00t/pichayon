@@ -23,8 +23,8 @@ class Resource:
 
         self.data = {k.replace('_', '-'): v for k, v in kwargs.items()}
 
-        if 'id' not in self.data:
-            self.data['id'] = None
+        # if 'id' not in self.data:
+        #     self.data['id'] = None
 
     @property
     def is_error(self):

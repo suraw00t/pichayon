@@ -1,4 +1,3 @@
-import datetime
 from flask import (Blueprint,
                    render_template,
                    url_for,
@@ -29,7 +28,7 @@ def get_user_and_remember(oauth2_token):
 
     user = acl.User(profile=user.data,
                     oauth2_token=oauth2_token,
-                    token=user.data)
+                    token=result.data)
 
     session[user.id] = user.to_session_dict()
 

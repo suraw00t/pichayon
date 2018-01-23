@@ -2,6 +2,10 @@ from flask import redirect, url_for, request, session
 from flask_login import LoginManager, UserMixin, current_user, login_url
 from flask_allows import Allows
 
+
+allows = Allows(identity_loader=lambda: current_user)
+
+
 class User(UserMixin):
     def __init__(self, profile={}, oauth2_token={}, token={}):
         self.token = token
@@ -9,8 +13,8 @@ class User(UserMixin):
         self.profile = profile
 
         self.roles = []
-        
-        for k,v in profile.items():
+
+        for k, v in profile.items():
             k = k.replace('-', '_')
             setattr(self, k, v)
 
@@ -24,8 +28,6 @@ class User(UserMixin):
             if role in self.roles:
                 return True
         return False
-
-allows = Allows(identity_loader=lambda: current_user)
 
 
 def is_admin(ident, request):
@@ -59,7 +61,7 @@ def init_acl(app):
     def unauthorized_callback():
         if request.method == 'GET':
             response = redirect(login_url('web.accounts.login',
-                                           request.url))
+                                          request.url))
             return response
 
         return redirect(url_for('web.accounts.login'))

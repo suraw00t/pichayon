@@ -7,6 +7,7 @@ from .common import http_client
 
 from . import users
 from . import rooms
+from . import groups
 
 from pichayon.api import schemas
 
@@ -42,8 +43,8 @@ class Client:
 
         self.users = users.UserManager(self,
                 schema=schemas.UserSchema())
-        self.rooms = rooms.RoomManager(self,
-                schema=schemas.RoomSchema())
+        self.groups = groups.GroupManager(self,
+                schema=schemas.GroupSchema())
 
     def authenticate(self, oauth2_token):
         data=dict(
