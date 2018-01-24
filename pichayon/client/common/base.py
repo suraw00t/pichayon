@@ -80,7 +80,6 @@ class Resource:
 
 
 class BaseManager:
-
     __resource_class__ = None
     __resource_url__ = None
 

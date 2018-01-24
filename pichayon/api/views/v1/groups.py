@@ -7,7 +7,6 @@ from pichayon.api import models
 from pichayon.api.renderers import render_json
 
 
-
 module = Blueprint('api.v1.groups', __name__, url_prefix='/groups')
 
 
@@ -25,8 +24,7 @@ def list():
 @acl.allows.requires(acl.is_admin)
 def create():
     schema = schemas.GroupSchema()
-   
-    group_data = schema.load(request.get_json()).data
+
     try:
         group_data = schema.load(request.get_json()).data
     except Exception as e:
@@ -43,3 +41,64 @@ def create():
     return render_json(schema.dump(group).data)
 
 
+@module.route('/<group_id>', methods=['GET'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
+def get(group_id):
+    group = None
+
+    schema = schemas.GroupSchema()
+    try:
+        group = models.Group.objects.get(id=group_id)
+    except Exception as e:
+        response_dict = request.get_json()
+        response_dict.update(e.messages)
+        response = render_json(response_dict)
+        response.status_code = 404
+        abort(response)
+
+    return render_json(schema.dump(group).data)
+
+
+@module.route('/<group_id>', methods=['PUT'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
+def update(group_id):
+    schema = schemas.GroupSchema()
+
+    try:
+        group = models.Group.objects.get(id=group_id)
+        group_data = schema.load(request.get_json()).data
+
+        group_data.pop('id')
+        group.update(**group_data)
+    except Exception as e:
+        response_dict = request.get_json()
+        response_dict.update(e.messages)
+        response = render_json(response_dict)
+        response.status_code = 400
+        abort(response)
+
+    group.save()
+    return render_json(schema.dump(group).data)
+
+
+@module.route('/<group_id>', methods=['DELETE'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
+def delete(group_id):
+    group = None
+
+    schema = schemas.GroupSchema()
+    try:
+        group = models.Group.objects.get(id=group_id)
+    except Exception as e:
+        response_dict = request.get_json()
+        response_dict.update(e.messages)
+        response = render_json(response_dict)
+        response.status_code = 404
+        abort(response)
+
+    group.delete()
+
+    return render_json(schema.dump(group).data)

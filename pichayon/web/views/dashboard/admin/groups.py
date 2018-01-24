@@ -6,7 +6,7 @@ from flask import (Blueprint,
 
 from pichayon.web import acl
 from pichayon.web.forms.admin import GroupForm
-
+from pichayon.client.resources import Group
 
 module = Blueprint('web.dashboard.admin.groups',
                    __name__,
@@ -18,7 +18,6 @@ module = Blueprint('web.dashboard.admin.groups',
 def index():
     pichayon_client = g.get_pichayon_client()
     groups = pichayon_client.groups.list()
-    print('got groups', groups)
     return render_template('/dashboard/admin/groups/index.html',
                            groups=groups)
 
@@ -41,13 +40,34 @@ def create():
     return redirect(url_for('web.dashboard.admin.groups.index'))
 
 
-@module.route('/<group_id>/update')
+@module.route('/<group_id>/update', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
-def update():
-    return {}
+def update(group_id):
+    pichayon_client = g.get_pichayon_client()
+    group = pichayon_client.groups.get(group_id)
+
+    form = GroupForm(obj=group)
+    if not form.validate_on_submit():
+        return render_template('/dashboard/admin/groups/create.html',
+                               form=form)
+
+    group = Group(id=group_id, **form.data)
+    group = pichayon_client.groups.update(group)
+
+    if group.is_error:
+        return render_template('/dashboard/admin/groups/create.html',
+                               form=form)
+
+    return redirect(url_for('web.dashboard.admin.groups.index'))
 
 
 @module.route('/<group_id>/delete')
 @acl.allows.requires(acl.is_admin)
-def delete():
-    return {}
+def delete(group_id):
+    pichayon_client = g.get_pichayon_client()
+    result = pichayon_client.groups.delete(group_id)
+
+    if result.is_error:
+        print('cannot delete')
+
+    return redirect(url_for('web.dashboard.admin.groups.index'))

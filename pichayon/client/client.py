@@ -1,13 +1,9 @@
-import requests
-import json
 import logging
 
 from .common import base
 from .common import http_client
 
-from . import users
-from . import rooms
-from . import groups
+from . import resources
 
 from pichayon.api import schemas
 
@@ -33,21 +29,27 @@ class Client:
         if not self.json_schemas:
             self.json_schemas = self.get_json_schemas()
 
-        retrieve_schema = lambda m:\
-            self.schemas['definitions'].get(m.__resource_class__.__resource_name__,
-                             None)
+        def retrieve_schema(m):
+            return self.schemas['definitions'].get(
+                    m.__resource_class__.__resource_name__,
+                    None)
         # self.users = users.UserManager(self,
         #         json_schema=retrieve_schema(users.UserManager))
         # self.rooms = rooms.RoomManager(self,
         #         json_schema=retrieve_schema(rooms.RoomManager))
 
-        self.users = users.UserManager(self,
+        self.users = resources.UserManager(
+                self,
                 schema=schemas.UserSchema())
-        self.groups = groups.GroupManager(self,
+        self.groups = resources.GroupManager(
+                self,
                 schema=schemas.GroupSchema())
+        self.rooms = resources.RoomManager(
+                self,
+                schema=schemas.RoomSchema())
 
     def authenticate(self, oauth2_token):
-        data=dict(
+        data = dict(
             auth=dict(
                 identity=dict(
                     methods=['oauth2_token'],

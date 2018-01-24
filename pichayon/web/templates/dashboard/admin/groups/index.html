@@ -32,7 +32,10 @@
           <td>{{ group.name }}</td>
           <td>{{ group.description }}</td>
           <td>{{ group.updated_date }}</td>
-          <td></td>
+          <td>
+            <a href="{{ url_for('web.dashboard.admin.groups.update', group_id=group.id) }}"><i class="material-icons">update</i></a>
+            <a href="{{ url_for('web.dashboard.admin.groups.delete', group_id=group.id) }}"><i class="material-icons">delete</i></a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
