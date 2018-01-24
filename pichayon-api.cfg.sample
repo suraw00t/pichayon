@@ -1,0 +1,8 @@
+MONGODB_DB = 'pichayondb'
+SECRET_KEY = 'pichayon-secretkey-api' # change it when deploy
+
+# change to PRINCIPAL address
+PRINCIPAL_ACCESS_TOKEN_URL = 'http://localhost:5000/oauth2/token'
+PRINCIPAL_AUTHORIZE_URL = 'http://localhost:5000/oauth2/authorize'
+PRINCIPAL_API_BASE_URL = 'http://localhost:5000/api/'
+PRINCIPAL_CLIENT_KWARGS = {'scope': ['email']}

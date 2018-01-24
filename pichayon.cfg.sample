@@ -1,2 +1,0 @@
-MONGODB_DB = 'pichayon'
-SECRET_KEY = 'pichayon-secretkey' # change it when deploy web

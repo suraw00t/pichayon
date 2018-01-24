@@ -1,0 +1,17 @@
+SECRET_KEY = 'pichayon-secretkey-web' # change it when deploy web
+
+OAUTH_CLIENT_CACHE_TYPE = 'simple'
+AUTHLIB_CACHE_THRESHOLD = 500
+AUTHLIB_CACHE_TYPE = 'simple'
+
+# change to pricipal oauth2
+PRINCIPAL_CLIENT_KEY = 'oauth2 client key'
+PRINCIPAL_CLIENT_SECRET = 'oauth2 client secret'
+PRINCIPAL_ACCESS_TOKEN_URL = 'http://localhost:5000/oauth2/token'
+PRINCIPAL_AUTHORIZE_URL = 'http://localhost:5000/oauth2/authorize'
+PRINCIPAL_API_BASE_URL = 'http://localhost:5000/api/'
+PRINCIPAL_CLIENT_KWARGS = {'scope': ['email', 'profile']}
+
+# change to pichayon api
+PICHAYON_API_BASE_URL = 'http://localhost:8000/v1/'
+PICHAYON_API_SECRET = 'pichayon-secretkey-api'
