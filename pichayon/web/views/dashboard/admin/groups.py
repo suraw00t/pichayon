@@ -65,9 +65,7 @@ def update(group_id):
 @acl.allows.requires(acl.is_admin)
 def delete(group_id):
     pichayon_client = g.get_pichayon_client()
-    result = pichayon_client.groups.delete(group_id)
+    pichayon_client.groups.delete(group_id)
 
-    if result.is_error:
-        print('cannot delete')
 
     return redirect(url_for('web.dashboard.admin.groups.index'))
