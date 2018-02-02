@@ -1,19 +1,12 @@
-import datetime
-import urllib
-
-from flask import (Blueprint,
-                   render_template,
-                   url_for,
-                   redirect,
-                   session,
-                   request)
 
 from pichayon.api import models
 from pichayon.api import oauth2
 
 
-def get_principal_user():
-    client = oauth2.oauth2_client
+def get_principal_user(oauth2_token):
+    print('in get_principal_user')
+    client = oauth2.get_oauth2_client(oauth2_token)
+    # client = oauth2.oauth2_client
     result = client.principal.get('email')
     data = result.json()
 

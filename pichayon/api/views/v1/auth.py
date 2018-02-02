@@ -3,14 +3,11 @@ import datetime
 
 from flask import (Blueprint,
                    request,
-                   session,
                    abort,
                    current_app)
 
 from pichayon.api.renderers import render_json
-from pichayon.api import models
 
-import mongoengine as me
 from flask_jwt_extended import (create_access_token,
                                 create_refresh_token,
                                 current_user,
@@ -26,11 +23,11 @@ module = Blueprint('auth', __name__, url_prefix='/auth')
 @module.route('', methods=['post'])
 def auth():
     auth_dict = request.get_json()['auth']
+    token = None
 
     try:
         provider = auth_dict['identity']['token']['provider']
         token = auth_dict['identity']['token']['token']
-        session[provider] = token
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -38,7 +35,9 @@ def auth():
         response.status_code = 400
         abort(response)
 
-    user = accounts.get_principal_user()
+    user = None
+    if provider == 'principal':
+        user = accounts.get_principal_user(token)
 
     if user:
         app = current_app

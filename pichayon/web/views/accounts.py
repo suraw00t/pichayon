@@ -19,7 +19,6 @@ cache = dict()
 
 
 def get_user_and_remember(oauth2_token):
-
     pichayon_client = g.get_pichayon_client()
     result = pichayon_client.authenticate(oauth2_token)
 

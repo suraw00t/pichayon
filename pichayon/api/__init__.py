@@ -14,7 +14,6 @@ def create_app():
     models.init_db(app)
     acl.init_jwt(app)
     renderers.init_json_encoder(app)
-    oauth2.init_oauth2(app)
     
     views.register_blueprint(app)
 
