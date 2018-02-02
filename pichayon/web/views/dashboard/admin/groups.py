@@ -67,5 +67,4 @@ def delete(group_id):
     pichayon_client = g.get_pichayon_client()
     pichayon_client.groups.delete(group_id)
 
-
     return redirect(url_for('web.dashboard.admin.groups.index'))
