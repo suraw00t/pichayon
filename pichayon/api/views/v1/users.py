@@ -1,15 +1,23 @@
-
 from flask import Blueprint, request, abort, current_app
 from flask_jwt_extended import jwt_required, current_user
 
+from pichayon.api import acl
 from pichayon.api.renderers import render_json
 from pichayon.api import models
 from pichayon.api import schemas
 
 import mongoengine as me
 
-module = Blueprint('users', __name__, url_prefix='/users')
+module = Blueprint('api.v1.users', __name__, url_prefix='/users')
 
+@module.route('', methods=['GET'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
+def list():
+    schema = schemas.UserSchema()
+    users = models.User.objects()
+
+    return render_json(schema.dump(users, many=True).data)
 
 @module.route('', methods=['post'])
 def create():

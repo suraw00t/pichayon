@@ -1,0 +1,47 @@
+{% extends '/dashboard/admin/index.html' %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<a href="{{ url_for('web.dashboard.admin.users.index') }}" class="breadcrumb">Users</a>
+{%- endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col s12">
+    <!--<a class="btn-floating btn-large waves-effect waves-light red" href="{{ url_for('web.dashboard.admin.users.create') }}"><i class="material-icons">add</i></a>
+    --></div>
+</div>
+
+<div class="row">
+  <div class="col s12">
+    <h3>Users</h3>
+    {% if users and users | count > 0 %}
+    <table>
+      <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+	  <td>{{ user.first_name }} {{ user.last_name }}</td>
+          <td>{{ user.roles | join(', ') }}</td>
+          <td>
+    	<!--	<a href="{{ url_for('web.dashboard.admin.users.update', user_id=user.id) }}"><i class="material-icons">update</i></a>
+	<a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}"><i class="material-icons">delete</i></a> -->
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

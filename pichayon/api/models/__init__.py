@@ -1,7 +1,8 @@
 from .users import User
 from .groups import Group
+from .rooms import Room
 
-__all__ = [User, Group]
+__all__ = [User, Group, Room]
 
 from flask_mongoengine import MongoEngine
 
