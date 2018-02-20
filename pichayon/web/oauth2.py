@@ -1,6 +1,6 @@
 from flask_login import current_user
 from authlib.flask.client import OAuth
-
+from werkzeug.contrib import cache
 
 from .acl import User
 
@@ -30,7 +30,7 @@ def init_oauth2(app):
     #                        fetch_token=fetch_token,
     #                        update_token=update_token)
 
-    oauth2_client.init_app(app)
+    oauth2_client.init_app(app, cache=cache)
 
     # principal_settings = app.config.get('AUTHLIB_CLIENT_PRINCIPAL')
 
