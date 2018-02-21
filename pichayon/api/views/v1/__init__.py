@@ -1,5 +1,4 @@
 from flask import Blueprint
-from apispec import APISpec
 
 from . import schemas
 from . import auth
