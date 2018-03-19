@@ -10,11 +10,10 @@ class UserSchema(Schema):
     username = ma.fields.String(required=True,
                                 validator=ma.validate.Length(min=3, max=20))
     email = fields.String(required=False)
-    # email = fields.Email(requred=False)
     first_name = fields.String(title='first-name', required=True)
     last_name = fields.String(title='last-name', required=True)
     status = fields.String(requred=True, default='distactive')
-
+    groups = fields.List(fields.String(default='-'))
     roles = fields.List(fields.String())
 
     class Meta:

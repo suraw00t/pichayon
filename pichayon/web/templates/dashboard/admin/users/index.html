@@ -23,6 +23,7 @@
             <th>Email</th>
             <th>Name</th>
             <th>Status</th>
+            <th>Group</th>
         </tr>
       </thead>
 
@@ -33,9 +34,12 @@
           <td>{{ user.email }}</td>
 	  <td>{{ user.first_name }} {{ user.last_name }}</td>
           <td>{{ user.roles | join(', ') }}</td>
+          <td>{{ user.groups | join() }}</td>
           <td>
-    	<!--	<a href="{{ url_for('web.dashboard.admin.users.update', user_id=user.id) }}"><i class="material-icons">update</i></a>
-	<a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}"><i class="material-icons">delete</i></a> -->
+    		<a href="{{ url_for('web.dashboard.admin.users.update', user_id=user.id) }}">
+            <i class="material-icons">create</i></a>
+	        <a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}">
+            <i class="material-icons">delete</i></a>
           </td>
         </tr>
         {% endfor %}

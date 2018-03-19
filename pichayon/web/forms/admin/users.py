@@ -9,4 +9,5 @@ class UserForm(FlaskForm):
     username = fields.TextField('Name',
                             validators=[validators.InputRequired(),
                                         validators.Length(min=3)])
-    #description = fields.TextField('Description')
+   # group = fields.ListField(Text.Field())
+    

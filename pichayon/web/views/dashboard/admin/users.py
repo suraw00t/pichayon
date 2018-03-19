@@ -47,16 +47,16 @@ def update(user_id):
     pichayon_client = g.get_pichayon_client()
     user = pichayon_client.users.get(user_id)
 
-    form = RoomForm(obj=user)
+    form = UserForm(obj=user)
     if not form.validate_on_submit():
-        return render_template('/dashboard/admin/users/create.html',
+        return render_template('/dashboard/admin/users/update.html',
                                form=form)
 
-    user = Room(id=user_id, **form.data)
+    user = User(id=user_id, **form.data)
     user = pichayon_client.users.update(user)
-
+    
     if user.is_error:
-        return render_template('/dashboard/admin/users/create.html',
+        return render_template('/dashboard/admin/users/update.html',
                                form=form)
 
     return redirect(url_for('web.dashboard.admin.users.index'))
