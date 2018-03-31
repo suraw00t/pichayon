@@ -26,7 +26,6 @@ def index():
 @acl.allows.requires(acl.is_admin)
 def create():
     pichayon_client = g.get_pichayon_client()
-    users = pichayon_client.groups.list()
     form = UserForm()
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/users/create.html',
@@ -54,7 +53,7 @@ def update(user_id):
 
     user = User(id=user_id, **form.data)
     user = pichayon_client.users.update(user)
-    
+
     if user.is_error:
         return render_template('/dashboard/admin/users/update.html',
                                form=form)

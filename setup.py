@@ -13,7 +13,7 @@ requires_api = [
         'flask-mongoengine',
         'flask-jwt-extended',
         'authlib',
-        'marshmallow',
+        'marshmallow==2.15.0',
         'apispec',
         'marshmallow-jsonapi',
         ]

@@ -1,14 +1,18 @@
-from flask import Blueprint, request, abort, current_app
+from flask import (Blueprint,
+                   request,
+                   abort,
+                   current_app)
 from flask_jwt_extended import jwt_required, current_user
 
 from pichayon.api import acl
 from pichayon.api.renderers import render_json
 from pichayon.api import models
 from pichayon.api import schemas
-
-import mongoengine as me
+from pichayon.api import oauth2
+from .. import accounts
 
 module = Blueprint('api.v1.users', __name__, url_prefix='/users')
+
 
 @module.route('', methods=['GET'])
 @jwt_required
@@ -19,11 +23,14 @@ def list():
 
     return render_json(schema.dump(users, many=True).data)
 
+
 @module.route('', methods=['post'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
 def create():
     schema = schemas.UserSchema()
     try:
-        user_data = schema.load(request.get_json())
+        user_data = schema.load(request.get_json()).data
     except Exception as e:
         print(e)
         response_dict = request.get_json()
@@ -32,30 +39,21 @@ def create():
         response.status_code = 400
         abort(response)
 
-    user = models.User.objects(me.Q(username=user_data.data['username']) |
-                               me.Q(email=user_data.data['email'])).first()
-    if user is None:
-        user = models.User(**user_data.data)
-        user.set_password(user_data.data['password'],
-                          salt=current_app.secret_key)
-        user.status = 'active'
-        user.save()
+    user = models.User.objects(username=user_data['username']).first()
+    if user:
         return render_json(schema.dump(user).data)
 
-    errors = [
-        {
-          'status': '400',
-          'title':  'Found User in System',
-          'detail': 'User name or email found in system'
-        }
-    ]
+    token = current_app.cache.get('users.{}'.format(current_user.id))
+    access_token = current_app.crypto.decrypt(token['access_token'])
+    token['access_token'] = access_token
 
-    response_dict = schema.dump(user_data.data).data
-    response_dict['errors'] = errors
+    client = oauth2.get_oauth2_client(token)
+    result = client.principal.get('users/{}'.format(user_data['username']))
 
-    response = render_json(response_dict)
-    response.status_code = 400
-    abort(response)
+    data = result.json()
+    user = accounts.add_principal_user(data)
+
+    return render_json(schema.dump(user).data)
 
 
 @module.route('/<user_id>', methods=['get'])
