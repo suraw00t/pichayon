@@ -16,7 +16,10 @@
   <div class="col s12">
     <h3>Users</h3>
     <div>
-      <a href="{{ url_for('web.dashboard.admin.users.create') }}" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">create</i></a>
+      <a href="{{ url_for('web.dashboard.admin.users.create') }}"
+          class="btn-floating btn-large waves-effect waves-light red"><i
+              class="material-icons">add</i></a>
+      
     </div>
     {% if users and users | count > 0 %}
     <table>
