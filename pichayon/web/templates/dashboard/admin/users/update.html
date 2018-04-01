@@ -4,7 +4,7 @@
 {% block content %}
 <div class="row">
   <div class="col s12">
-      <h4>Add Group</h4>
+      <h4>Add Group </h4>
     {% if errors is not undefined %}
     <div class="card red lighten-5">
       <div class="card-content red-text text-darken-4">
@@ -30,13 +30,16 @@
 
         </div>
       </div>
-    </div>
+    <div>
+      {% if groups and groups | count > 0 %}
       {% for group in groups %}
       <p>
       <input type="checkbox" id="test5" />
-      <label for="test5">{{ group.name }}</label>
+      <label for "test5"> {{ group.name }}</label>
     </p>
       {% endfor %}
+      {% endif %}
+    </div>
       <button type="submit" class="waves-effect waves-light btn">Add</button>
     </form>
   </div>

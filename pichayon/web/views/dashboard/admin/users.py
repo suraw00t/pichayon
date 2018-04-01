@@ -46,18 +46,20 @@ def create():
 def update(user_id):
     pichayon_client = g.get_pichayon_client()
     user = pichayon_client.users.get(user_id)
-
+    groups = pichayon_client.groups.list()
     form = UserForm(obj=user)
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/users/update.html',
-                               form=form)
-
+                               form=form,
+                               groups=groups)
+    user.group=group
     user = User(id=user_id, **form.data)
     user = pichayon_client.users.update(user)
     
     if user.is_error:
         return render_template('/dashboard/admin/users/update.html',
-                               form=form)
+                               form=form,
+                               groups=groups)
 
     return redirect(url_for('web.dashboard.admin.users.index'))
 

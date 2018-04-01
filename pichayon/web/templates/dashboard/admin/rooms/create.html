@@ -30,18 +30,6 @@
 
         </div>
       </div>
-      <div class="row">
-        <div class="input-field col s12">
-          {{ form.description(class_=eh.get_validate_class(form.description.errors)) }}
-          {{ form.description.label }}
-          {% if form.description.errors %}
-          <div class="red lighten-5 red-text text-darken-4">
-            {{ ', '.join(form.description.errors) }}
-          </div>
-          {% endif %}
-
-        </div>
-      </div>
       {% for group in groups %}
       <p>
       <input type="checkbox" id="test5" />

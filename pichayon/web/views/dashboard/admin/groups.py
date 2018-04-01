@@ -29,7 +29,7 @@ def create():
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/groups/create.html',
                                form=form)
-
+    room = pichayon_client.rooms.list()
     pichayon_client = g.get_pichayon_client()
     group = pichayon_client.groups.create(**form.data)
 

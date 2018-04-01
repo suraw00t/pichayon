@@ -13,7 +13,7 @@ class UserSchema(Schema):
     first_name = fields.String(title='first-name', required=True)
     last_name = fields.String(title='last-name', required=True)
     status = fields.String(requred=True, default='distactive')
-    groups = fields.List(fields.String(default='-'))
+    groups = fields.List(fields.String())
     roles = fields.List(fields.String())
 
     class Meta:

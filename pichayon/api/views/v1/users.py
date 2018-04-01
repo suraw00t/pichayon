@@ -57,9 +57,36 @@ def create():
     response.status_code = 400
     abort(response)
 
+@module.route('/<user_id>', methods=['PUT'])
+@jwt_required
+@acl.allows.requires(acl.is_admin)
+def update(user_id):
+    schema = schema.UserSchema()
+
+    try:
+        user = models.User.objects.get(id=user_id)
+        user_data = schema.load(request.get_json()).data
+
+        user_data.pop('id')
+        user.update(**user_data)
+    
+    except Exception as e:
+        response_dict = request.get_json()
+        response_dict.update(e.messages)
+        response = render_json(response_dict)
+        response.status_code = 400
+        abort(response)
+
+    user.save()
+    return render_json(schema.dump(user).data)
+
 
 @module.route('/<user_id>', methods=['get'])
 @jwt_required
 def get(user_id):
+    user = current_user
     schema = schemas.UserSchema()
-    return render_json(schema.dump(current_user).data)
+    if 'admin' in current_user.roles:
+        user = models.User.objects(id=user_id).first()
+        
+    return render_json(schema.dump(user).data)
