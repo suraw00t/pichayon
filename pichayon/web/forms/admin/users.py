@@ -5,6 +5,13 @@ from wtforms.fields import html5
 
 from flask_wtf import FlaskForm
 
+class AddingUserForm(FlaskForm):
+    username = fields.TextField(
+            'Name',
+            validators=[validators.InputRequired(),
+                        validators.Length(min=3)])
+
+
 class UserForm(FlaskForm):
     username = fields.TextField(
             'Name',

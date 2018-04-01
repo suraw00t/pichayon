@@ -5,7 +5,7 @@ from flask import (Blueprint,
                    g)
 
 from pichayon.web import acl
-from pichayon.web.forms.admin import UserForm
+from pichayon.web.forms.admin import UserForm, AddingUserForm
 from pichayon.client.resources import User
 
 module = Blueprint('web.dashboard.admin.users',
@@ -26,7 +26,7 @@ def index():
 @acl.allows.requires(acl.is_admin)
 def create():
     pichayon_client = g.get_pichayon_client()
-    form = UserForm()
+    form = AddingUserForm()
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/users/create.html',
                                form=form)
