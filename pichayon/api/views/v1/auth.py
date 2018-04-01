@@ -20,6 +20,14 @@ from .. import accounts
 module = Blueprint('auth', __name__, url_prefix='/auth')
 
 
+def cache_oauth2token(token):
+    app = current_app
+    data = token.copy()
+    data['access_token'] = app.crypto.encrypt(data['access_token'])
+    key = 'users.{}'.format(token['user_id'])
+    app.cache.set(key, data, timeout=data['expires_in'])
+
+
 @module.route('', methods=['post'])
 def auth():
     auth_dict = request.get_json()['auth']
@@ -40,7 +48,10 @@ def auth():
         user = accounts.get_principal_user(token)
 
     if user:
+        cache_oauth2token(token)
+
         app = current_app
+
         now = datetime.datetime.utcnow()
         expires_at = now + app.config.get('JWT_ACCESS_TOKEN_EXPIRES')
 

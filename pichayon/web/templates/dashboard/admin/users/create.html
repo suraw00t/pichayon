@@ -1,0 +1,41 @@
+{% extends '/dashboard/admin/users/index.html' %}
+{% import '/base/error-handler.html' as eh %}
+
+{% block content %}
+<div class="row">
+  <div class="col s12">
+      <h4>Add User</h4>
+    {% if errors is not undefined %}
+    <div class="card red lighten-5">
+      <div class="card-content red-text text-darken-4">
+        <span class="card-title">Errors</span>
+          {% for error in errors %}
+          <p>{{ error.detail }}</p>
+          {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <form action="{{request.path}}" method="POST">
+      {{ form.csrf_token }}
+      <div class="row">
+        <div class="input-field col s12">
+          {{ form.username(class_=eh.get_validate_class(form.username.errors)) }}
+          {{ form.username.label }}
+          {% if form.username.errors %}
+          <div class="red lighten-5 red-text text-darken-4">
+            {{ ', '.join(form.username.errors) }}
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+          <button type="submit" class="waves-effect waves-light btn">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

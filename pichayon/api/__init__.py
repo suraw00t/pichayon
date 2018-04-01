@@ -5,6 +5,8 @@ from . import acl
 from . import models
 from . import oauth2
 from . import renderers
+from .. import caches
+from .. import crypto
 
 def create_app():
     app = Flask(__name__)
@@ -14,6 +16,8 @@ def create_app():
     models.init_db(app)
     acl.init_jwt(app)
     renderers.init_json_encoder(app)
+    caches.init_cache(app)
+    crypto.init_crypto(app)
     
     views.register_blueprint(app)
 

@@ -6,12 +6,17 @@ from wtforms.fields import html5
 
 from flask_wtf import FlaskForm
 
-class UserForm(FlaskForm):
-    username = fields.TextField('Student ID',
-                            validators=[validators.InputRequired(),
-                                        validators.Length(min=3)])
-    
-    
+class AddingUserForm(FlaskForm):
+    username = fields.TextField(
+            'Name',
+            validators=[validators.InputRequired(),
+                        validators.Length(min=3)])
 
+
+class UserForm(FlaskForm):
+    username = fields.TextField(
+            'Username',
+            validators=[validators.InputRequired(),
+                        validators.Length(min=3)])
    # group = fields.ListField(Text.Field())
     
