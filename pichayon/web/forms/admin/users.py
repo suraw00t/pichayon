@@ -1,10 +1,17 @@
 from wtforms import Form
-from wtforms import widgets
 from wtforms import fields
 from wtforms import validators
 from wtforms.fields import html5
-
+from wtforms import widgets
 from flask_wtf import FlaskForm
+from io import StringIO
+
+
+class MultiCheckboxField(fields.SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    # widget = MultiCheckboxField()
+    option_widget = widgets.CheckboxInput()
+
 
 class AddingUserForm(FlaskForm):
     username = fields.TextField(
@@ -13,10 +20,10 @@ class AddingUserForm(FlaskForm):
                         validators.Length(min=3)])
 
 
+
 class UserForm(FlaskForm):
     username = fields.TextField(
             'Username',
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
-   # group = fields.ListField(Text.Field())
-    
+    doors = MultiCheckboxField('Doors')

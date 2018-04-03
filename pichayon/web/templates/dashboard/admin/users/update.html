@@ -30,17 +30,18 @@
 
         </div>
       </div>
-    <div>
-      {% if groups and groups | count > 0 %}
-      {% for group in groups %}
-      <p>
-      <input type="checkbox" id="test5" />
-      <label for "test5"> {{ group.name }}</label>
-    </p>
-      {% endfor %}
-      {% endif %}
-    </div>
-      <button type="submit" class="waves-effect waves-light btn">Add</button>
+
+      <div class="row">
+        <div class="col s12">
+          {{ form.doors }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s12">
+            <button type="submit" class="waves-effect waves-light btn">Add</button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
