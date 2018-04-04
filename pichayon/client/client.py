@@ -41,9 +41,9 @@ class Client:
         self.users = resources.UserManager(
                 self,
                 schema=schemas.UserSchema())
-        self.groups = resources.GroupManager(
+        self.doors = resources.DoorManager(
                 self,
-                schema=schemas.GroupSchema())
+                schema=schemas.DoorSchema())
         self.rooms = resources.RoomManager(
                 self,
                 schema=schemas.RoomSchema())

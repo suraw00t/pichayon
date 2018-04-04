@@ -45,8 +45,7 @@ def create():
 def update(user_id):
     pichayon_client = g.get_pichayon_client()
     user = pichayon_client.users.get(user_id)
-    groups = pichayon_client.groups.list()
-    rooms = groups
+    rooms = pichayon_client.rooms.list()
     room_choices = [(room.name, room.name) for room in rooms]
     print(room_choices)
     form = UserForm(obj=user)
