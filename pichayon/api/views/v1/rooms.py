@@ -101,5 +101,4 @@ def delete(room_id):
         abort(response)
 
     room.delete()
-
     return render_json(schema.dump(room).data)

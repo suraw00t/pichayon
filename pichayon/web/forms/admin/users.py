@@ -20,10 +20,9 @@ class AddingUserForm(FlaskForm):
                         validators.Length(min=3)])
 
 
-
 class UserForm(FlaskForm):
     username = fields.TextField(
             'Username',
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
-    doors = MultiCheckboxField('Doors')
+    rooms = MultiCheckboxField('Rooms')

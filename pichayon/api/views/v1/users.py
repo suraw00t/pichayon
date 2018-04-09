@@ -75,6 +75,7 @@ def update(user_id):
         response.status_code = 400
         abort(response)
 
+    user = models.User(**user_data)
     user.save()
     return render_json(schema.dump(user).data)
 

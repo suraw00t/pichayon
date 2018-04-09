@@ -14,7 +14,7 @@ class User(me.Document, UserMixin):
 
     status = me.StringField(required=True, default='disactive')
     roles = me.ListField(me.StringField(), default=['user'])
-    groups = me.ListField(me.StringField(), default=['-'])
+    rooms = me.ListField(me.StringField(), default=['-'])
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.utcnow)
     updated_date = me.DateTimeField(required=True,
@@ -42,5 +42,4 @@ class AuthCode(me.Document):
     def is_expires(self):
         if self.expires_date < datetime.datetime.utcnow:
             return False
-
         return True
