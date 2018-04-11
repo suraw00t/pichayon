@@ -25,4 +25,7 @@ class UserForm(FlaskForm):
             'Username',
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
+    # rooms = MultiCheckboxField('Rooms')
+
+class AddingRoomForm(FlaskForm):
     rooms = MultiCheckboxField('Rooms')
