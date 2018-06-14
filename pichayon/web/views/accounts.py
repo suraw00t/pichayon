@@ -31,7 +31,7 @@ def get_user_and_remember(oauth2_token):
 
     session[user.id] = user.to_session_dict()
 
-    login_user(user)
+    login_user(user, remember=True)
 
 
 @module.route('/login', methods=('GET', 'POST'))

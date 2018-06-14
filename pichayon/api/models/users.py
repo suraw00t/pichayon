@@ -14,7 +14,6 @@ class User(me.Document, UserMixin):
 
     status = me.StringField(required=True, default='disactive')
     roles = me.ListField(me.StringField(), default=['user'])
-    rooms = me.ListField(me.StringField(), default=['-'])
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.utcnow)
     updated_date = me.DateTimeField(required=True,
