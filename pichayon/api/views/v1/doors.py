@@ -7,26 +7,26 @@ from pichayon.api import models
 from pichayon.api.renderers import render_json
 
 
-module = Blueprint('api.v1.groups', __name__, url_prefix='/groups')
+module = Blueprint('api.v1.doors', __name__, url_prefix='/doors')
 
 
 @module.route('', methods=['GET'])
 @jwt_required
 @acl.allows.requires(acl.is_admin)
 def list():
-    schema = schemas.GroupSchema()
-    groups = models.Group.objects()
-    return render_json(schema.dump(groups, many=True).data)
+    schema = schemas.DoorSchema()
+    doors = models.Door.objects()
+    return render_json(schema.dump(doors, many=True).data)
 
 
 @module.route('', methods=['POST'])
 @jwt_required
 @acl.allows.requires(acl.is_admin)
 def create():
-    schema = schemas.GroupSchema()
+    schema = schemas.DoorSchema()
 
     try:
-        group_data = schema.load(request.get_json()).data
+        door_data = schema.load(request.get_json()).data
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -35,21 +35,21 @@ def create():
         abort(response)
 
     user = current_user._get_current_object()
-    group = models.Group(user=user,
-                         **group_data)
-    group.save()
-    return render_json(schema.dump(group).data)
+    door = models.Door(user=user,
+                       **door_data)
+    door.save()
+    return render_json(schema.dump(door).data)
 
 
-@module.route('/<group_id>', methods=['GET'])
+@module.route('/<door_id>', methods=['GET'])
 @jwt_required
 @acl.allows.requires(acl.is_admin)
-def get(group_id):
-    group = None
+def get(door_id):
+    door = None
 
-    schema = schemas.GroupSchema()
+    schema = schemas.DoorSchema()
     try:
-        group = models.Group.objects.get(id=group_id)
+        door = models.Door.objects.get(id=door_id)
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -57,21 +57,21 @@ def get(group_id):
         response.status_code = 404
         abort(response)
 
-    return render_json(schema.dump(group).data)
+    return render_json(schema.dump(door).data)
 
 
-@module.route('/<group_id>', methods=['PUT'])
+@module.route('/<door_id>', methods=['PUT'])
 @jwt_required
 @acl.allows.requires(acl.is_admin)
-def update(group_id):
-    schema = schemas.GroupSchema()
+def update(door_id):
+    schema = schemas.DoorSchema()
 
     try:
-        group = models.Group.objects.get(id=group_id)
-        group_data = schema.load(request.get_json()).data
+        door = models.Door.objects.get(id=door_id)
+        door_data = schema.load(request.get_json()).data
 
-        group_data.pop('id')
-        group.update(**group_data)
+        door_data.pop('id')
+        door.update(**door_data)
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -79,19 +79,19 @@ def update(group_id):
         response.status_code = 400
         abort(response)
 
-    group.save()
-    return render_json(schema.dump(group).data)
+    door.save()
+    return render_json(schema.dump(door).data)
 
 
-@module.route('/<group_id>', methods=['DELETE'])
+@module.route('/<door_id>', methods=['DELETE'])
 @jwt_required
 @acl.allows.requires(acl.is_admin)
-def delete(group_id):
-    group = None
+def delete(door_id):
+    door = None
 
-    schema = schemas.GroupSchema()
+    schema = schemas.DoorSchema()
     try:
-        group = models.Group.objects.get(id=group_id)
+        door = models.Door.objects.get(id=door_id)
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -99,6 +99,6 @@ def delete(group_id):
         response.status_code = 404
         abort(response)
 
-    group.delete()
+    door.delete()
 
-    return render_json(schema.dump(group).data)
+    return render_json(schema.dump(door).data)

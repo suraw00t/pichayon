@@ -1,10 +1,10 @@
-{% extends '/dashboard/admin/groups/index.html' %}
+{% extends '/dashboard/admin/doors/index.html' %}
 {% import '/base/error-handler.html' as eh %}
 
 {% block content %}
 <div class="row">
   <div class="col s12">
-	  <h4>Update Group {{ eh.get_validate_class() }}</h4>
+    <h4>Create Doors</h4>
     {% if errors is not undefined %}
     <div class="card red lighten-5">
       <div class="card-content red-text text-darken-4">
@@ -42,7 +42,7 @@
 
         </div>
       </div>
-      <button type="submit" class="waves-effect waves-light btn">Update</button>
+      <button type="submit" class="waves-effect waves-light btn">Create</button>
     </form>
   </div>
 </div>

@@ -5,7 +5,7 @@ from marshmallow_jsonapi.flask import Schema
 from . import common
 
 
-class GroupSchema(Schema):
+class DoorSchema(Schema):
 
     id = fields.String()
     name = ma.fields.String(required=True,
@@ -15,6 +15,6 @@ class GroupSchema(Schema):
     updated_date = fields.DateTime()
 
     class Meta:
-        type_ = 'groups'
+        type_ = 'doors'
         strict = True
         inflect = common.dasherize

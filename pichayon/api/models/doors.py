@@ -4,7 +4,7 @@ import datetime
 from .users import User
 
 
-class Group(me.Document):
+class Door(me.Document):
     name = me.StringField(required=True, unique=True)
     description = me.StringField()
 
@@ -16,5 +16,5 @@ class Group(me.Document):
                                     default=datetime.datetime.utcnow,
                                     auto_now=True)
 
-    meta = {'collection': 'groups'}
+    meta = {'collection': 'doors'}
 

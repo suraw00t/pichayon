@@ -5,7 +5,7 @@ from flask import (Blueprint,
                    g)
 
 from pichayon.web import acl
-from pichayon.web.forms.admin import UserForm, AddingUserForm
+from pichayon.web.forms.admin import UserForm, AddingUserForm, AddingRoomForm
 from pichayon.client.resources import User
 
 module = Blueprint('web.dashboard.admin.users',
@@ -45,18 +45,26 @@ def create():
 def update(user_id):
     pichayon_client = g.get_pichayon_client()
     user = pichayon_client.users.get(user_id)
-
-    form = UserForm(obj=user)
+    print(user.username)
+    rooms = pichayon_client.rooms.list()
+    room_choices = [(room.name, room.name) for room in rooms]
+    form = AddingRoomForm(obj=user)
+    # print(user)
+    form.rooms.choices = room_choices
+    # print(form.rooms)
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/users/update.html',
-                               form=form)
+                               form=form,
+                               user=user)
+
 
     user = User(id=user_id, **form.data)
     user = pichayon_client.users.update(user)
 
     if user.is_error:
         return render_template('/dashboard/admin/users/update.html',
-                               form=form)
+                               form=form,
+                               user=user)
 
     return redirect(url_for('web.dashboard.admin.users.index'))
 
