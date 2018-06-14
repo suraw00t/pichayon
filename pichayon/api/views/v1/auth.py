@@ -20,11 +20,12 @@ from .. import accounts
 module = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-def cache_oauth2token(token):
+def cache_oauth2token(token, user):
     app = current_app
+
     data = token.copy()
     data['access_token'] = app.crypto.encrypt(data['access_token'])
-    key = 'users.{}'.format(token['user_id'])
+    key = 'users.{}'.format(user.id)
     app.cache.set(key, data, timeout=data['expires_in'])
 
 
@@ -48,7 +49,7 @@ def auth():
         user = accounts.get_principal_user(token)
 
     if user:
-        cache_oauth2token(token)
+        cache_oauth2token(token, user)
 
         app = current_app
 

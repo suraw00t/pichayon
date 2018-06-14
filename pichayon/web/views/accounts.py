@@ -59,8 +59,6 @@ def authorized_principal():
     if request.args.get('state') in cache:
         sdata = cache.pop(request.args.get('state'))
         session.update(sdata)
-
-    print('login session:', session)
     client = oauth2.oauth2_client
 
     try:
