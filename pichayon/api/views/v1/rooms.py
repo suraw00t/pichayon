@@ -17,7 +17,7 @@ def list():
     schema = schemas.RoomSchema()
     rooms = models.Room.objects()
     
-    return render_json(schema.dump(rooms, many=True).data)
+    return render_json(schema.dump(rooms, many=True))
 
 
 @module.route('', methods=['POST'])
@@ -39,7 +39,7 @@ def create():
     room = models.Room(user=user,
                        **room_data)
     room.save()
-    return render_json(schema.dump(room).data)
+    return render_json(schema.dump(room))
 
 
 @module.route('/<room_id>', methods=['GET'])
@@ -58,7 +58,7 @@ def get(room_id):
         response.status_code = 404
         abort(response)
 
-    return render_json(schema.dump(room).data)
+    return render_json(schema.dump(room))
 
 
 @module.route('/<room_id>', methods=['PUT'])
@@ -81,7 +81,7 @@ def update(room_id):
         abort(response)
 
     room.save()
-    return render_json(schema.dump(room).data)
+    return render_json(schema.dump(room))
 
 
 @module.route('/<room_id>', methods=['DELETE'])
@@ -101,4 +101,4 @@ def delete(room_id):
         abort(response)
 
     room.delete()
-    return render_json(schema.dump(room).data)
+    return render_json(schema.dump(room))

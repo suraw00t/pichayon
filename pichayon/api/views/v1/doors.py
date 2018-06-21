@@ -16,7 +16,7 @@ module = Blueprint('api.v1.doors', __name__, url_prefix='/doors')
 def list():
     schema = schemas.DoorSchema()
     doors = models.Door.objects()
-    return render_json(schema.dump(doors, many=True).data)
+    return render_json(schema.dump(doors, many=True))
 
 
 @module.route('', methods=['POST'])
@@ -26,7 +26,7 @@ def create():
     schema = schemas.DoorSchema()
 
     try:
-        door_data = schema.load(request.get_json()).data
+        door_data = schema.load(request.get_json())
     except Exception as e:
         response_dict = request.get_json()
         response_dict.update(e.messages)
@@ -38,7 +38,7 @@ def create():
     door = models.Door(user=user,
                        **door_data)
     door.save()
-    return render_json(schema.dump(door).data)
+    return render_json(schema.dump(door))
 
 
 @module.route('/<door_id>', methods=['GET'])
@@ -57,7 +57,7 @@ def get(door_id):
         response.status_code = 404
         abort(response)
 
-    return render_json(schema.dump(door).data)
+    return render_json(schema.dump(door))
 
 
 @module.route('/<door_id>', methods=['PUT'])
@@ -80,7 +80,7 @@ def update(door_id):
         abort(response)
 
     door.save()
-    return render_json(schema.dump(door).data)
+    return render_json(schema.dump(door))
 
 
 @module.route('/<door_id>', methods=['DELETE'])
@@ -101,4 +101,4 @@ def delete(door_id):
 
     door.delete()
 
-    return render_json(schema.dump(door).data)
+    return render_json(schema.dump(door))

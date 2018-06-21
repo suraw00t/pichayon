@@ -21,7 +21,7 @@ def list():
     schema = schemas.UserSchema()
     users = models.User.objects()
 
-    return render_json(schema.dump(users, many=True).data)
+    return render_json(schema.dump(users, many=True))
 
 
 @module.route('', methods=['post'])
@@ -41,7 +41,7 @@ def create():
 
     user = models.User.objects(username=user_data['username']).first()
     if user:
-        return render_json(schema.dump(user).data)
+        return render_json(schema.dump(user))
 
     token = current_app.cache.get('users.{}'.format(current_user.id))
     access_token = current_app.crypto.decrypt(token['access_token'])
@@ -53,7 +53,7 @@ def create():
     data = result.json()
     user = accounts.add_principal_user(data)
 
-    return render_json(schema.dump(user).data)
+    return render_json(schema.dump(user))
 
 @module.route('/<user_id>', methods=['PUT'])
 @jwt_required
