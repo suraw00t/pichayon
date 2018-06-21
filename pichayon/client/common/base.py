@@ -121,9 +121,9 @@ class BaseManager:
             load_schema = schema.load
        
         if schema_many:
-            resource_data = load_schema(response, many=True).data
+            resource_data = load_schema(response, many=True)
         else:
-            resource_data = load_schema(response).data
+            resource_data = load_schema(response)
 
         errors = []
 
@@ -200,9 +200,9 @@ class BaseManager:
         data = {}
 
         if schema:
-            data = schema.dump(resource).data
+            data = schema.dump(resource)
         else:
-            data = self.schema.dump(resource).data
+            data = self.schema.dump(resource)
 
         for name, field in self.schema.fields.items():
             if isinstance(field, mja.fields.Relationship):
@@ -213,7 +213,7 @@ class BaseManager:
                             data['data']['relationships'] = {}
                         data['data']['relationships'][name] = \
                             field._Relationship__schema.dump(
-                                resource.data[name]).data
+                                resource.data[name])
         return data
 
     def resource_url(self, url, resource_id=None):

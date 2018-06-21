@@ -9,7 +9,6 @@ class UserSchema(Schema):
     id = fields.String()
     username = ma.fields.String(required=True,
                                 validator=ma.validate.Length(min=3, max=20))
-    email = fields.String(required=True)
     first_name = fields.String(title='first-name', required=True)
     last_name = fields.String(title='last-name', required=True)
     status = fields.String(required=True, default='distactive')

@@ -86,5 +86,5 @@ def get(user_id):
     schema = schemas.UserSchema()
     if 'admin' in current_user.roles:
         user = models.User.objects(id=user_id).first()
-        
-    return render_json(schema.dump(user).data)
+    
+    return render_json(schema.dump(user))

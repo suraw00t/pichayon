@@ -29,7 +29,7 @@ requires_web = [
         ]
 
 requires_all = set(requires_api + requires_web)
-requires = requires_all
+requires = list(requires_all)
 
 init = os.path.join(os.path.dirname(__file__), 'pichayon', '__init__.py')
 version_line = list(filter(lambda l: l.startswith(

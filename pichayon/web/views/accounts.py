@@ -49,7 +49,8 @@ def login_principal():
                        _external=True)
     response = client.principal.authorize_redirect(callback)
 
-    cache[session['_principal_state_']] = dict(session)
+    print('s===>', session)
+    cache[session['_principal_authlib_state_']] = dict(session)
     return response
 
 
