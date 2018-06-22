@@ -5,6 +5,7 @@ from . import auth
 from . import users
 from . import rooms
 from . import doors
+from . import authorizations
 
 module = Blueprint('api.v1', __name__, url_prefix='/v1')
 
@@ -12,4 +13,5 @@ subviews = [schemas,
             auth,
             users,
             rooms,
-            doors]
+            doors,
+            authorizations]

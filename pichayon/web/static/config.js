@@ -27,7 +27,7 @@ System.config({
       "assert": "npm:assert@1.4.1"
     },
     "github:jspm/nodelibs-buffer@0.1.1": {
-      "buffer": "npm:buffer@5.0.8"
+      "buffer": "npm:buffer@5.1.0"
     },
     "github:jspm/nodelibs-events@0.1.1": {
       "events": "npm:events@1.0.2"
@@ -73,9 +73,9 @@ System.config({
     "npm:babel-runtime@5.8.38": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
-    "npm:buffer@5.0.8": {
-      "base64-js": "npm:base64-js@1.2.1",
-      "ieee754": "npm:ieee754@1.1.8"
+    "npm:buffer@5.1.0": {
+      "base64-js": "npm:base64-js@1.3.0",
+      "ieee754": "npm:ieee754@1.1.11"
     },
     "npm:clean-css@4.1.9": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.1",

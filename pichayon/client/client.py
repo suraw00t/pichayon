@@ -47,6 +47,9 @@ class Client:
         self.rooms = resources.RoomManager(
                 self,
                 schema=schemas.RoomSchema())
+        self.authorizations = resources.AuthorizationManager(
+                self,
+                schema=schemas.AuthorizationSchema())
 
     def authenticate(self, oauth2_token):
         data = dict(

@@ -42,10 +42,10 @@
           <td>{{ user.roles | join(', ') }}</td>
           <td>{{ user.rooms | join(', ') }}</td>
           <td>
-    		<a href="{{ url_for('web.dashboard.admin.users.update', user_id=user.id) }}">
+    		<a href="{{ url_for('web.dashboard.admin.users.grant', user_id=user.id) }}">
             <i class="material-icons">create</i></a>
-			<!-- <a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}">-->
-            <!-- <i class="material-icons">delete</i></a>-->
+            <!-- <a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}">-->
+            <i class="material-icons">delete</i></a>
           </td>
         </tr>
         {% endfor %}

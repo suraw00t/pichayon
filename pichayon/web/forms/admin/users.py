@@ -15,7 +15,7 @@ class MultiCheckboxField(fields.SelectMultipleField):
 
 class AddingUserForm(FlaskForm):
     username = fields.TextField(
-            'Name',
+            'Username',
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
 
@@ -27,5 +27,15 @@ class UserForm(FlaskForm):
                         validators.Length(min=3)])
     # rooms = MultiCheckboxField('Rooms')
 
-class AddingRoomForm(FlaskForm):
-    rooms = MultiCheckboxField('Rooms')
+class AddingRoomForm(Form):
+    room = fields.HiddenField('Rooms')
+    
+    # room = MultiCheckboxField('Rooms')
+    started_date = html5.DateField('Started Date',
+                                    format='%Y-%m-%d')
+    expired_date = html5.DateField('Expired Date',
+                                    format='%Y-%m-%d')
+
+class AuthorizedRoomForm(FlaskForm):
+    rooms = fields.FieldList(fields.FormField(AddingRoomForm))
+    

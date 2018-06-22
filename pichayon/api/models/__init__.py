@@ -1,8 +1,9 @@
 from .users import User
 from .doors import Door
 from .rooms import Room
+from .authorizations import Authorization
 
-__all__ = [User, Door, Room]
+__all__ = [User, Door, Room, Authorization]
 
 from flask_mongoengine import MongoEngine
 
