@@ -24,14 +24,15 @@ def list():
 @jwt_required
 @acl.allows.requires(acl.is_admin)
 def create():
-    room = None
+    # room = None
     schema = schemas.RoomSchema()
+    # print(schema)
 
     try:
-        room_data = schema.load(request.get_json()).data
+        room_data = schema.load(request.get_json())
     except Exception as e:
         response_dict = request.get_json()
-        # response_dict.update(e.messages)
+        response_dict.update(e.messages)
         response = render_json(response_dict)
         response.status_code = 400
         abort(response)
