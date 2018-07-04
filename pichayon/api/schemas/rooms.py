@@ -8,7 +8,7 @@ class RoomSchema(Schema):
     id = fields.String()
     name = ma.fields.String(required=True,
                             validator=ma.validate.Length(min=3, max=20))
-    description = ma.fields.String()
+    description = fields.String()
     created_date = fields.DateTime()
     updated_date = fields.DateTime()
 

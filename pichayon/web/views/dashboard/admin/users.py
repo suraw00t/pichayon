@@ -24,6 +24,8 @@ module = Blueprint('web.dashboard.admin.users',
 def index():
     pichayon_client = g.get_pichayon_client()
     users = pichayon_client.users.list()
+    # for user in users:
+        # print(user.email)
     return render_template('/dashboard/admin/users/index.html',
                            users=users)
 
