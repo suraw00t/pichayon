@@ -31,7 +31,7 @@ def list():
 def create():
     schema = schemas.AuthorizationSchema()
     try:
-        print(request.get_json())
+        print('data request : ',request.get_json())
         auth_data = schema.load(request.get_json())
     except Exception as e:
         print(e)

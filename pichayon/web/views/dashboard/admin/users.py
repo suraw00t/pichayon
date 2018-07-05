@@ -52,29 +52,26 @@ def create():
 def grant(user_id):
     pichayon_client = g.get_pichayon_client()
     user = pichayon_client.users.get(user_id)
-    # print(user)
-    # print(user.username)
     rooms = pichayon_client.rooms.list()
-    # room_choices = [(room.id, room.name) for room in rooms]
-    # form = AddingRoomForm(obj=user)
-    # print(user)
-    # form.room.choices = room_choices
     form = AuthorizedRoomForm()
     from wtforms import fields
-    # print(room.name)
     for room  in rooms:
-        # print(room.name)
         f = AddingRoomForm()
-        f.room.data = room.id
-        f.room.label.text = room.name
-        f.room = fields.HiddenField(room.name, default=room.id)
-        # print(f.room.label.__dict__)
+        # f.room = fields.HiddenField(room.name, default=room.id)
+        # f.room.data = room.id
+        # f.room.label.text = room.name
+        # f.room = '123'
+        print('==>',room.id)
+        # print('==>',f.room_id)
+        # print('==>',f.room_id.data)
         f.started_date = datetime.datetime.now()
         f.expired_date = datetime.datetime.now()
+
+        print('==>',f.started_date)
         form.rooms.append_entry(f)
 
     
-    # print(form.rooms)
+    # print(form.validate_on_submit())
     if not form.validate_on_submit():
         return render_template('/dashboard/admin/users/grant.html',
                                form=form,
@@ -82,9 +79,8 @@ def grant(user_id):
                                rooms=rooms)
 
 
-    print(form.data)
+    # print(form.data)
     user = pichayon_client.authorizations.create(**form.data)
-
     if user.is_error:
         return render_template('/dashboard/admin/users/grant.html',
                                form=form,

@@ -30,7 +30,7 @@ def list():
 def create():
     schema = schemas.UserSchema()
     try:
-        user_data = schema.load(request.get_json()).data
+        user_data = schema.load(request.get_json())
     except Exception as e:
         print(e)
         response_dict = request.get_json()
@@ -51,6 +51,7 @@ def create():
     result = client.principal.get('users/{}'.format(user_data['username']))
 
     data = result.json()
+    print('got data', data)
     user = accounts.add_principal_user(data)
 
     return render_json(schema.dump(user))
@@ -63,7 +64,7 @@ def update(user_id):
 
     try:
         user = models.User.objects.get(id=user_id)
-        user_data = schema.load(request.get_json()).data
+        user_data = schema.load(request.get_json())
 
         user_data.pop('id')
         user.update(**user_data)

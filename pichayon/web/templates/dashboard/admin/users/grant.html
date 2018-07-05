@@ -17,12 +17,12 @@
     {% endif %}
 
     <form action="{{request.path}}" method="POST">
+    {{ form.csrf_token }}
     {% for sf in form.rooms %}
-            {{ form.csrf_token }}
       <div class="row">
         <div class="col s6">
-            <b>{{ sf.room.label }} </b><br/>
-            {{ sf.room }}
+            <b>{#{ sf.room_id.label }#} </b><br/>
+            {{ sf.username }}
             {{ sf.started_date.label }}
             {{ sf.started_date }}
             {{ sf.expired_date.label }}
