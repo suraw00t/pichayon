@@ -1,11 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
 
-from . import admin
-
-
 module = Blueprint('web.dashboard', __name__, url_prefix='/dashboard')
-subviews = [admin]
 
 
 @module.route('/')

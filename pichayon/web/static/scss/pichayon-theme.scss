@@ -1,0 +1,10 @@
+
+$psu-deep-blue-color: rgba(0, 60, 113, 1); 
+
+$primary-color: $psu-deep-blue-color !default;
+
+.psu-deep-blue {
+  color: $psu-deep-blue-color
+}
+
+@import "../node_modules/materialize-css/sass/materialize";

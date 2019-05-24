@@ -13,7 +13,7 @@ from flask_login import (login_user,
 
 from pichayon.web import oauth2, acl
 
-module = Blueprint('web.accounts', __name__)
+module = Blueprint('accounts', __name__)
 
 
 def get_user_and_remember(oauth2_token):
@@ -43,7 +43,7 @@ def login():
 @module.route('/login-principal')
 def login_principal():
     client = oauth2.oauth2_client
-    redirect_uri = url_for('web.accounts.authorized_principal',
+    redirect_uri = url_for('accounts.authorized_principal',
                            _external=True)
     response = client.principal.authorize_redirect(redirect_uri)
 
@@ -58,10 +58,10 @@ def authorized_principal():
         token = client.principal.authorize_access_token()
     except Exception as e:
         print(e)
-        return redirect(url_for('web.accounts.login'))
+        return redirect(url_for('accounts.login'))
 
     get_user_and_remember(token)
-    return redirect(url_for('web.dashboard.index'))
+    return redirect(url_for('dashboard.index'))
 
 
 @module.route('/logout')
@@ -70,4 +70,4 @@ def logout():
     if current_user.id in session:
         session.pop(current_user.id)
     logout_user()
-    return redirect(url_for('web.site.index'))
+    return redirect(url_for('site.index'))

@@ -10,10 +10,8 @@ from pichayon.web import acl
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
                                       AddingRoomForm)
-from pichayon.client.resources import User
-from pichayon.client.resources import Authorization
 
-module = Blueprint('web.dashboard.admin.users',
+module = Blueprint('admin.users',
                    __name__,
                    url_prefix='/users')
 
@@ -43,7 +41,7 @@ def create():
         return render_template('/dashboard/admin/users/create.html',
                                form=form)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('admin.users.index'))
 
 
 @module.route('/<user_id>/grant', methods=["GET", "POST"])
@@ -75,7 +73,7 @@ def grant(user_id):
                                user=user,
                                rooms=rooms)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('admin.users.index'))
 
 
 @module.route('/<user_id>/delete')
@@ -84,4 +82,4 @@ def delete(user_id):
     pichayon_client = g.get_pichayon_client()
     pichayon_client.users.delete(user_id)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('admin.users.index'))

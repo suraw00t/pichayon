@@ -6,9 +6,9 @@ from . import doors
 from . import rooms
 from . import users
 
-module = Blueprint('web.dashboard.admin', __name__, url_prefix='/admin')
+module = Blueprint('admin', __name__, url_prefix='/admin')
 
-subviews = [users, doors, rooms]
+views = [users, doors, rooms]
 
 
 @module.route('/')

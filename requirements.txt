@@ -1,0 +1,18 @@
+# API
+flask
+flask-mongoengine
+flask-jwt-extended
+authlib
+marshmallow
+apispec
+marshmallow-jsonapi
+
+# WEB
+flask
+flask-login
+flask-allows
+authlib
+python-dateutil
+marshmallow-jsonapi
+marshmallow
+

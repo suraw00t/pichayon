@@ -2,9 +2,10 @@
 {% import '/base/error-handler.html' as eh %}
 
 {% block content %}
+
 <div class="row">
   <div class="col s12">
-      <h4>Add room to user {{ user.username }}</h4>
+    <h4>Add room to user {{ user.username }}</h4>
     {% if errors is not undefined %}
     <div class="card red lighten-5">
       <div class="card-content red-text text-darken-4">
@@ -18,37 +19,31 @@
 
     <form action="{{request.path}}" method="POST">
     {{ form.csrf_token }}
-    {% for sf in form.rooms %}
       <div class="row">
         <div class="col s6">
-            <b>{#{ sf.room_id.label }#} </b><br/>
-            {{ sf.username }}
-            {{ sf.started_date.label }}
-            {{ sf.started_date }}
-            {{ sf.expired_date.label }}
-            {{ sf.expired_date }}
+          {{ form.room }}
+          {{ form.room.label }}
         </div>
       </div>
-      {% endfor %}
-      <!-- <div class="input-field">-->
-
-  <!-- <input type="text" class="datepicker">-->
-
-          <!-- </div>-->
       <div class="row">
-        <div class="input-field col s12">
+        <div class="col s6">
+          {{ form.started_date.label }}
+          {{ form.started_date }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s6">
+          {{ form.expired_date.label }}
+          {{ form.expired_date }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s12">
             <button type="submit" class="waves-effect waves-light btn">Add</button>
         </div>
       </div>
     </form>
   </div>
 </div>
-    <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.datepicker');
-    var instances = M.Datepicker.init(elems);
-  });
-    </script>
-
 {% endblock %}

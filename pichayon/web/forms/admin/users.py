@@ -27,17 +27,9 @@ class UserForm(FlaskForm):
                         validators.Length(min=3)])
     # rooms = MultiCheckboxField('Rooms')
 
-class AddingRoomForm(Form):
-
-    # room_id = fields.TextField('Rooms')
-    
-    # room = MultiCheckboxField('Rooms')
-    username = fields.StringField('Username')
+class AddingRoomForm(FlaskForm):
+    room = fields.SelectField('Rooms')
     started_date = html5.DateField('Started Date',
                                     format='%Y-%m-%d')
     expired_date = html5.DateField('Expired Date',
                                     format='%Y-%m-%d')
-
-class AuthorizedRoomForm(FlaskForm):
-    rooms = fields.FieldList(fields.FormField(AddingRoomForm))
-    
