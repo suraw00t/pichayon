@@ -10,10 +10,8 @@ from pichayon.web import acl
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
                                       AddingRoomForm)
-from pichayon.client.resources import User
-from pichayon.client.resources import Authorization
 
-module = Blueprint('web.dashboard.admin.users',
+module = Blueprint('administration.users',
                    __name__,
                    url_prefix='/users')
 
@@ -25,7 +23,7 @@ def index():
     users = pichayon_client.users.list()
     # for user in users:
         # print(user.email)
-    return render_template('/dashboard/admin/users/index.html',
+    return render_template('/administration/users/index.html',
                            users=users)
 
 
@@ -35,15 +33,15 @@ def create():
     pichayon_client = g.get_pichayon_client()
     form = AddingUserForm()
     if not form.validate_on_submit():
-        return render_template('/dashboard/admin/users/create.html',
+        return render_template('/administration/users/create.html',
                                form=form)
     user = pichayon_client.users.create(**form.data)
 
     if user.is_error:
-        return render_template('/dashboard/admin/users/create.html',
+        return render_template('/administration/users/create.html',
                                form=form)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('administration.users.index'))
 
 
 @module.route('/<user_id>/grant', methods=["GET", "POST"])
@@ -61,7 +59,7 @@ def grant(user_id):
     
     # print(form.validate_on_submit())
     if not form.validate_on_submit():
-        return render_template('/dashboard/admin/users/grant.html',
+        return render_template('/administration/users/grant.html',
                                form=form,
                                user=user,
                                rooms=rooms)
@@ -70,12 +68,12 @@ def grant(user_id):
     # print(form.data)
     user = pichayon_client.authorizations.create(**form.data)
     if user.is_error:
-        return render_template('/dashboard/admin/users/grant.html',
+        return render_template('/administration/users/grant.html',
                                form=form,
                                user=user,
                                rooms=rooms)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('administration.users.index'))
 
 
 @module.route('/<user_id>/delete')
@@ -84,4 +82,4 @@ def delete(user_id):
     pichayon_client = g.get_pichayon_client()
     pichayon_client.users.delete(user_id)
 
-    return redirect(url_for('web.dashboard.admin.users.index'))
+    return redirect(url_for('administration.users.index'))

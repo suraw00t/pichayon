@@ -8,14 +8,16 @@ from flask import Flask
 from . import views
 from . import acl
 from . import oauth2
+from .. import models
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('pichayon.web.default_settings')
     app.config.from_envvar('PICHAYON_WEB_SETTINGS', silent=True)
 
+    models.init_db(app)
     acl.init_acl(app)
-    oauth2.init_oauth2(app)
+    oauth2.init_oauth(app)
     
     views.register_blueprint(app)
 

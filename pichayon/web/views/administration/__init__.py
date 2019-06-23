@@ -3,12 +3,13 @@ from flask import Blueprint
 from pichayon.web import acl
 
 from . import doors
-from . import rooms
 from . import users
 
-module = Blueprint('admin', __name__, url_prefix='/admin')
+module = Blueprint('administration', __name__, url_prefix='/administration')
 
-views = [users, doors, rooms]
+views = [users,
+         doors,
+         ]
 
 
 @module.route('/')

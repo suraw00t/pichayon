@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
 
-module = Blueprint('web.dashboard', __name__, url_prefix='/dashboard')
+module = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 
 @module.route('/')

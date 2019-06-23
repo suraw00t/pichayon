@@ -6,7 +6,6 @@ from flask_login import UserMixin
 
 class User(me.Document, UserMixin):
     username = me.StringField(required=True, unique=True)
-    password = me.StringField()
 
     email = me.StringField()
     first_name = me.StringField(required=True)
@@ -14,11 +13,14 @@ class User(me.Document, UserMixin):
 
     status = me.StringField(required=True, default='disactive')
     roles = me.ListField(me.StringField(), default=['user'])
+
     created_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.utcnow)
+                                    default=datetime.datetime.now)
     updated_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.utcnow,
+                                    default=datetime.datetime.now,
                                     auto_now=True)
+
+    resources = me.DictField()
 
     meta = {'collection': 'users'}
 
@@ -28,17 +30,8 @@ class User(me.Document, UserMixin):
                 return True
         return False
 
+    def get_image(self):
+        if 'google' in self.resources:
+            return self.resources['google'].get('picture', None)
+        return None
 
-class AuthCode(me.Document):
-    user = me.ReferenceField(User, dbref=True)
-    created_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.utcnow)
-    expires_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.utcnow)
-
-    meta = {'collection': 'auth_codes'}
-
-    def is_expires(self):
-        if self.expires_date < datetime.datetime.utcnow:
-            return False
-        return True

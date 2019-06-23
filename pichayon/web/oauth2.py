@@ -1,50 +1,85 @@
-from flask_login import current_user
+from flask import redirect, url_for
+from flask_login import current_user, login_user
 from authlib.flask.client import OAuth
-from werkzeug.contrib import cache
+import loginpass
 
-from .acl import User
+from pichayon import models
+import mongoengine as me
+
+import datetime
+
+
+def fetch_token(name):
+    token = models.OAuth2Token.objects(
+            name=name,
+            user=current_user._get_current_object()).first()
+    return token.to_dict()
+
+
+def update_token(name, token):
+    item = models.OAuth2Token(
+            name=name, user=current_user._get_current_object()).first()
+    item.token_type = token.get('token_type', 'Bearer')
+    item.access_token = token.get('access_token')
+    item.refresh_token = token.get('refresh_token')
+    item.expires = datetime.datetime.utcfromtimestamp(token.get('expires_at'))
+
+    item.save()
+    return item
+
 
 oauth2_client = OAuth()
 
 
-# def fetch_token(name):
-#     token = models.OAuth2Token.objects(
-#             name=name,
-#             user=current_user._get_current_object()).first()
-#     return token.to_dict()
+def handle_authorize_google(remote, token, user_info):
+
+    if not user_info:
+        return redirect(url_for('accounts.login'))
+
+    user = models.User.objects(
+            me.Q(username=user_info.get('name')) |
+            me.Q(email=user_info.get('email'))
+            ).first()
+    if not user:
+        user = models.User(
+            username=user_info.get('name'),
+            email=user_info.get('email'),
+            first_name=user_info.get('given_name'),
+            last_name=user_info.get('family_name'),
+            status='active')
+        user.resources[remote.name] = user_info
+        email = user_info.get('email')
+        if email[:email.find('@')].isdigit():
+            user.roles.append('student')
+        user.save()
+
+    login_user(user)
+
+    if token:
+        oauth2token = models.OAuth2Token(
+                name=remote.name,
+                user=user,
+                access_token=token.get('access_token'),
+                token_type=token.get('token_type'),
+                refresh_token=token.get('refresh_token', None),
+                expires=datetime.datetime.utcfromtimestamp(
+                        token.get('expires_in'))
+                )
+        oauth2token.save()
+
+    return redirect(url_for('dashboard.index'))
 
 
-# def update_token(name, token):
-#     item = models.OAuth2Token(name=name, user_id=current_user.id).first()
-#     item.token_type = token.get('token_type', 'bearer')
-#     item.access_token = token.get('access_token')
-#     item.alt_token = token.get('refresh_token')
-#     item.expires_at = token.get('expires_at')
+def init_oauth(app):
+    oauth2_client.init_app(app,
+                           fetch_token=fetch_token,
+                           update_token=update_token)
 
-#     item.save()
-#     return item
+    oauth2_client.register('engpsu')
+    # oauth2_client.register('google')
 
-
-def init_oauth2(app):
-    # oauth2_client.init_app(app,
-    #                        fetch_token=fetch_token,
-    #                        update_token=update_token)
-
-    oauth2_client.init_app(app, cache=cache)
-
-    # principal_settings = app.config.get('AUTHLIB_CLIENT_PRINCIPAL')
-
-    oauth2_client.register('principal')
-    # oauth2_client.register(
-    #     principal_settings['name'],
-    #     client_key=principal_settings['client_key'],
-    #     client_secret=principal_settings['client_secret'],
-    #     request_token_url=principal_settings['request_token_url'],
-    #     request_token_params=principal_settings['request_token_params'],
-    #     access_token_url=principal_settings['access_token_url'],
-    #     access_token_params=principal_settings['access_token_params'],
-    #     refresh_token_url=principal_settings['refresh_token_url'],
-    #     authorize_url=principal_settings['authorize_url'],
-    #     api_base_url=principal_settings['api_base_url'],
-    #     client_kwargs=principal_settings['client_kwargs']
-    # )
+    google_bp = loginpass.create_flask_blueprint(
+            loginpass.Google,
+            oauth2_client,
+            handle_authorize_google)
+    app.register_blueprint(google_bp, url_prefix='/google')

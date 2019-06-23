@@ -3,12 +3,12 @@ from . import site
 from . import accounts
 
 from . import dashboard
-from . import admin
+from . import administration
 
 views = [accounts,
          site,
          dashboard,
-         admin,
+         administration,
          ]
 
 

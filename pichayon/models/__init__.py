@@ -1,9 +1,8 @@
 from .users import User
-from .doors import Door
-from .rooms import Room
-from .authorizations import Authorization
+from .doors import Door, DoorAuthorization
+from .oauth2 import OAuth2Token
 
-__all__ = [User, Door, Room, Authorization]
+__all__ = [User, Door, OAuth2Token]
 
 from flask_mongoengine import MongoEngine
 

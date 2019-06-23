@@ -1,18 +1,15 @@
 {
-  "name": "pichayon-web",
+  "name": "sadhu",
   "version": "0.0.1",
-  "description": "pichayon web interface",
-  "main": "index.js",
+  "description": "sadhu front-end",
   "scripts": {
-    "build-css": "node_modules/node-sass/bin/node-sass scss/pichayon-theme.scss css/pichayon-theme.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "UNLICENSED",
-  "license": "",
+  "author": "",
+  "license": "UNLICENSED",
   "dependencies": {
-    "google-material-design-icons": "^1.0.0",
-    "materialize-css": "^1.0.0",
-    "node-sass": "^4.12.0"
+    "fomantic-ui-css": "^2.7.5",
+    "mathjax": "^2.7.5"
   },
   "devDependencies": {}
 }

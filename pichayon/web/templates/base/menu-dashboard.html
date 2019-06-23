@@ -1,0 +1,23 @@
+
+<div class="item">
+  {%- if current_user.get_image() %}
+  <a href="{{ url_for('accounts.index') }}" class="ui image">
+    <img class="ui avatar image" src="{{ current_user.get_image() }}">
+  </a>
+{% endif -%}
+  <a href="{{ url_for('accounts.index') }}"><span class="white-text name">{{ current_user.first_name }} {{ current_user.last_name }}</span></a><br/>
+  <a href="{{ url_for('accounts.index') }}"><span class="white-text email">{{ current_user.email }}</span></a>
+</div>
+
+<a class="item" href="{{ url_for('dashboard.index') }}"><i class="icon dashboard"></i>Dashboard</a>
+{% if current_user.has_roles(['lecturer', 'admin']) %}
+  <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Door</a>
+  <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>User</a>
+{% else %}
+  {# for user
+  <a class="item" href="{{ url_for('accounts.index') }}"><i class="icon user"></i>Account</a> #}
+{% endif %}
+<a class="item" href="{{ url_for('accounts.index') }}"><i class="icon user"></i>Account</a>
+<a class="item" href="{{ url_for('accounts.logout') }}"><i class="icon sign out"></i>Logout</a>
+
+
