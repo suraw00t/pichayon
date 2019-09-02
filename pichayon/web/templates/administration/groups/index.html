@@ -1,0 +1,55 @@
+{% extends '/administration/index.html' %}
+
+{% block dashboard_title %}
+  Groups
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if url_for('administration.doors.index') == request.path %}
+  <div class="active section">Groups</div>
+{% else %}
+  <a href="{{ url_for('administration.groups.index') }}" class="section">Groups</a>
+{% endif %}
+{%- endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.groups.create') }}">
+        <i class="add icon"></i>
+        Add
+      </a>
+    </div>
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+  {% if groups and groups | count > 0 %}
+  <table class="ui celled table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Updated Date</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for group in groups %}
+      <tr>
+        <td>{{ group.name }}</td>
+        <td>{{ group.description }}</td>
+        <td>{{ group.updated_date.ctime() }}</td>
+        <td>
+	  <a href="{{ url_for('administration.groups.edit', group_id=group.id) }}"><i class="edit icon"></i></a>
+          <a href="{{ url_for('administration.groups.delete', group_id=group.id) }}"><i class="delete icon"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

@@ -43,6 +43,8 @@ def get_user_and_remember():
 @module.route('/login', methods=('GET', 'POST'))
 def login():
     if current_user.is_authenticated:
+        if not current_user.gave_informations:
+            return redirect(url_for('accounts.edit_profile'))
         return redirect(url_for('dashboard.index'))
 
     return render_template('/accounts/login.html')
@@ -102,7 +104,7 @@ def authorized_engpsu():
 
     userinfo_response = client.engpsu.get('userinfo')
     userinfo = userinfo_response.json()
-
+    # print(userinfo)
     user = models.User.objects(username=userinfo.get('username')).first()
 
     if not user:
@@ -157,7 +159,7 @@ def index():
 @module.route('/accounts/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = forms.accounts.Profile(
+    form = forms.accounts.AccountForm(
             obj=current_user,
             )
     if not form.validate_on_submit():
@@ -166,7 +168,9 @@ def edit_profile():
     user = current_user._get_current_object()
     user.first_name = form.first_name.data
     user.last_name = form.last_name.data
-
+    user.id_card_number = form.id_card_number.data
+    if not user.gave_informations:
+        user.gave_informations = True
     user.save()
 
     return redirect(url_for('accounts.index'))

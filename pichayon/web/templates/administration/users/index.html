@@ -1,29 +1,24 @@
-{% extends '/dashboard/admin/index.html' %}
+{% extends '/administration/index.html' %}
+
+{% block dashboard_title %}
+  Doors
+{% endblock %}
 
 {%- block breadcrumbs %}
 {{ super() }}
-<a href="{{ url_for('web.dashboard.admin.users.index') }}" class="breadcrumb">Users</a>
+<i class="right angle icon divider"></i>
+{% if url_for('administration.users.index') == request.path %}
+  <div class="active section">Users</div>
+{% else %}
+  <a href="{{ url_for('administration.users.index') }}" class="section">Users</a>
+{% endif %}
 {%- endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col s12">
-    <!--<a class="btn-floating btn-large waves-effect waves-light red" href="{{ url_for('web.dashboard.admin.users.create') }}"><i class="material-icons">add</i></a>
-    --></div>
-</div>
-
-<div class="row">
-  <div class="col s12">
-    <h3>Users</h3>
-    <div>
-      <a href="{{ url_for('web.dashboard.admin.users.create') }}"
-          class="btn-floating btn-large waves-effect waves-light red"><i
-              class="material-icons">add</i></a>
-      
-    </div>
-    {% if users and users | count > 0 %}
-    <table>
-      <thead>
+  <div class="ui container" style="margin-top: 1em;">
+  {% if users and users | count > 0 %}
+  <table class="ui celled table">
+    <thead>
         <tr>
             <th>Username</th>
             <th>Email</th>
@@ -31,27 +26,21 @@
             <th>Status</th>
             <th>Rooms</th>
         </tr>
-      </thead>
+    </thead>
 
-      <tbody>
+    <tbody>
+
         {% for user in users %}
         <tr>
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
 	  <td>{{ user.first_name }} {{ user.last_name }}</td>
-          <td>{{ user.roles | join(', ') }}</td>
+	  <td>{{ user.roles[-1] }}</td>
           <td>{{ user.rooms | join(', ') }}</td>
-          <td>
-    		<a href="{{ url_for('web.dashboard.admin.users.grant', user_id=user.id) }}">
-            <i class="material-icons">create</i></a>
-            <!-- <a href="{{ url_for('web.dashboard.admin.users.delete', user_id=user.id) }}">-->
-            <i class="material-icons">delete</i></a>
-          </td>
         </tr>
         {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-  </div>
+    </tbody>
+  </table>
+  {% endif %}
 </div>
 {% endblock %}

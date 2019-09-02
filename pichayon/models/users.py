@@ -5,14 +5,26 @@ from flask_login import UserMixin
 
 
 class User(me.Document, UserMixin):
-    username = me.StringField(required=True, unique=True)
-
+    username = me.StringField(
+            required=True,
+            unique=True)
     email = me.StringField()
     first_name = me.StringField(required=True)
     last_name = me.StringField(required=True)
+    id_card_number = me.StringField(required=True)
 
-    status = me.StringField(required=True, default='disactive')
-    roles = me.ListField(me.StringField(), default=['user'])
+    gave_informations = me.BooleanField(
+            required=True,
+            default=False)
+
+    profile_image = me.FileField()
+
+    status = me.StringField(
+            required=True,
+            default='disactive')
+    roles = me.ListField(
+            me.StringField(),
+            default=['user'])
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
@@ -34,4 +46,3 @@ class User(me.Document, UserMixin):
         if 'google' in self.resources:
             return self.resources['google'].get('picture', None)
         return None
-

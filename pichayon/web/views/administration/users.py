@@ -5,7 +5,7 @@ from flask import (Blueprint,
                    g)
 
 import datetime
-
+from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
@@ -19,10 +19,7 @@ module = Blueprint('administration.users',
 @module.route('/')
 @acl.allows.requires(acl.is_admin)
 def index():
-    pichayon_client = g.get_pichayon_client()
-    users = pichayon_client.users.list()
-    # for user in users:
-        # print(user.email)
+    users = models.User.objects()
     return render_template('/administration/users/index.html',
                            users=users)
 

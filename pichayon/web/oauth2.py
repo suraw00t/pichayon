@@ -74,7 +74,6 @@ def init_oauth(app):
     oauth2_client.init_app(app,
                            fetch_token=fetch_token,
                            update_token=update_token)
-
     oauth2_client.register('engpsu')
     # oauth2_client.register('google')
 

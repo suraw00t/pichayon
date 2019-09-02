@@ -18,6 +18,9 @@
         {{ renderer.render_field(form.first_name) }}
         {{ renderer.render_field(form.last_name) }}
       </div>
+      <div class="two fields">
+        {{ renderer.render_field(form.id_card_number) }}
+      </div>
 
       <button name="create" type="submit" class="ui primary button">Change</button>
     </form>

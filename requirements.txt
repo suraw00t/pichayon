@@ -6,6 +6,7 @@ authlib
 marshmallow
 apispec
 marshmallow-jsonapi
+loginpass
 
 # WEB
 flask
