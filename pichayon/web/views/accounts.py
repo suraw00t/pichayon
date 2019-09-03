@@ -168,6 +168,8 @@ def edit_profile():
     user = current_user._get_current_object()
     user.first_name = form.first_name.data
     user.last_name = form.last_name.data
+    user.first_name_th = form.first_name_th.data
+    user.last_name_th = form.last_name_th.data
     user.id_card_number = form.id_card_number.data
     if not user.gave_informations:
         user.gave_informations = True

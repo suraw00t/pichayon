@@ -13,6 +13,12 @@ class AccountForm(FlaskForm):
     last_name = fields.TextField('Last Name',
                                  validators=[validators.InputRequired(),
                                  validators.Length(min=3)])
+    first_name_th = fields.TextField('First Name (Thai)',
+                                  validators=[validators.InputRequired(),
+                                  validators.Length(min=3)])
+    last_name_th = fields.TextField('Last Name (Thai)',
+                                 validators=[validators.InputRequired(),
+                                 validators.Length(min=3)])
     id_card_number = fields.TextField('ID Card Number',
                                  validators=[validators.InputRequired(),
                                  validators.Length(min=3)])

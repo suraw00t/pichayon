@@ -11,6 +11,9 @@ class User(me.Document, UserMixin):
     email = me.StringField()
     first_name = me.StringField(required=True)
     last_name = me.StringField(required=True)
+
+    first_name_th = me.StringField(required=True, default='')
+    last_name_th = me.StringField(required=True, default='')
     id_card_number = me.StringField(
             required=True,
             default='')
