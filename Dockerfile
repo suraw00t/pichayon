@@ -7,7 +7,7 @@ RUN apt install -y python3 python3-dev python3-pip python3-venv npm
 COPY . /app
 WORKDIR /app
 
-RUN pip3 install flask uwsgi marshmallow
+RUN pip3 install flask uwsgi marshmallow requests
 RUN python3 setup.py develop
 RUN npm install --prefix pichayon/web/static
 
