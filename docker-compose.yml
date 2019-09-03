@@ -17,7 +17,7 @@ services:
             - ../deployment:/deployment
             - /etc/localtime:/etc/localtime:ro
         ports:
-            - 8080:9000
+            - 9000:9000
         links:
             - mongodb
         depends_on:
@@ -26,7 +26,7 @@ services:
             - default
         restart: always
         environment:
-            YANA_SETTINGS: /app/pichayon-production.cfg
-        command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
+            PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
+        # command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
 networks:
     default:
