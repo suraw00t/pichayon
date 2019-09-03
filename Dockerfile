@@ -12,4 +12,9 @@ RUN python3 setup.py develop
 RUN npm install --prefix pichayon/web/static
 
 ENV PICHAYON_WEB_SETTINGS=/app/pichayon-production.cfg
+ENV FLASK_ENV=prodoction
+ENV AUTHLIB_INSECURE_TRANSPORT=true
 
+
+EXPOSE 9000
+CMD uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini

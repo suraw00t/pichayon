@@ -27,6 +27,6 @@ services:
         restart: always
         environment:
             PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
-        command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini --protocol=http
+        command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
 networks:
     default:
