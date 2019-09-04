@@ -24,6 +24,7 @@
             <th>Email</th>
             <th>Name</th>
             <th>Name(Thai)</th>
+            <th>ID Card Number</th>
             <th>Status</th>
             <th>Rooms</th>
         </tr>
@@ -37,6 +38,7 @@
           <td>{{ user.email }}</td>
 	  <td>{{ user.first_name }} {{ user.last_name }}</td>
 	  <td>{{ user.first_name_th }} {{ user.last_name_th }}</td>
+	  <td>{{ user.id_card_number }}</td>
 	  <td>{{ user.roles[-1] }}</td>
           <td>{{ user.rooms | join(', ') }}</td>
         </tr>
