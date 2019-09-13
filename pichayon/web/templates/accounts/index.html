@@ -12,20 +12,23 @@ Profile
 {% block content %}
 <div class="ui container">
   <div class="ui segment">
-    <h2 class="ui header">Profile <a class="btn-floating btn-large waves-effect waves-light" href="{{ url_for('accounts.edit_profile') }}" title='Edit profile.'><i class="edit icon"></i></a>
+	  <h2 class="ui header">Profile
+{% if current_user == user or not request.args.get('user')%}
+     <a class="btn-floating btn-large waves-effect waves-light" href="{{ url_for('accounts.edit_profile') }}" title='Edit profile.'><i class="edit icon"></i></a>
+     {% endif %}
     </h2>
     <div class="ui grid two column">
       <div class="column">
-        {{ current_user.username }}
+        {{ user.username }}
       </div>
       <div class="column">
-        {{ current_user.email }}
+        {{ user.email }}
       </div>
       <div class="column">
-        {{ current_user.first_name }}
+        {{ user.first_name }}
       </div>
       <div class="column">
-        {{ current_user.last_name }}
+        {{ user.last_name }}
       </div>
     </div>
   </div>

@@ -2,12 +2,13 @@ from flask import (Blueprint,
                    render_template,
                    redirect,
                    url_for,
+                   request,
                    g)
 
 from pichayon import models
 from pichayon.web import acl
-from pichayon.web.forms.admin import DoorForm
-
+from pichayon.web.forms.admin import DoorForm, DoorGroupForm
+from flask_login import login_user, logout_user, login_required, current_user
 module = Blueprint('administration.doors',
                    __name__,
                    url_prefix='/doors')
@@ -16,9 +17,9 @@ module = Blueprint('administration.doors',
 @module.route('/')
 @acl.allows.requires(acl.is_admin)
 def index():
-    doors = models.Door.objects(status='active')
+    door_groups = models.DoorGroup.objects(status='active').order_by('name')
     return render_template('/administration/doors/index.html',
-                           doors=doors)
+                           door_groups=door_groups)
 
 
 @module.route('/create', methods=["GET", "POST"])
@@ -30,10 +31,22 @@ def create():
                                form=form)
     door = models.Door()
     form.populate_obj(door)
-
+    door.creator = current_user._get_current_object()
     door.save()
+    group_id = request.args.get('group_id')
+    door_group = models.DoorGroup.objects.get(id=group_id)
+    door_group.members.append(door)
+    door_group.save()
+    return redirect(url_for('administration.groups.door_group',
+                            doorgroup_id=group_id))
 
-    return redirect(url_for('administration.doors.index'))
+
+@module.route('/<doorgroup_id>/doorlists', methods=["GET", "POST"])
+@acl.allows.requires(acl.is_admin)
+def doors_list(doorgroup_id):
+    door_group = models.DoorGroup.objects.get(id=doorgroup_id)
+    return render_template('/administration/doors/door_lists.html',
+                           door_group=door_group)
 
 
 @module.route('/<door_id>/edit', methods=["GET", "POST"])

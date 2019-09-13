@@ -4,44 +4,43 @@ from flask import (Blueprint,
                    url_for,
                    g)
 
+from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
 from pichayon.web import acl
-from pichayon.web.forms.admin import GroupForm
+from pichayon.web.forms.admin import DoorGroupForm
 
 module = Blueprint('administration.groups',
                    __name__,
                    url_prefix='/groups')
 
 
-@module.route('/')
+@module.route('/', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
 def index():
-    groups = models.Group.objects(status='active')
-    return render_template('/administration/groups/index.html',
-                           groups=groups)
+    return 'group'
 
 
-@module.route('/create', methods=["GET", "POST"])
+@module.route('/create_doorgroup', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
-def create():
-    form = GroupForm()
+def create_doorgroup():
+    form = DoorGroupForm()
     if not form.validate_on_submit():
         return render_template('/administration/groups/create-edit.html',
                                form=form)
-    group = models.Group()
-    form.populate_obj(group)
+    door_group = models.DoorGroup()
+    form.populate_obj(door_group)
 
-    group.save()
+    door_group.save()
 
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('administration.doors.index'))
 
 
-@module.route('/<group_id>/edit', methods=["GET", "POST"])
+@module.route('/<doorgroup_id>/edit_doorgroup', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
-def edit(group_id):
-    group = models.Group.objects.get(id=group_id)
+def edit_doorgroup(doorgroup_id):
+    group = models.DoorGroup.objects.get(id=doorgroup_id)
 
-    form = GroupForm(obj=group)
+    form = DoorGroupForm(obj=group)
     if not form.validate_on_submit():
         return render_template('/administration/groups/create-edit.html',
                                form=form)
@@ -52,11 +51,11 @@ def edit(group_id):
     return redirect(url_for('administration.groups.index'))
 
 
-@module.route('/<group_id>/delete')
+@module.route('/<doorgroup_id>/delete')
 @acl.allows.requires(acl.is_admin)
-def delete(group_id):
-    group = models.Group.objects.get(id=group_id)
-    group.status = 'delete'
-    group.save()
+def delete_doorgroup(doorgroup_id):
+    group = models.DoorGroup.objects.get(id=doorgroup_id)
+    # group.status = 'delete'
+    group.delete()
 
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('administration.doors.index'))

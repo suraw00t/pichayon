@@ -4,7 +4,9 @@ from flask import (Blueprint,
                    render_template,
                    url_for,
                    redirect,
+                   request,
                    )
+
 from flask_login import login_user, logout_user, login_required, current_user
 
 from pichayon import models
@@ -123,6 +125,7 @@ def authorized_engpsu():
             user.roles.append('student')
         else:
             user.roles.append('staff')
+            user.gave_informations = True
 
         user.save()
 
@@ -152,8 +155,12 @@ def logout():
 @module.route('/accounts')
 @login_required
 def index():
-
-    return render_template('/accounts/index.html')
+    user = current_user
+    if request.args.get('user'):
+        user_id = request.args.get('user')
+        user = models.User.objects.get(id=user_id)
+    return render_template('/accounts/index.html',
+                           user=user)
 
 
 @module.route('/accounts/edit-profile', methods=['GET', 'POST'])

@@ -1,5 +1,5 @@
 from .doors import DoorForm
-from .groups import GroupForm
+from .groups import DoorGroupForm
 from .rooms import RoomForm
 from .users import (UserForm,
                     AddingUserForm,

@@ -1,0 +1,53 @@
+{% extends '/administration/doors/index.html' %}
+
+{% block dashboard_title %}
+  Doors List
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{super()}}
+<i class="right angle icon divider"></i>
+<div class="active section">Door List</div>
+{%- endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.doors.create', group_id=door_group.id) }}">
+        <i class="add icon"></i>
+        Add Door
+      </a>
+    </div>
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+  {% if door_group.members and door_group.members | count > 0 %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Door Name</th>
+        <th>Description</th>
+        <th>Updated Date</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+
+    <tbody>
+	    {% for door in door_group.members %}
+
+      <tr>
+	      <td><a href="{{url_for('administration.doors.edit', door_id=door.id)}}">{{ door.name }}</a></td>
+        <td>{{ door.description }}</td>
+        <td>{{ door.updated_date.ctime() }}</td>
+        <td>
+          <a href="{{ url_for('administration.doors.edit', door_id=door.id) }}"><i class="edit icon"></i></a>
+          <a href="{{ url_for('administration.doors.delete', door_id=door.id) }}"><i class="delete icon"></i></a>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
