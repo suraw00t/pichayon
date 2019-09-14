@@ -7,7 +7,7 @@
 {%- block breadcrumbs %}
 {{ super() }}
 <i class="right angle icon divider"></i>
-{% if url_for('administration.doors.index') == request.path %}
+{% if url_for('administration.groups.index') == request.path %}
   <div class="active section">Groups</div>
 {% else %}
   <a href="{{ url_for('administration.groups.index') }}" class="section">Groups</a>
@@ -17,16 +17,16 @@
 {% block content %}
   <div class="ui container">
     <div class="ui labeled icon menu">
-      <a class="item" href="{{ url_for('administration.groups.create') }}">
+      <a class="item" href="{{ url_for('administration.groups.create_usergroup') }}">
         <i class="add icon"></i>
-        Add
+        Create Group
       </a>
     </div>
   </div>
 
   <div class="ui container" style="margin-top: 1em;">
   {% if groups and groups | count > 0 %}
-  <table class="ui celled table">
+  <table class="ui selectable celled table">
     <thead>
       <tr>
         <th>Name</th>
@@ -39,17 +39,23 @@
     <tbody>
       {% for group in groups %}
       <tr>
-        <td>{{ group.name }}</td>
+	      <td><a href="{{url_for('administration.users.list', group_id=group.id)}}">{{ group.name }}</a></td>
         <td>{{ group.description }}</td>
         <td>{{ group.updated_date.ctime() }}</td>
         <td>
-	  <a href="{{ url_for('administration.groups.edit', group_id=group.id) }}"><i class="edit icon"></i></a>
-          <a href="{{ url_for('administration.groups.delete', group_id=group.id) }}"><i class="delete icon"></i></a>
+	  <a href="{{ url_for('administration.groups.edit_usergroup', group_id=group.id) }}"><i class="edit icon"></i></a>
+          <a href="{{ url_for('administration.groups.delete_usergroup', group_id=group.id) }}"><i class="delete icon"></i></a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+     <div class="ui info message">
+        <div class="header">
+          No Group
+        </div>
+      </div>
   {% endif %}
 </div>
 {% endblock %}

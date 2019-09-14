@@ -1,4 +1,4 @@
-{% extends '/administration/doors/index.html' %}
+{% extends '/administration/authorizations/door_auth.html' %}
 
 {% block dashboard_title %}
   Doors List
@@ -36,11 +36,11 @@
 	    {% for door in door_group.members %}
 
       <tr>
-	      <td><a href="{{url_for('administration.doors.edit', door_id=door.id)}}">{{ door.name }}</a></td>
+	      <td><a href="{{url_for('administration.doors.edit', door_id=door.id, group_id=door_group.id)}}">{{ door.name }}</a></td>
         <td>{{ door.description }}</td>
         <td>{{ door.updated_date.ctime() }}</td>
         <td>
-          <a href="{{ url_for('administration.doors.edit', door_id=door.id) }}"><i class="edit icon"></i></a>
+          <a href="{{ url_for('administration.doors.edit', door_id=door.id, group_id=door_group.id) }}"><i class="edit icon"></i></a>
           <a href="{{ url_for('administration.doors.delete', door_id=door.id) }}"><i class="delete icon"></i></a>
         </td>
       </tr>

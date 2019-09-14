@@ -1,0 +1,26 @@
+{% extends '/administration/authorizations/door_auth.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+{% block dashboard_title %}
+Add Authority
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">Add Authority</div>
+
+{%- endblock %}
+{% block content %}
+<form class="ui big form" method="POST">
+	{{ form.csrf_token }}
+	<div class="field">
+      {{ renderer.render_multiple_select(form.user_group) }}
+	</div>
+<button class="ui submit primary button" type="submit">Confirm</button>
+</form>
+
+<script>
+$('#user_group')
+  .dropdown();
+</script>
+{% endblock %}

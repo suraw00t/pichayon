@@ -11,9 +11,9 @@
 
 <a class="item" href="{{ url_for('dashboard.index') }}"><i class="icon dashboard"></i>Dashboard</a>
 {% if current_user.has_roles(['lecturer', 'admin']) %}
-  <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Door</a>
-  <a class="item" href="{{ url_for('administration.groups.index') }}"><i class="group closed icon"></i>Group</a>
-  <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>User</a>
+  <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Doors</a>
+  <a class="item" href="{{ url_for('administration.groups.index') }}"><i class="group closed icon"></i>User Groups</a>
+  <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>Users</a>
 {% else %}
   {# for user
   <a class="item" href="{{ url_for('accounts.index') }}"><i class="icon user"></i>Account</a> #}

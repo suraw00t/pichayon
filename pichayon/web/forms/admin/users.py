@@ -14,10 +14,11 @@ class MultiCheckboxField(fields.SelectMultipleField):
 
 
 class AddingUserForm(FlaskForm):
-    username = fields.TextField(
-            'Username',
-            validators=[validators.InputRequired(),
-                        validators.Length(min=3)])
+    username = fields.SelectMultipleField('Username')
+
+
+class AddRoleUserForm(FlaskForm):
+    role = fields.SelectField('Role')
 
 
 class UserForm(FlaskForm):
@@ -26,6 +27,7 @@ class UserForm(FlaskForm):
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
     # rooms = MultiCheckboxField('Rooms')
+
 
 class AddingRoomForm(FlaskForm):
     room = fields.SelectField('Rooms')

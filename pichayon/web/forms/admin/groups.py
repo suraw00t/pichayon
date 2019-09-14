@@ -10,3 +10,10 @@ class DoorGroupForm(FlaskForm):
                             validators=[validators.InputRequired(),
                                         validators.Length(min=3)])
     description = fields.TextField('Description')
+
+
+class UserGroupForm(FlaskForm):
+    name = fields.TextField('Name',
+                            validators=[validators.InputRequired(),
+                                        validators.Length(min=3)])
+    description = fields.TextField('Description')

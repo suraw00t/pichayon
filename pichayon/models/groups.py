@@ -6,7 +6,7 @@ import datetime
 
 class UserMember(me.EmbeddedDocument):
     user = me.ReferenceField('User', dbref=True)
-    role = me.StringField(required=True, default='member')
+    role = me.StringField(required=True, default='Member')
     added_by = me.ReferenceField('User', dbref=True)
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
@@ -14,7 +14,7 @@ class UserMember(me.EmbeddedDocument):
 
 class UserGroup(me.Document):
     name = me.StringField(required=True, unique=True)
-    descriptions = me.StringField()
+    description = me.StringField()
     members = me.ListField(me.EmbeddedDocumentField('UserMember'))
 
     created_date = me.DateTimeField(required=True,

@@ -30,6 +30,7 @@
     <thead>
       <tr>
         <th>Door Group Name</th>
+        <th>Door</th>
         <th>Description</th>
         <th>Updated Date</th>
         <th>Operation</th>
@@ -40,7 +41,8 @@
 	    {% for group in door_groups %}
 
       <tr>
-	      <td><a href="{{url_for('administration.doors.doors_list', doorgroup_id=group.id)}}">{{ group.name }}</a></td>
+	      <td><a href="{{url_for('administration.door_authorizations.index', group_id=group.id)}}">{{ group.name }}</a></td>
+	      <td><a href="{{url_for('administration.doors.doors_list', doorgroup_id=group.id)}}">{{ group.members | count }}</a></td>
         <td>{{ group.description }}</td>
         <td>{{ group.updated_date.ctime() }}</td>
         <td>

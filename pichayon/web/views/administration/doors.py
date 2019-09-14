@@ -26,22 +26,24 @@ def index():
 @acl.allows.requires(acl.is_admin)
 def create():
     form = DoorForm()
+    group_id = request.args.get('group_id')
+    door_group = models.DoorGroup.objects.get(id=group_id)
     if not form.validate_on_submit():
         return render_template('/administration/doors/create-edit.html',
-                               form=form)
+                               form=form,
+                               door_group=door_group)
     door = models.Door()
     form.populate_obj(door)
     door.creator = current_user._get_current_object()
     door.save()
-    group_id = request.args.get('group_id')
-    door_group = models.DoorGroup.objects.get(id=group_id)
+
     door_group.members.append(door)
     door_group.save()
-    return redirect(url_for('administration.groups.door_group',
+    return redirect(url_for('administration.doors.doors_list',
                             doorgroup_id=group_id))
 
 
-@module.route('/<doorgroup_id>/doorlists', methods=["GET", "POST"])
+@module.route('/<doorgroup_id>/doors_list', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
 def doors_list(doorgroup_id):
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
@@ -52,12 +54,15 @@ def doors_list(doorgroup_id):
 @module.route('/<door_id>/edit', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
 def edit(door_id):
+    group_id = request.args.get('group_id')
+    door_group = models.DoorGroup.objects.get(id=group_id)
     door = models.Door.objects.get(id=door_id)
 
     form = DoorForm(obj=door)
     if not form.validate_on_submit():
         return render_template('/administration/doors/create-edit.html',
-                               form=form)
+                               form=form,
+                               door_group=door_group)
 
     form.populate_obj(door)
     door.save()
