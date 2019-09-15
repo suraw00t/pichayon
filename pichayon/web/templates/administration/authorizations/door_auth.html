@@ -41,10 +41,10 @@ Door Authorizations
      {% for group in door_auth.user_group %}
 
       <tr>
-	      <td><a href="{{url_for('administration.users.list', group_id=group.id)}}">{{ group.name }}</a></td>
-        <td>{{ group.started_date.ctime }}</td>
-        <td>{{ group.description }}</td>
-        <td>{{ group.updated_date.ctime() }}</td>
+	      <td><a href="{{url_for('administration.users.list', group_id=group.group.id)}}">{{ group.group.name }}</a></td>
+        <td>{{ group.started_date.ctime() }}</td>
+        <td>{{ group.expired_date.ctime() }}</td>
+        <td>{{ group.granter.username }}</td>
         <td>
           <a href="{{ url_for('administration.groups.edit_doorgroup', doorgroup_id=group.id) }}"><i class="edit icon"></i></a>
           <a href="{{ url_for('administration.groups.delete_doorgroup', doorgroup_id=group.id) }}"><i class="delete icon"></i></a>

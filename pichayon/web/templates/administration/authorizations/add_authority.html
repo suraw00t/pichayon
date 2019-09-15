@@ -3,7 +3,30 @@
 {% block dashboard_title %}
 Add Authority
 {% endblock %}
-
+{% block additional_js %}
+  <script type="text/javascript">
+    datetime_formatter = {
+      datetime: function (datetime, settings) {
+        if (!datetime) return '';
+        var day = datetime.getDate();
+        var month = datetime.getMonth() + 1;
+        var year = datetime.getFullYear();
+        var hour = datetime.getHours();
+        var minute = datetime.getMinutes();
+        return year + '-' + ("0" + month).slice(-2) + '-' + ("0" + day).slice(-2) + " " + ("0" + hour).slice(-2) + ":" + ("0" + minute).slice(-2)  ;
+      }};
+    $('#started_date_calendar').calendar({
+      formatter: datetime_formatter,
+      ampm: false,
+      endCalendar: $('#ended_date_calendar')
+    });
+    $('#ended_date_calendar').calendar({
+      formatter: datetime_formatter,
+      ampm: false,
+      startCalendar: $('#started_date_calendar')
+    });
+  </script>
+{% endblock %}
 {%- block breadcrumbs %}
 {{ super() }}
 <i class="right angle icon divider"></i>
@@ -15,6 +38,12 @@ Add Authority
 	{{ form.csrf_token }}
 	<div class="field">
       {{ renderer.render_multiple_select(form.user_group) }}
+	</div>
+	<div class="field" id="rangestart">
+      {{ renderer.render_calendar(form.started_date, calendar_id='started_date_calendar') }}
+	</div>
+	<div class="field" id="rangeend">
+      {{ renderer.render_calendar(form.expired_date, calendar_id='ended_date_calendar') }}
 	</div>
 <button class="ui submit primary button" type="submit">Confirm</button>
 </form>

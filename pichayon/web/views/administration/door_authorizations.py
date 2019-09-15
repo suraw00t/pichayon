@@ -43,9 +43,15 @@ def add_authority():
                                form=form,
                                door_group=door_group,
                                door_auth=door_auth)
+
     for g_name in form.user_group.data:
         u_group = models.UserGroup.objects.get(name=g_name)
-        door_auth.user_group.append(u_group)
+        group_member = models.GroupMember(group=u_group,
+                                          granter=current_user._get_current_object(),
+                                          started_date=form.started_date.data,
+                                          expired_date=form.expired_date.data
+                                          )
+        door_auth.user_group.append(group_member)
     door_auth.save()
     return redirect(url_for('administration.door_authorizations.index',
                             group_id=group_id))
