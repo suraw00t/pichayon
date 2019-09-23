@@ -1,7 +1,11 @@
 {% import '/base/html-renderer.html' as renderer %}
 {% extends '/administration/authorizations/door_auth.html' %}
 {% block dashboard_title %}
-Add Authority
+{% if 'add_authority' in request.args %}
+<div class="active section">Add Authority</div>
+{% else %}
+	<div class="active section">Edit Authority</div>
+{% endif %}
 {% endblock %}
 {% block additional_js %}
   <script type="text/javascript">
@@ -30,7 +34,11 @@ Add Authority
 {%- block breadcrumbs %}
 {{ super() }}
 <i class="right angle icon divider"></i>
+{% if 'add_authority' in request.args %}
 <div class="active section">Add Authority</div>
+{% else %}
+	<div class="active section">Edit Authority</div>
+{% endif %}
 
 {%- endblock %}
 {% block content %}

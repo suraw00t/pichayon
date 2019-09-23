@@ -73,8 +73,10 @@ def edit(door_id):
 @module.route('/<door_id>/delete')
 @acl.allows.requires(acl.is_admin)
 def delete(door_id):
-    door = models.Door.objects.get(id=door_id)
-    door.status = 'delete'
-    door.save()
-
+    group_id = request.args.get('group_id')
+    door_group = models.DoorGroup.objects.get(id=group_id)
+    selected_door = models.Door.objects.get(id=door_id)
+    door_group.members.remove(selected_door)
+    selected_door.delete()
+    door_group.save()
     return redirect(url_for('administration.doors.index'))

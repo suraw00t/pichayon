@@ -88,9 +88,12 @@ def edit_doorgroup(doorgroup_id):
 @module.route('user_group/<group_id>/delete')
 @acl.allows.requires(acl.is_admin)
 def delete_usergroup(group_id):
-    group = models.UserGroup.objects.get(id=group_id)
+    selected_group = models.UserGroup.objects.get(id=group_id)
+    door_auths = models.DoorAuthorizations.objects()
+    for door_auth in door_auths:
+        door_auth.remove_member(selected_group)
     # group.status = 'delete'
-    group.delete()
+    selected_group.delete()
 
     return redirect(url_for('administration.groups.index'))
 
@@ -100,6 +103,8 @@ def delete_usergroup(group_id):
 def delete_doorgroup(doorgroup_id):
     group = models.DoorGroup.objects.get(id=doorgroup_id)
     # group.status = 'delete'
+    door_auth = models.DoorAuthorizations.objects.get(door_group=group)
+    door_auth.delete()
     group.delete()
 
     return redirect(url_for('administration.doors.index'))
