@@ -42,7 +42,7 @@
 
       <tr>
 	      <td><a href="{{url_for('administration.door_authorizations.index', group_id=group.id)}}">{{ group.name }}</a></td>
-	      <td><a href="{{url_for('administration.doors.doors_list', doorgroup_id=group.id)}}">{{ group.members | count }}</a></td>
+	      <td><a href="{{url_for('administration.doors.doors_list', doorgroup_id=group.id)}}">{{ group.members | count }} <i class="door closed icon"></i></a></td>
         <td>{{ group.description }}</td>
         <td>{{ group.updated_date.ctime() }}</td>
         <td>

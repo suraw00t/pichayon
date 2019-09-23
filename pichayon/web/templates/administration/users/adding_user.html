@@ -10,6 +10,7 @@
   <div class="active section">Adding User</div>
 {%- endblock %}
 {% block content %}
+	<div class="ui container">
 <form class="ui big form" method="POST">
 	{{ form.csrf_token }}
 	<div class="field">
@@ -17,6 +18,7 @@
 	</div>
 <button class="ui submit primary button" type="submit">Confirm</button>
 </form>
+</div>
 <script>
 $('#username')
   .dropdown();

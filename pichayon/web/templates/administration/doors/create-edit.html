@@ -23,9 +23,16 @@
   <div class="ui container">
     <form method="POST" class="ui form">
       {{ form.csrf_token }}
+       <div class="ui form">
+	<div class="six wide field">
+
       {{ renderer.render_field(form.name) }}
+  </div>
+      <div class="twelve wide field">
+
       {{ renderer.render_field(form.description) }}
 
+  </div>
       <button type="submit" class="ui button primary">
         {% if 'edit' in request.path %}
           Edit
@@ -33,6 +40,7 @@
           Create
         {% endif %}
       </button>
+  </div>
     </form>
   </div>
 {% endblock %}
