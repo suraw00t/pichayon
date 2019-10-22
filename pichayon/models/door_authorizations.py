@@ -21,16 +21,8 @@ class DoorAuthorizations(me.Document):
 
     meta = {'collection': 'door_authorizations'}
 
-    def is_member(self, group):
+    def is_group_member(self, group):
         for ugroup in self.user_group:
-            if ugroup.group == group:
+            if ugroup.group == group and datetime.datetime.now() < ugroup.expired_date and datetime.datetime.now() > ugroup.started_date:
                 return True
         return False
-
-    def remove_member(self, group):
-        for ugroup in self.user_group:
-            print(ugroup.group)
-            print(group)
-            print(ugroup.group == group)
-            # if ugroup.group == group:
-            #     self.user_group.remove(ugroup)
