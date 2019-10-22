@@ -35,7 +35,7 @@ def add_authority():
     user_group = models.UserGroup.objects()
     choices = []
     for group in user_group:
-        if not door_auth.is_member(group):
+        if not door_auth.is_group_member(group):
             choices.append((group.name, group.name))
     form.user_group.choices = choices
     if not form.validate_on_submit():
@@ -67,7 +67,7 @@ def edit_authority():
     user_group = models.UserGroup.objects()
     choices = []
     for group in user_group:
-        if not door_auth.is_member(group):
+        if not door_auth.is_group_member(group):
             choices.append((group.name, group.name))
     form.user_group.choices = choices
     if not form.validate_on_submit():

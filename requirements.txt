@@ -8,6 +8,9 @@ apispec
 marshmallow-jsonapi
 loginpass
 
+# CONTROLLER
+asyncio-nats-client
+
 # WEB
 flask
 flask-login

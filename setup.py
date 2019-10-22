@@ -52,6 +52,7 @@ setup(name='pichayon',
       [console_scripts]
       pichayon-web = pichayon.cmd.web:main
       pichayon-api = pichayon.cmd.api:main
+      pichayon-controller = pichayon.cmd.controller:main
 
       ''',
       )
