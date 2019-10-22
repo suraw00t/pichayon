@@ -3,7 +3,7 @@ from flask import (Blueprint,
                    url_for,
                    redirect)
 from flask_login import login_required, current_user
-
+from pichayon import models
 module = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 
@@ -12,4 +12,20 @@ module = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 def index():
     if not current_user.gave_informations:
         return redirect(url_for('accounts.edit_profile'))
-    return render_template('/dashboard/index.html')
+
+    door_auths = models.DoorAuthorizations.objects()
+    groups = models.UserGroup.objects()
+    door_groups = list()
+    cu_groups = list()
+    for group in groups:
+        if group.is_member(current_user._get_current_object()):
+            cu_groups.append(group)
+
+    for door_auth in door_auths:
+        for group in cu_groups:
+            if not door_auth.is_group_member(group):
+                continue
+            door_groups.append(door_auth.door_group)
+
+    return render_template('/dashboard/index.html',
+                           door_groups=door_groups)
