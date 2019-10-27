@@ -23,9 +23,9 @@
       <div class="extra content">
         {% for door in door_group.members %}
           Door: {{ door.name }}
-          <div class="ui two buttons">
-            <div class="ui basic green button">Open</div>
-            <div class="ui basic red button">Decline</div>
+          <div class="opendoor ui two buttons">
+            <div id="{{door.id}}" class="ui basic green button">Open</div>
+            <!-- <div class="ui basic red button">Decline</div>-->
           </div>
         {% if loop.index != door_group.members| length%}
           <div class="ui divider"></div>
@@ -42,5 +42,5 @@
   {% endfor %}
 
 </div>
-
+<script type="text/python" src="{{ url_for('static', filename='scripting/controller.py') }}"></script>
 {% endblock %}
