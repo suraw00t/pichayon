@@ -82,7 +82,7 @@ def edit_doorgroup(doorgroup_id):
     form.populate_obj(group)
     group.save()
 
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('administration.doors.index'))
 
 
 @module.route('user_group/<group_id>/delete')

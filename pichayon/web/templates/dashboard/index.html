@@ -11,7 +11,7 @@
       <div class="content">
          <!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">-->
       <div class="header">
-        {{ door_group.name }}
+         <i class="door closed icon"></i>{{ door_group.name |upper}}
       </div>
       <div class="meta">
         {{ door_group.description }}
@@ -21,10 +21,20 @@
       <!-- </div>-->
     </div>
       <div class="extra content">
-        <div class="ui two buttons">
-          <div class="ui basic green button">Approve</div>
-          <div class="ui basic red button">Decline</div>
-        </div>
+        {% for door in door_group.members %}
+          Door: {{ door.name }}
+          <div class="ui two buttons">
+            <div class="ui basic green button">Open</div>
+            <div class="ui basic red button">Decline</div>
+          </div>
+        {% if loop.index != door_group.members| length%}
+          <div class="ui divider"></div>
+        {% endif %}
+        {% endfor %}
+        {% if door_group.members | length == 0 %}
+          Don't have any door in this group.
+        {% endif%}
+
       </div>
     </div>
   </div>

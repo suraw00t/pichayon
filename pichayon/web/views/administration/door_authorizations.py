@@ -88,7 +88,7 @@ def edit_authority():
     return redirect(url_for('administration.door_authorizations.index',
                             group_id=group_id))
 
-    
+
 @module.route('delete_authority', methods=["GET", "POST"])
 @acl.allows.requires(acl.is_admin)
 def delete_authority():
