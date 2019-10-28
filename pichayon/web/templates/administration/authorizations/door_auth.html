@@ -47,6 +47,7 @@ Door Authorizations
         <td>{{ group.granter.username }}</td>
         <td>
           <a href="{{ url_for('administration.door_authorizations.delete_authority', doorgroup_id=door_auth.door_group.id, usergroup_id=group.group.id) }}"><i class="delete icon"></i></a>
+          <a href="{{ url_for('administration.door_authorizations.edit_authority', doorgroup_id=door_auth.door_group.id, usergroup_id=group.group.id) }}"><i class="edit icon"></i></a>
         </td>
       </tr>
 
