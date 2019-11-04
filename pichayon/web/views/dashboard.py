@@ -23,7 +23,7 @@ def index():
 
     for door_auth in door_auths:
         for group in cu_groups:
-            if not door_auth.is_group_member(group):
+            if door_auth.is_expired(group):
                 continue
             door_groups.append(door_auth.door_group)
 

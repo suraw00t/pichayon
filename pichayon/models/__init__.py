@@ -2,7 +2,7 @@ from .users import User
 from .doors import Door
 from .oauth2 import OAuth2Token
 from .groups import UserGroup, UserMember, DoorGroup
-from .door_authorizations import DoorAuthorizations, GroupMember
+from .door_authorizations import DoorAuthorizations, GroupMember, Rrule
 __all__ = [User,
            Door,
            OAuth2Token,
@@ -10,7 +10,8 @@ __all__ = [User,
            UserMember,
            DoorGroup,
            DoorAuthorizations,
-           GroupMember]
+           GroupMember,
+           Rrule]
 
 from flask_mongoengine import MongoEngine
 
