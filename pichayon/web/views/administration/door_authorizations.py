@@ -40,13 +40,14 @@ def add_authority():
             choices.append((group.name, group.name))
     form.user_group.choices = choices
     if not form.validate_on_submit():
-        form.start_time.data = datetime.time(11,0)
+        form.start_time.data = datetime.time(0, 0)
+        form.end_time.data = datetime.time(0, 0)
         return render_template('/administration/authorizations/add_authority.html',
                                form=form,
                                door_group=door_group,
                                door_auth=door_auth)
-    print(form.end_time.data)
-    print(form.start_time.data)
+    # print(form.end_time.data)
+    # print(form.start_time.data)
     rrule = models.Rrule()
     days = []
     for d in form.days.data:
@@ -86,7 +87,11 @@ def edit_authority():
     choices = [(str(user_group.id), user_group.name)]
     form.user_group.choices = choices
     if not form.validate_on_submit():
+        h_start, m_start, _ = rrule.start_time.split(':')
+        h_end, m_end, _ = rrule.end_time.split(':')
         form.days.data = [str(d) for d in rrule.days]
+        form.start_time.data = datetime.time(int(h_start), int(m_start))
+        form.end_time.data = datetime.time(int(h_end), int(m_end))
         form.user_group.data = choices[0]
         form.started_date.data = selected_groupmember.started_date
         form.expired_date.data = selected_groupmember.expired_date
@@ -100,6 +105,8 @@ def edit_authority():
             group_member.started_date = form.started_date.data
             group_member.expired_date = form.expired_date.data
             group_member.rrule.days = [int(d) for d in form.days.data]
+            group_member.rrule.start_time = str(form.start_time.data)
+            group_member.rrule.end_time = str(form.end_time.data)
     door_auth.save()
     return redirect(url_for('administration.door_authorizations.index',
                             group_id=doorgroup_id))
