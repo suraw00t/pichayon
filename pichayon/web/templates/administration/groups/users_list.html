@@ -48,8 +48,8 @@
         <td>{{ member.added_date.ctime() }}</td>
         <td>{{ member.added_by.username }}</td>
         <td>
-	  <a href="{{ url_for('administration.users.add_role', group_id=group.id, user_id=member.user.id) }}"><i class="edit icon"></i></a>
-          <a href="{{ url_for('administration.users.delete', group_id=group.id, user_id=member.user.id) }}"><i class="delete icon"></i></a>
+	  <a href="{{ url_for('administration.users.add_role', group_id=group.id, user_id=member.user.id) }}"><i class="circular inverted edit icon"></i></a>
+          <a href="{{ url_for('administration.users.delete', group_id=group.id, user_id=member.user.id) }}"><i class="circular inverted red delete icon"></i></a>
         </td>
       </tr>
       {% endfor %}

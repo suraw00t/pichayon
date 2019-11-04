@@ -41,13 +41,13 @@
 	    {% for group in door_groups %}
 
       <tr>
-	      <td><a href="{{url_for('administration.door_authorizations.index', group_id=group.id)}}">{{ group.name }}</a></td>
+	      <td><a href="{{url_for('administration.door_authorizations.index', group_id=group.id)}}">{{ group.name }} <i class="large eye icon"></i></a></td>
 	      <td><a href="{{url_for('administration.doors.doors_list', doorgroup_id=group.id)}}">{{ group.members | count }} <i class="door closed icon"></i></a></td>
         <td>{{ group.description }}</td>
         <td>{{ group.updated_date.ctime() }}</td>
         <td>
-          <a href="{{ url_for('administration.groups.edit_doorgroup', doorgroup_id=group.id) }}"><i class="edit icon"></i></a>
-          <a href="{{ url_for('administration.groups.delete_doorgroup', doorgroup_id=group.id) }}"><i class="delete icon"></i></a>
+          <a href="{{ url_for('administration.groups.edit_doorgroup', doorgroup_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
+          <a href="{{ url_for('administration.groups.delete_doorgroup', doorgroup_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
         </td>
       </tr>
 
