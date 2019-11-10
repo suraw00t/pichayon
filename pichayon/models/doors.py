@@ -4,7 +4,9 @@ import datetime
 
 class Door(me.Document):
     name = me.StringField(required=True)
+    device_id = me.StringField()
     description = me.StringField()
+
 
     creator = me.ReferenceField('User', dbref=True)
 

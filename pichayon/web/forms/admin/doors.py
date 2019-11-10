@@ -10,4 +10,7 @@ class DoorForm(FlaskForm):
     name = fields.TextField('Name',
                             validators=[validators.InputRequired(),
                                         validators.Length(min=3)])
+    device_id = fields.TextField('Device ID',
+                            validators=[validators.InputRequired(),
+                                        validators.Length(min=8)])
     description = fields.TextField('Description')
