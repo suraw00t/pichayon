@@ -30,18 +30,17 @@ class ControllerNodeServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
+
  
         data = dict(action='register',
                     device_id=self.device_id,
                     data=datetime.datetime.now().isoformat()
                     )
 
-        response = await self.nc.request(
+        response = await self.nc.publish(
                 'pichayon.controller_node.greeting',
-                json.dumps(data).encode(),
+                json.dumps(data).encode()
                 )
-        data = json.loads(response.data.decode())
-        self.id = data['id']
 
     def run(self):
         loop = asyncio.get_event_loop()
