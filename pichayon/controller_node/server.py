@@ -16,7 +16,7 @@ from . import devices
 class ControllerNodeServer:
     def __init__(self, settings):
         self.settings = settings
-        self.is_register = False
+        # self.is_register = False
         device = devices.Device()
         self.device_id = device.get_device_id()
         self.running = False
@@ -30,37 +30,18 @@ class ControllerNodeServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
-
-        # rpc_topic = 'pichayon.controller_node.{}'.format(self.device_id)
-        # logger.info('try to subscribe rpc topic: {}'.format(rpc_topic))
-        # rpc_sid = await self.nc.subscribe(
-        #         rpc_topic,
-        #         cb=self.handle_rpc_message)
-
  
-        # data = dict(action='register',
-        #             device_id=self.device_id,
-        #             data=datetime.datetime.now().isoformat()
-        #             )
+        data = dict(action='register',
+                    device_id=self.device_id,
+                    data=datetime.datetime.now().isoformat()
+                    )
 
-        while not self.is_register:
-            logger.debug('Try to register controller node')
-            try:
-                response = await self.nc.request(
-                        'pichayon.controller_node.report',
-                        json.dumps(data).encode(),
-                        timeout=5
-                        )
-                self.is_register = True
-                data = json.loads(response.data.decode())
-                self.id = data['id']
-            except Exception as e:
-                logger.debug(e)
-
-            if not self.is_register:
-                await asyncio.sleep(1)
-
-        logger.debug('Register success')
+        response = await self.nc.request(
+                'pichayon.controller_node.greeting',
+                json.dumps(data).encode(),
+                )
+        data = json.loads(response.data.decode())
+        self.id = data['id']
 
     def run(self):
         loop = asyncio.get_event_loop()
