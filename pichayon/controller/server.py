@@ -13,15 +13,22 @@ class ControllerServer:
         models.init_mongoengine(settings)
         self.running = False
         self.command_queue = asyncio.Queue()
-
-    async def handle_command(self, msg):
+    
+    async def handle_node_controller_greeting(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
-        # logger.debug("Received a rpc message on '{subject} {reply}': {data}".format(
-        #         subject=msg.subject, reply=msg.reply, data=msg.data.decode()))
+        logger.debug('Yes')
+        
         data = json.loads(data)
-        await self.command_queue.put(data)
+        if data['action'] == 'register':
+            # response = await self.register_node_controller(data)
+            response = {'data':1}
+            await self.nc.publish(reply,
+                            json.dumps(response).encode())
+            logger.debug('client {} is registed'.format(data['device_id']))
+            return
+        await self.cn_report_queue.put(data)
 
     async def set_up(self, loop):
         self.nc = NATS()
@@ -31,24 +38,21 @@ class ControllerServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
+        greeting_topic = 'pichayon.node_controller.greeting'
+        logger.debug('OK')
 
-
-        report_topic = 'pichayon.processor.report'
-        command_topic = 'pichayon.processor.command'
-
-        # ps_id = await self.nc.subscribe(
-        #         report_topic,
-        #         cb=self.handle_processor_report)
-        cs_id = await self.nc.subscribe(
-                command_topic,
-                cb=self.handle_command)
+        nc_id = await self.nc.subscribe(
+                greeting_topic,
+                cb=self.handle_node_controller_greeting)
+        # cs_id = await self.nc.subscribe(
+        #         command_topic,
+        #         cb=self.handle_command)
 
     def run(self):
         self.running = True
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
-        # cn_report_task = loop.create_task(self.process_compute_node_report())
         # processor_command_task = loop.create_task(self.process_processor_command())
         # handle_expired_data_task = loop.create_task(self.process_expired_controller())
         # handle_controller_task = loop.create_task(self.handle_controller())

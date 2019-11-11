@@ -13,10 +13,10 @@ from nats.aio.errors import ErrTimeout
 from . import devices
 
 
-class ControllerNodeServer:
+class NodeControllerServer:
     def __init__(self, settings):
         self.settings = settings
-        # self.is_register = False
+        self.is_register = False
         device = devices.Device()
         self.device_id = device.get_device_id()
         self.running = False
@@ -36,11 +36,23 @@ class ControllerNodeServer:
                     device_id=self.device_id,
                     data=datetime.datetime.now().isoformat()
                     )
+        while not self.is_register:        
+            try:
+                logger.debug('Try to register node controller')
+                response = await self.nc.request(
+                        'pichayon.node_controller.greeting',
+                        json.dumps(data).encode(),
+                        timeout=5
+                        )
+                self.is_register = True
+            except Exception as e:
+                logger.debug(e)
 
-        response = await self.nc.publish(
-                'pichayon.controller_node.greeting',
-                json.dumps(data).encode()
-                )
+            if not self.is_register:
+                await asyncio.sleep(1)
+        
+        logger.debug('Register success')
+
 
     def run(self):
         loop = asyncio.get_event_loop()
