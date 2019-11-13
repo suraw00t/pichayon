@@ -20,6 +20,16 @@ class NodeControllerServer:
         device = devices.Device()
         self.device_id = device.get_device_id()
         self.running = False
+    
+    async def handle_controller_command(self, msg):
+        subject = msg.subject
+        reply = msg.reply
+        data = msg.data.decode()
+        # logger.debug("Received a rpc message on '{subject} {reply}': {data}".format(
+        #         subject=subject, reply=reply, data=data))
+        data = json.loads(data)
+        # await self.processor_command_queue.put(data)
+        logger.debug(data)
 
     async def set_up(self, loop):
         self.nc = NATS()
@@ -36,6 +46,10 @@ class NodeControllerServer:
                     device_id=self.device_id,
                     data=datetime.datetime.now().isoformat()
                     )
+        command_topic = f'pichayon.node_controller.{self.device_id}'
+        cc_id = await self.nc.subscribe(
+                command_topic,
+                cb=self.handle_controller_command)
         while not self.is_register:        
             try:
                 logger.debug('Try to register node controller')
@@ -45,6 +59,8 @@ class NodeControllerServer:
                         timeout=5
                         )
                 self.is_register = True
+                data = json.loads(response.data.decode())
+                logger.debug(data)
             except Exception as e:
                 logger.debug(e)
 
@@ -60,7 +76,7 @@ class NodeControllerServer:
         self.running = True
     
         loop.run_until_complete(self.set_up(loop))
-        # update_data_task = loop.create_task(self.update_controller_node_data())
+        # controller_command_task = loop.create_task(self.a())
         
         try:
             loop.run_forever()

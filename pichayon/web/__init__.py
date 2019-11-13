@@ -9,6 +9,7 @@ from . import views
 from . import acl
 from . import oauth2
 from .. import models
+from . import request_context
 
 def create_app():
     app = Flask(__name__)
@@ -20,6 +21,7 @@ def create_app():
     oauth2.init_oauth(app)
     
     views.register_blueprint(app)
+    request_context.init_request_context(app)
 
     return app
 

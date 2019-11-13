@@ -32,8 +32,8 @@ class DoorAuthorizations(me.Document):
                 return True
         return False
 
-    def is_expired(self, group):
+    def is_authority(self, group):
         for ugroup in self.user_group:
             if ugroup.group == group and datetime.datetime.now() < ugroup.expired_date and datetime.datetime.now() > ugroup.started_date:
-                return False
-        return True
+                return True
+        return False

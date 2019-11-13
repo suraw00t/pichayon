@@ -24,7 +24,7 @@
         {% for door in door_group.members %}
           Door: {{ door.name }}
           <div class="opendoor ui two buttons">
-            <div id="{{door.id}}" class="ui basic green button">Open</div>
+            <div id="{{door.id}}/{{user_group.id}}" class="ui basic green button">Open</div>
             <!-- <div class="ui basic red button">Decline</div>-->
           </div>
         {% if loop.index != door_group.members| length%}

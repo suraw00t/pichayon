@@ -23,7 +23,7 @@
   <div class="ui container">
     <form method="POST" class="ui form">
       {{ form.csrf_token }}
-       <div class="ui form">
+   <div class="ui form error">
 	<div class="six wide field">
       {{ renderer.render_field(form.name) }}
   </div>
@@ -33,6 +33,12 @@
   <div class="twelve wide field">
       {{ renderer.render_field(form.description) }}
   </div>
+  {% if device_id_error == 'True' %}
+    <div class="ui error message">
+    <div class="header">Error</div>
+    <p>Device ID is already</p>
+  </div>
+  {% endif %}
       <button type="submit" class="ui button primary">
         {% if 'edit' in request.path %}
           Edit

@@ -51,7 +51,14 @@ class DoorGroup(me.Document):
 
     def is_member(self, door):
         for member in self.members:
-            if member.door == door:
+            if member == door:
                 return True
 
         return False
+
+    def search_device_id(self, device_id):
+        for door in self.members:
+            if door.device_id == device_id:
+                return True
+        return False
+

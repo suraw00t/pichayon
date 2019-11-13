@@ -28,6 +28,11 @@ def create():
     form = DoorForm()
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
+    if models.Door.objects(device_id=form.device_id.data).first():
+        return render_template('/administration/doors/create-edit.html',
+                               form=form,
+                               door_group=door_group,
+                               device_id_error="True")
     if not form.validate_on_submit():
         return render_template('/administration/doors/create-edit.html',
                                form=form,
@@ -59,10 +64,21 @@ def edit(door_id):
     door = models.Door.objects.get(id=door_id)
 
     form = DoorForm(obj=door)
+
     if not form.validate_on_submit():
         return render_template('/administration/doors/create-edit.html',
                                form=form,
                                door_group=door_group)
+
+    if door.device_id == form.device_id.data:
+        form.populate_obj(door)
+        door.save()
+        return redirect(url_for('administration.doors.index'))
+    if models.Door.objects(device_id=form.device_id.data).first():
+        return render_template('/administration/doors/create-edit.html',
+                               form=form,
+                               door_group=door_group,
+                               device_id_error="True")
 
     form.populate_obj(door)
     door.save()
