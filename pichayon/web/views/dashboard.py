@@ -22,7 +22,7 @@ def index():
     groups = models.UserGroup.objects()
     door_groups = list()
     cu_groups = list()
-    user_group = None
+    user_group = dict()
     for group in groups:
         if group.is_member(current_user._get_current_object()):
             cu_groups.append(group)
@@ -32,7 +32,7 @@ def index():
             if not door_auth.is_authority(group):
                 continue
             door_groups.append(door_auth.door_group)
-            user_group = group
+            user_group[door_auth.door_group.id] = group
     return render_template('/dashboard/index.html',
                            door_groups=door_groups,
                            user_group=user_group)

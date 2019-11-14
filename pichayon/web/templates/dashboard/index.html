@@ -24,7 +24,7 @@
         {% for door in door_group.members %}
           Door: {{ door.name }}
           <div class="opendoor ui two buttons">
-            <div id="{{door.id}}/{{user_group.id}}" class="ui basic green button">Open</div>
+            <div id="{{door.id}}/{{user_group[door_group.id].id}}" class="ui basic green button">Open</div>
             <!-- <div class="ui basic red button">Decline</div>-->
           </div>
         {% if loop.index != door_group.members| length%}
@@ -32,7 +32,10 @@
         {% endif %}
         {% endfor %}
         {% if door_group.members | length == 0 %}
-          Don't have any door in this group.
+          Don't have any door in this group.<br>
+          {% if user_group[door_group.id].is_supervisor(current_user) %}
+            <a style="color: green" href='{{url_for('administration.doors.create', group_id=door_group.id)}}'>Create now!</a>
+          {% endif %}
         {% endif%}
 
       </div>

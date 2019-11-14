@@ -30,9 +30,9 @@ class ControllerServer:
         
         data = json.loads(data)
         if data['action'] == 'register':
-            logger.debug('before res')
+            # logger.debug('before res')
             response = await self.data_resource.get_authorization_data(data['device_id'])
-            logger.debug('after res')
+            # logger.debug('after res')
             await self.nc.publish(reply,
                             json.dumps(response).encode())
             logger.debug('client {} is registed'.format(data['device_id']))
@@ -45,11 +45,11 @@ class ControllerServer:
             
             door = models.Door.objects.get(id=data['door_id'])
             user = models.User.objects.get(id=data['user_id'])
-            user_group = models.UserGroup.objects(id=data['user_group_id']).first()
+            user_group = models.UserGroup.objects.get(id=data['user_group_id'])
             door_auth = door.get_door_auth()
             if not user_group.is_member(user):
                 continue
-
+            # logger.debug(user_group.name)
             if not door_auth.is_authority(user_group):
                 logger.debug('No Authority')
                 continue

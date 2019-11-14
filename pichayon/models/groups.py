@@ -30,9 +30,14 @@ class UserGroup(me.Document):
         for member in self.members:
             if member.user == user:
                 return True
-
         return False
 
+    def is_supervisor(self, user):
+        for member in self.members:
+            if member.user == user and 'Member' not in member.role:
+                return True
+
+        return False
 
 class DoorGroup(me.Document):
     name = me.StringField(required=True, unique=True)

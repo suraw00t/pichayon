@@ -1,3 +1,4 @@
+import uuid
 import logging
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,9 @@ class Device:
             f.close()
         except Exception as e:
             logger.exception(e)
-            self.device_id = "ERROR000000000"
+            # self.device_id = "ERROR000000000"
+        if self.device_id == '0000000000000000':
+            self.device_id = uuid.getnode()
+
         return self.device_id
 
