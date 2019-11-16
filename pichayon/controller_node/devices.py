@@ -12,7 +12,8 @@ class Device:
         GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
         self.relay_pin = 4  
-        GPIO.setup(self.relay_pin, GPIO.OUT, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self.relay_pin, GPIO.OUT)
+        GPIO.output(self.relay_pin, GPIO.LOW)
 
     def get_device_id(self):
         try:
