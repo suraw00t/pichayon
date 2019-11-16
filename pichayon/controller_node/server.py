@@ -33,6 +33,7 @@ class NodeControllerServer:
     async def process_controller_command(self):
         while self.running:
             data = await self.controller_command_queue.get()
+            logger.debug('process command')
             if data['action'] == 'open':
                 await self.device.open_door()
 

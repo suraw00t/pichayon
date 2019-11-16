@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class Device:
     def __init__(self):
         self.device_id = '0000000000000000'
+
         GPIO.setmode(GPIO.BCM)
         self.relay_pin = 26 
         GPIO.setup(self.relay_pin, GPIO.OUT)
@@ -31,6 +32,7 @@ class Device:
     
     async def open_door(self):
         logger.debug('Opendoor')
+        GPIO.cleanup()
         GPIO.output(self.relay_pin, GPIO.HIGH)
         await asyncio.sleep(5)
         GPIO.output(self.relay_pin, GPIO.LOW)
