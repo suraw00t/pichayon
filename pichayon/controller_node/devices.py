@@ -1,11 +1,18 @@
 import uuid
+import asyncio
 import logging
+import RPi.GPIO as GPIO
+
 logger = logging.getLogger(__name__)
 
 
 class Device:
     def __init__(self):
         self.device_id = '0000000000000000'
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BCM)
+        self.relay_pin = 4  
+        GPIO.setup(self.relay_pin, GPIO.OUT, pull_up_down=GPIO.PUD_DOWN)
 
     def get_device_id(self):
         try:
@@ -21,4 +28,10 @@ class Device:
             self.device_id = uuid.getnode()
 
         return self.device_id
+    
+    async def open_door(self):
+        GPIO.output(self.relay_pin, GPIO.HIGH)
+        await asyncio.sleep(5)
+        GPIO.output(self.relay_pin, GPIO.LOW)
 
+        

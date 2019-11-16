@@ -17,6 +17,7 @@ class NodeControllerServer:
     def __init__(self, settings):
         self.settings = settings
         self.is_register = False
+        self.controller_command_queue = asyncio.Queue()
         device = devices.Device()
         self.device_id = device.get_device_id()
         self.running = False
@@ -25,11 +26,15 @@ class NodeControllerServer:
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
-        # logger.debug("Received a rpc message on '{subject} {reply}': {data}".format(
-        #         subject=subject, reply=reply, data=data))
         data = json.loads(data)
-        # await self.processor_command_queue.put(data)
-        logger.debug(data)
+        await self.controller_command_queue.put(data)
+        # logger.debug(data)
+
+    async def process_command(self):
+        while self.running:
+            data = await self.controller_command_queue.get()
+            if data['action'] == 'open':
+                await self.device.open_door()
 
     async def set_up(self, loop):
         self.nc = NATS()
