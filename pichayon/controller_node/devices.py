@@ -9,9 +9,8 @@ logger = logging.getLogger(__name__)
 class Device:
     def __init__(self):
         self.device_id = '0000000000000000'
-        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
-        self.relay_pin = 4  
+        self.relay_pin = 26 
         GPIO.setup(self.relay_pin, GPIO.OUT)
         GPIO.output(self.relay_pin, GPIO.LOW)
 
