@@ -18,8 +18,8 @@ class NodeControllerServer:
         self.settings = settings
         self.is_register = False
         self.controller_command_queue = asyncio.Queue()
-        device = devices.Device()
-        self.device_id = device.get_device_id()
+        self.device = devices.Device()
+        self.device_id = self.device.get_device_id()
         self.running = False
     
     async def handle_controller_command(self, msg):

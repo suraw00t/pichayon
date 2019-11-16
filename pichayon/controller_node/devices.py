@@ -13,7 +13,7 @@ class Device:
         GPIO.setmode(GPIO.BCM)
         self.relay_pin = 26 
         GPIO.setup(self.relay_pin, GPIO.OUT)
-        GPIO.output(self.relay_pin, GPIO.LOW)
+        GPIO.output(self.relay_pin, GPIO.HIGH)
 
     def get_device_id(self):
         try:
@@ -32,9 +32,8 @@ class Device:
     
     async def open_door(self):
         logger.debug('Opendoor')
-        GPIO.cleanup()
-        GPIO.output(self.relay_pin, GPIO.HIGH)
-        await asyncio.sleep(5)
         GPIO.output(self.relay_pin, GPIO.LOW)
+        await asyncio.sleep(5)
+        GPIO.output(self.relay_pin, GPIO.HIGH)
 
         
