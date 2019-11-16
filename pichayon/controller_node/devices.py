@@ -31,6 +31,7 @@ class Device:
         return self.device_id
     
     async def open_door(self):
+        logger.debug('Opendoor')
         GPIO.output(self.relay_pin, GPIO.HIGH)
         await asyncio.sleep(5)
         GPIO.output(self.relay_pin, GPIO.LOW)

@@ -30,7 +30,7 @@ class NodeControllerServer:
         await self.controller_command_queue.put(data)
         # logger.debug(data)
 
-    async def process_command(self):
+    async def process_controller_command(self):
         while self.running:
             data = await self.controller_command_queue.get()
             if data['action'] == 'open':
@@ -82,6 +82,8 @@ class NodeControllerServer:
     
         loop.run_until_complete(self.set_up(loop))
         # controller_command_task = loop.create_task(self.a())
+        controller_command_task = loop.create_task(self.process_controller_command())
+
         
         try:
             loop.run_forever()
