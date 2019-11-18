@@ -1,13 +1,3 @@
-# API
-flask
-flask-mongoengine
-flask-jwt-extended
-authlib
-marshmallow
-apispec
-marshmallow-jsonapi
-loginpass
-
 # CONTROLLER
 asyncio-nats-client
 RPi.GPIO
@@ -16,7 +6,7 @@ RPi.GPIO
 flask
 flask-login
 flask-allows
-authlib
+authlib==0.12.1
 python-dateutil
 marshmallow-jsonapi
 marshmallow
