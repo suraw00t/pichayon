@@ -55,7 +55,7 @@ services:
             - default
         restart: always
         environment:
-            PICHAYON_SETTINGS: /app/pichayon-production.cfg
+            PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
         command: pichayon-controller
 networks:
     default:
