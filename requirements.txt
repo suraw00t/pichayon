@@ -12,3 +12,5 @@ marshmallow-jsonapi
 marshmallow
 python-dateutil
 flask-mongoengine
+loginpass
+
