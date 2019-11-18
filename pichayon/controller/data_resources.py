@@ -13,22 +13,22 @@ class DataResourceManager:
         door_auth = None
         ugroup = list()
         ugroup_selected = dict()
-        logger.debug('data res1')
+        # logger.debug('data res1')
         for door_group in door_groups:
-            logger.debug(door_group.name)
+            # logger.debug(door_group.name)
             if door_group.search_device_id(device_id):
                 door_auth = models.DoorAuthorizations.objects(door_group=door_group).first()
-                logger.debug(door_auth)
+                # logger.debug(door_auth)
                 break
         if door_auth is None:
             return {}
-        logger.debug('res2')
+        # logger.debug('res2')
         for user_group in door_auth.user_group:
-            logger.debug(user_group.group)
+            # logger.debug(user_group.group)
             ugroup.append(user_group.group)
         
         for group in ugroup:
-            logger.debug('res3')
+            # logger.debug('res3')
             if door_auth.is_authority(group):
                 ugroup_selected['name'] = group.name
                 ugroup_selected['members'] = list()
@@ -36,6 +36,6 @@ class DataResourceManager:
                     ugroup_selected['members'].append({'username': member.user.username})
 
     
-        logger.debug('res5')
-        logger.debug(ugroup_selected)
+        # logger.debug('res5')
+        # logger.debug(ugroup_selected)
         return ugroup_selected
