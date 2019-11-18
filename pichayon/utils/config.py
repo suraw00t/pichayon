@@ -20,7 +20,7 @@ def get_settings():
 
         settings = flask.config.Config(file_path)
         settings.from_object('pichayon.default_settings')
-        settings.from_envvar('pichayon_SETTINGS', silent=True)
+        settings.from_envvar('PICHAYON_SETTINGS', silent=True)
 
     return settings
 
