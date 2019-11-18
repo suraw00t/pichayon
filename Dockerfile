@@ -11,7 +11,7 @@ RUN pip3 install flask uwsgi marshmallow requests
 RUN python3 setup.py develop
 RUN npm install --prefix pichayon/web/static
 
-ENV PICHAYON_WEB_SETTINGS=/app/pichayon-production.cfg
+ENV PICHAYON_SETTINGS=/app/pichayon-production.cfg
 ENV FLASK_ENV=prodoction
 ENV AUTHLIB_INSECURE_TRANSPORT=true
 
