@@ -11,4 +11,4 @@ python-dateutil
 marshmallow-jsonapi
 marshmallow
 python-dateutil
-
+flask-mongoengine
