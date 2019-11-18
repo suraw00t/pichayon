@@ -19,16 +19,28 @@ class GroupMember(me.EmbeddedDocument):
                                     default=datetime.datetime.now)
 
     def check_rrule(self):
-        from dateutil.rrule import rrule, WEEKLY
-        h, m, _ = rrule.start_time.spilt(':')
-        datetime_expected = list(rrule(freq=WEEKLY,
-                                       dtstart=start,
-                                       byweekday=rrule.days,
+        if datetime.datetime.now() < self.started_date or datetime.datetime.now() > self.expired_date:
+            return False
+        from dateutil.rrule import rrule, DAILY
+        h_start, m_start, _ = self.rrule.start_time.split(':')
+        expected_datetime = list(rrule(freq=DAILY,
+                                       dtstart=datetime.datetime.combine(datetime.date.today(),
+                                           datetime.time(0,0)),
+                                       byweekday=self.rrule.days,
                                        count=1,
-                                       byhour=h,
-                                       byminute=m,
+                                       byhour=int(h_start),
+                                       byminute=int(m_start),
                                        bysecond=0))
-        
+        h_end, m_end, _ = self.rrule.end_time.split(':')
+        exp_datetime = datetime.datetime.combine(datetime.date.today(),
+                                                 datetime.time(int(h_end),
+                                                               int(m_end)))
+        print(expected_datetime)
+        for dt in expected_datetime:
+            if datetime.datetime.now() > dt and datetime.datetime.now() < exp_datetime:
+                return True
+        return False
+
 
 class DoorAuthorizations(me.Document):
     door_group = me.ReferenceField('DoorGroup', dbref=True, required=True)
@@ -45,6 +57,6 @@ class DoorAuthorizations(me.Document):
 
     def is_authority(self, group):
         for ugroup in self.user_group:
-            if ugroup.group == group and datetime.datetime.now() < ugroup.expired_date and datetime.datetime.now() > ugroup.started_date:
+            if ugroup.group == group and datetime.datetime.now() < ugroup.expired_date and datetime.datetime.now() > ugroup.started_date and ugroup.check_rrule():
                 return True
         return False
