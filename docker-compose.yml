@@ -36,7 +36,7 @@ services:
             - default
         restart: always
         environment:
-            PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
+            PICHAYON_SETTINGS: /app/pichayon-production.cfg
         command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
     controller:
         build: .
@@ -55,7 +55,7 @@ services:
             - default
         restart: always
         environment:
-            PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
+            PICHAYON_SETTINGS: /app/pichayon-production.cfg
         command: pichayon-controller
 networks:
     default:

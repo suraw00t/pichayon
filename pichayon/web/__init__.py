@@ -14,7 +14,7 @@ from . import request_context
 def create_app():
     app = Flask(__name__)
     app.config.from_object('pichayon.web.default_settings')
-    app.config.from_envvar('PICHAYON_WEB_SETTINGS', silent=True)
+    app.config.from_envvar('PICHAYON_SETTINGS', silent=True)
 
     models.init_db(app)
     acl.init_acl(app)

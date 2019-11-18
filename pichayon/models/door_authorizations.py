@@ -18,6 +18,17 @@ class GroupMember(me.EmbeddedDocument):
     expired_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
 
+    def check_rrule(self):
+        from dateutil.rrule import rrule, WEEKLY
+        h, m, _ = rrule.start_time.spilt(':')
+        datetime_expected = list(rrule(freq=WEEKLY,
+                                       dtstart=start,
+                                       byweekday=rrule.days,
+                                       count=1,
+                                       byhour=h,
+                                       byminute=m,
+                                       bysecond=0))
+        
 
 class DoorAuthorizations(me.Document):
     door_group = me.ReferenceField('DoorGroup', dbref=True, required=True)
