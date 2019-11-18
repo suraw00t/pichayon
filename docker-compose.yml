@@ -9,6 +9,16 @@ services:
         restart: always
         networks:
             - default
+    nats-server:
+        image: nats
+        container_name: pichayon-nats-server
+        ports:
+            - 4222:4222
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+        restart: always
+        networks:
+            - default
     web:
         build: .
         image: pichayon-image
@@ -28,5 +38,24 @@ services:
         environment:
             PICHAYON_WEB_SETTINGS: /app/pichayon-production.cfg
         command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
+    controller:
+        build: .
+        image: pichayon-image
+        container_name: pichayon-controller
+        volumes:
+            - ../deployment:/deployment
+            - /etc/localtime:/etc/localtime:ro
+        links:
+            - mongodb
+            - nats-server
+        depends_on:
+            - nats-server
+            - mongodb
+        networks:
+            - default
+        restart: always
+        environment:
+            PICHAYON_SETTINGS: /app/pichayon-production.cfg
+        command: pichayon-controller
 networks:
     default:
