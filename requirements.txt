@@ -14,3 +14,7 @@ python-dateutil
 flask-mongoengine
 loginpass
 
+#face recognitions
+opencv-python
+numpy
+face_recognition

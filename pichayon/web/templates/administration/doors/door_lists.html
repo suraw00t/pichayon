@@ -26,7 +26,9 @@
     <thead>
       <tr>
         <th>Door Name</th>
+        <th>Device ID</th>
         <th>Description</th>
+        <th>Camera</th>
         <th>Updated Date</th>
         <th>Operation</th>
       </tr>
@@ -37,7 +39,13 @@
 
       <tr>
 	      <td><a href="{{url_for('administration.doors.edit', door_id=door.id, group_id=door_group.id)}}">{{ door.name }}</a></td>
+        <td>{{ door.device_id }}</td>
         <td>{{ door.description }}</td>
+        {% if door.camera_url | length > 0%}
+        <td><i class="large check icon green"></i></td>
+        {% else %}
+        <td><i class="large delete icon red"></i></td>
+        {% endif %}
         <td>{{ door.updated_date.ctime() }}</td>
         <td>
           <a href="{{ url_for('administration.doors.edit', door_id=door.id, group_id=door_group.id) }}"><i class="circular inverted edit icon"></i></a>

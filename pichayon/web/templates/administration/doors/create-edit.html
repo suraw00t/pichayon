@@ -33,6 +33,9 @@
   <div class="twelve wide field">
       {{ renderer.render_field(form.description) }}
   </div>
+  <div class="twelve wide field">
+      {{ renderer.render_field(form.camera_url) }}
+  </div>
   {% if device_id_error == 'True' %}
     <div class="ui error message">
     <div class="header">Error</div>

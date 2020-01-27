@@ -73,17 +73,19 @@ def edit(door_id):
     if door.device_id == form.device_id.data:
         form.populate_obj(door)
         door.save()
-        return redirect(url_for('administration.doors.index'))
+        return redirect(url_for('administration.doors.doors_list',
+                                doorgroup_id=group_id))
+
     if models.Door.objects(device_id=form.device_id.data).first():
         return render_template('/administration/doors/create-edit.html',
                                form=form,
                                door_group=door_group,
                                device_id_error="True")
-
     form.populate_obj(door)
     door.save()
 
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('administration.doors.doors_list',
+                            doorgroup_id=group_id))
 
 
 @module.route('/<door_id>/delete')

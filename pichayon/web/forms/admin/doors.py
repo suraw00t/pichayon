@@ -14,3 +14,4 @@ class DoorForm(FlaskForm):
                             validators=[validators.InputRequired(),
                                         validators.Length(min=8)])
     description = fields.TextField('Description')
+    camera_url = fields.TextField('Camera URL')
