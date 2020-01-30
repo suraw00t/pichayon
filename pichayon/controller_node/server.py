@@ -11,7 +11,7 @@ from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
 
 from . import devices
-
+from . import keypad
 
 class NodeControllerServer:
     def __init__(self, settings):
@@ -21,6 +21,7 @@ class NodeControllerServer:
         self.device = devices.Device()
         self.device_id = self.device.get_device_id()
         self.running = False
+        self.keypad = keypad.Keypad()
     
     async def handle_controller_command(self, msg):
         subject = msg.subject
@@ -36,6 +37,12 @@ class NodeControllerServer:
             logger.debug('process command')
             if data['action'] == 'open':
                 await self.device.open_door()
+
+    async def process_keypad(self):
+        while self.running:
+            key = keypad.get_key()
+            logger.debug(f'>>>{key}')
+            await asyncio.sleep(1)
 
     async def set_up(self, loop):
         self.nc = NATS()
