@@ -40,9 +40,11 @@ class NodeControllerServer:
 
     async def process_keypad(self):
         while self.running:
-            key = keypad.get_key()
+            key = self.keypad.get_key()
+            if key is None:
+                continue
             logger.debug(f'>>>{key}')
-            await asyncio.sleep(1)
+            await asyncio.sleep(.25)
 
     async def set_up(self, loop):
         self.nc = NATS()
@@ -91,7 +93,7 @@ class NodeControllerServer:
         loop.run_until_complete(self.set_up(loop))
         # controller_command_task = loop.create_task(self.a())
         controller_command_task = loop.create_task(self.process_controller_command())
-
+        process_keypad_task = loop.create_task(self.process_keypad())
         
         try:
             loop.run_forever()

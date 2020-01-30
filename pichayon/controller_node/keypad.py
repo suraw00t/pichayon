@@ -15,8 +15,8 @@ class Keypad:
                 ['7', '8', '9', "C"],
                 ["*", '0', "#", "D"]
             ]
-        self.row_pins = [19, 13, 6, 5]
-        self.col_pins = [21, 20, 16, 12]
+        self.col_pins = [19, 13, 6, 5]
+        self.row_pins = [21, 20, 16, 12]
 
     def get_key(self):
         for pin in self.col_pins:
@@ -24,7 +24,6 @@ class Keypad:
             GPIO.output(pin, GPIO.LOW)
         for pin in self.row_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
         row_val = -1
         for i in range(len(self.row_pins)):
             tmp_read = GPIO.input(self.row_pins[i])
@@ -42,20 +41,21 @@ class Keypad:
         GPIO.output(self.row_pins[row_val], GPIO.HIGH)
 
         col_val = -1
-        for j in range(len(self.COLUMN)):
+        for j in range(len(self.col_pins)):
             tmp_read = GPIO.input(self.col_pins[j])
             if tmp_read == 1:
                 col_val = j
 
-        if col_val < 0 or col_val > 2:
+        if col_val < 0 or col_val > 3:
             self.exit()
             return
 
         self.exit()
+
         return self.keypad[row_val][col_val]
 
     def exit(self):
-        for pin in self.row_pins):
+        for pin in self.row_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         for pin in self.col_pins:
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
