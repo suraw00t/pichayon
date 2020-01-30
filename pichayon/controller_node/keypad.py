@@ -34,8 +34,8 @@ class Keypad:
             self.exit()
             return
 
-        for j in range(len(self.col_pins)):
-            GPIO.setup(self.col_pins[j], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        for pin in self.col_pins:
+            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
         GPIO.setup(self.row_pins[row_val], GPIO.OUT)
         GPIO.output(self.row_pins[row_val], GPIO.HIGH)
