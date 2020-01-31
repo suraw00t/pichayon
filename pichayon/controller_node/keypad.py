@@ -18,8 +18,8 @@ class Keypad:
         self.col_pins = [19, 13, 6, 5]
         self.row_pins = [21, 20, 16, 12]
         self.buzzer = 4
-        GPIO.setup(buzzer, GPIO.OUT)
-        GPIO.output(buzzer, GPIO.LOW)
+        GPIO.setup(self.buzzer, GPIO.OUT)
+        GPIO.output(self.buzzer, GPIO.LOW)
 
     def get_key(self):
         for pin in self.col_pins:
