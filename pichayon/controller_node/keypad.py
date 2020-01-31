@@ -2,7 +2,7 @@ import uuid
 import asyncio
 import logging
 import RPi.GPIO as GPIO
-
+import time
 logger = logging.getLogger(__name__)
 
 
@@ -17,6 +17,9 @@ class Keypad:
             ]
         self.col_pins = [19, 13, 6, 5]
         self.row_pins = [21, 20, 16, 12]
+        self.buzzer = 4
+        GPIO.setup(buzzer, GPIO.OUT)
+        GPIO.output(buzzer, GPIO.LOW)
 
     def get_key(self):
         for pin in self.col_pins:
@@ -51,7 +54,9 @@ class Keypad:
             return
 
         self.exit()
-
+        GPIO.output(self.buzzer, GPIO.HIGH)
+        time.sleep(0.2)
+        GPIO.output(self.buzzer, GPIO.LOW)
         return self.keypad[row_val][col_val]
 
     def exit(self):
