@@ -47,12 +47,14 @@ class NodeControllerServer:
                 self.passcode = ''
             key = self.keypad.get_key()
             if key is None:
+                await asyncio.sleep(.25)
                 continue
             time_stamp = datetime.datetime.now()
             self.passcode += key
             logger.debug(f'>>>{self.passcode}')
             if len(self.passcode) == 6:
                 self.passcode = ''
+                await asyncio.sleep(1)
             await asyncio.sleep(.25)
 
     async def set_up(self, loop):
@@ -64,7 +66,6 @@ class NodeControllerServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
-
  
         data = dict(action='register',
                     device_id=self.device_id,
