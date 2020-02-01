@@ -49,9 +49,9 @@ class NodeControllerServer:
                 self.passcode = ''
 
             key = self.keypad.get_key()
-            # if key is None:
-                # await asyncio.sleep(.25)
-                # continue
+            if key is None:
+                await asyncio.sleep(.25)
+                continue
             time_stamp = datetime.datetime.now()
             self.passcode += key
             logger.debug(f'>>>{self.passcode}')
