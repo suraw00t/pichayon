@@ -64,7 +64,7 @@ class NodeControllerServer:
         while self.running:
             id_read = self.rfid.get_id()
             if id_read:
-                logger.debug(f'>>>{id}')
+                logger.debug(f'>>>{id_read}')
             await asyncio.sleep(1)
 
     async def set_up(self, loop):
