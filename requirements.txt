@@ -1,6 +1,7 @@
 # CONTROLLER
 asyncio-nats-client
 RPi.GPIO
+mfrc522
 
 # WEB
 flask

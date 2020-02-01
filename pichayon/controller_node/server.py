@@ -12,6 +12,7 @@ from nats.aio.errors import ErrTimeout
 
 from . import devices
 from . import keypad
+from . import rfid
 
 class NodeControllerServer:
     def __init__(self, settings):
@@ -23,6 +24,7 @@ class NodeControllerServer:
         self.running = False
         self.keypad = keypad.Keypad()
         self.passcode = ''
+        self.rfid = rfid.RFID()
     
     async def handle_controller_command(self, msg):
         subject = msg.subject
@@ -45,10 +47,11 @@ class NodeControllerServer:
             # passcode will expire in 3 sec
             if datetime.datetime.now() > time_stamp+datetime.timedelta(seconds=3):
                 self.passcode = ''
+
             key = self.keypad.get_key()
-            if key is None:
-                await asyncio.sleep(.25)
-                continue
+            # if key is None:
+                # await asyncio.sleep(.25)
+                # continue
             time_stamp = datetime.datetime.now()
             self.passcode += key
             logger.debug(f'>>>{self.passcode}')
@@ -56,6 +59,12 @@ class NodeControllerServer:
                 self.passcode = ''
                 await asyncio.sleep(1)
             await asyncio.sleep(.25)
+    
+    async def process_rfid(self):
+        while self.running:
+            id = self.rfid.get_id()
+            logger.debug(f'>>>{id}')
+            await asyncio.sleep(.5)
 
     async def set_up(self, loop):
         self.nc = NATS()
@@ -104,6 +113,7 @@ class NodeControllerServer:
         # controller_command_task = loop.create_task(self.a())
         controller_command_task = loop.create_task(self.process_controller_command())
         process_keypad_task = loop.create_task(self.process_keypad())
+        process_rfid_task = loop.create_task(self.process_rfid())
         
         try:
             loop.run_forever()
