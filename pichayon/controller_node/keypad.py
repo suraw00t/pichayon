@@ -22,45 +22,42 @@ class Keypad:
         GPIO.output(self.buzzer, GPIO.LOW)
 
     def get_key(self):
-        while True:
-            for pin in self.col_pins:
-                GPIO.setup(pin, GPIO.OUT)
-                GPIO.output(pin, GPIO.LOW)
-            for pin in self.row_pins:
-                GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            row_val = -1
-            for i in range(len(self.row_pins)):
-                tmp_read = GPIO.input(self.row_pins[i])
-                if tmp_read == 0:
-                    row_val = i
+        for pin in self.col_pins:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.LOW)
+        for pin in self.row_pins:
+            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        row_val = -1
+        for i in range(len(self.row_pins)):
+            tmp_read = GPIO.input(self.row_pins[i])
+            if tmp_read == 0:
+                row_val = i
 
-            if row_val < 0 or row_val > 3:
-                self.exit()
-                time.sleep(.025)
-                continue
-
-            for pin in self.col_pins:
-                GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-            GPIO.setup(self.row_pins[row_val], GPIO.OUT)
-            GPIO.output(self.row_pins[row_val], GPIO.HIGH)
-
-            col_val = -1
-            for j in range(len(self.col_pins)):
-                tmp_read = GPIO.input(self.col_pins[j])
-                if tmp_read == 1:
-                    col_val = j
-
-            if col_val < 0 or col_val > 3:
-                self.exit()
-                time.sleep(.025)
-                continue
-
+        if row_val < 0 or row_val > 3:
             self.exit()
-            GPIO.output(self.buzzer, GPIO.HIGH)
-            time.sleep(.025)
-            GPIO.output(self.buzzer, GPIO.LOW)
-            return self.keypad[row_val][col_val]
+            return
+
+        for pin in self.col_pins:
+            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+        GPIO.setup(self.row_pins[row_val], GPIO.OUT)
+        GPIO.output(self.row_pins[row_val], GPIO.HIGH)
+
+        col_val = -1
+        for j in range(len(self.col_pins)):
+            tmp_read = GPIO.input(self.col_pins[j])
+            if tmp_read == 1:
+                col_val = j
+
+        if col_val < 0 or col_val > 3:
+            self.exit()
+            return
+
+        self.exit()
+        GPIO.output(self.buzzer, GPIO.HIGH)
+        time.sleep(.025)
+        GPIO.output(self.buzzer, GPIO.LOW)
+        return self.keypad[row_val][col_val]
 
     def exit(self):
         for pin in self.row_pins:
