@@ -1,9 +1,9 @@
 import asyncio
-
+import threading
 import json
 import datetime
 import os
-
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ class NodeControllerServer:
         self.running = False
         self.keypad = keypad.Keypad()
         # self.passcode = ''
+        self.id_read = ''
         self.rfid = rfid.RFID()
     
     async def handle_controller_command(self, msg):
@@ -60,13 +61,20 @@ class NodeControllerServer:
                 passcode = ''
                 await asyncio.sleep(1)
             await asyncio.sleep(.25)
-    
+
+    def read_rfid(self):
+        while self.running:
+            self.id_read = self.rfid.get_id()
+            time.sleep(.025)
+         
     async def process_rfid(self):
         while self.running:
-            id_read = self.rfid.get_id()
-            if id_read:
-                logger.debug(f'rdid: >>>{id_read}')
-            await asyncio.sleep(1)
+            read_rfid_thread = threading.Thread(target=self.read_rfid())
+            read_rfid_thread.start()
+            if len(self.id_read) > 0:
+                logger.debug(f'rfid: >>>{self.id_read}')
+                read_rfid_thread.join()
+            await asyncio.sleep(.25)
 
     async def set_up(self, loop):
         self.nc = NATS()
