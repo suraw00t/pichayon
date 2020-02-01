@@ -17,19 +17,17 @@ class RFID:
 
     def get_id(self):
         try:
-            while True:
-                id, text = self.reader.read()
-                if id:
-                    GPIO.output(self.buzzer, GPIO.HIGH)
-                    time.sleep(.05)
-                    GPIO.output(self.buzzer, GPIO.LOW)
-                    time.sleep(.05)
-                    GPIO.output(self.buzzer, GPIO.HIGH)
-                    time.sleep(.025)
-                    GPIO.output(self.buzzer, GPIO.LOW)
-                    return id
-
-                time.sleep(1)
+            # while True:
+            id, text = self.reader.read()
+            if id:
+                GPIO.output(self.buzzer, GPIO.HIGH)
+                time.sleep(.05)
+                GPIO.output(self.buzzer, GPIO.LOW)
+                time.sleep(.05)
+                GPIO.output(self.buzzer, GPIO.HIGH)
+                time.sleep(.025)
+                GPIO.output(self.buzzer, GPIO.LOW)
+                return id
         except KeyboardInterrupt:
             GPIO.cleanup()
-            raise
+            # raise
