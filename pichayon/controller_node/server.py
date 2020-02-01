@@ -55,7 +55,7 @@ class NodeControllerServer:
                 continue
             time_stamp = datetime.datetime.now()
             passcode += key
-            logger.debug(f'>>>{passcode}')
+            logger.debug(f'passcode: >>>{passcode}')
             if len(passcode) == 6:
                 passcode = ''
                 await asyncio.sleep(1)
@@ -65,7 +65,7 @@ class NodeControllerServer:
         while self.running:
             id_read = self.rfid.get_id()
             if id_read:
-                logger.debug(f'>>>{id_read}')
+                logger.debug(f'rdid: >>>{id_read}')
             await asyncio.sleep(1)
 
     async def set_up(self, loop):
