@@ -64,7 +64,9 @@ class NodeControllerServer:
 
     def read_rfid(self):
         while self.running:
+            logger.debug('before get_id')
             self.id_read = self.rfid.get_id()
+            logger.debug(f'rfid: >>>{self.id_read}')
             # time.sleep(.025)
          
     async def process_rfid(self):
