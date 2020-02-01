@@ -65,16 +65,17 @@ class NodeControllerServer:
     def read_rfid(self):
         while self.running:
             self.id_read = self.rfid.get_id()
-            time.sleep(.025)
+            # time.sleep(.025)
          
     async def process_rfid(self):
+        read_rfid_thread = threading.Thread(target=self.read_rfid)
+        read_rfid_thread.start()
         while self.running:
-            read_rfid_thread = threading.Thread(target=self.read_rfid())
-            read_rfid_thread.start()
             if len(self.id_read) > 0:
                 logger.debug(f'rfid: >>>{self.id_read}')
-                read_rfid_thread.join()
+
             await asyncio.sleep(.25)
+        read_rfid_thread.join()
 
     async def set_up(self, loop):
         self.nc = NATS()
