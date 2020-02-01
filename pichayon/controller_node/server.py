@@ -24,7 +24,7 @@ class NodeControllerServer:
         self.running = False
         self.keypad = keypad.Keypad()
         # self.passcode = ''
-        self.id_read = ''
+        self.id_read = 0
         self.rfid = rfid.RFID()
     
     async def handle_controller_command(self, msg):
@@ -75,7 +75,7 @@ class NodeControllerServer:
         while self.running:
             logger.debug(f'while in process{type(self.id_read)}')
 
-            if len(self.id_read) > 0:
+            if self.id_read > 0:
                 logger.debug(f'len : rfid: >>>{self.id_read}')
 
             await asyncio.sleep(.25)
