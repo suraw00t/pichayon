@@ -23,7 +23,7 @@ class NodeControllerServer:
         self.device_id = self.device.get_device_id()
         self.running = False
         self.keypad = keypad.Keypad()
-        self.passcode = ''
+        # self.passcode = ''
         self.rfid = rfid.RFID()
     
     async def handle_controller_command(self, msg):
@@ -43,20 +43,21 @@ class NodeControllerServer:
 
     async def process_keypad(self):
         time_stamp = datetime.datetime.now()
+        passcode = ''
         while self.running:
             # passcode will expire in 3 sec
             if datetime.datetime.now() > time_stamp+datetime.timedelta(seconds=3):
-                self.passcode = ''
+                passcode = ''
 
             key = self.keypad.get_key()
             if key is None:
                 await asyncio.sleep(.25)
                 continue
             time_stamp = datetime.datetime.now()
-            self.passcode += key
-            logger.debug(f'>>>{self.passcode}')
-            if len(self.passcode) == 6:
-                self.passcode = ''
+            passcode += key
+            logger.debug(f'>>>{passcode}')
+            if len(passcode) == 6:
+                passcode = ''
                 await asyncio.sleep(1)
             await asyncio.sleep(.25)
     
