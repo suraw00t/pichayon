@@ -32,6 +32,12 @@ class UserForm(FlaskForm):
 class AddingRoomForm(FlaskForm):
     room = fields.SelectField('Rooms')
     started_date = html5.DateField('Started Date',
-                                    format='%Y-%m-%d')
+                                   format='%Y-%m-%d')
     expired_date = html5.DateField('Expired Date',
-                                    format='%Y-%m-%d')
+                                   format='%Y-%m-%d')
+
+
+class EditForm(FlaskForm):
+    roles = fields.SelectField('Role')
+    rfid = fields.TextField('RFID')
+

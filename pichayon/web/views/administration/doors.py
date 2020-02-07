@@ -9,9 +9,18 @@ from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import DoorForm, DoorGroupForm
 from flask_login import login_user, logout_user, login_required, current_user
+import string
+import random
 module = Blueprint('administration.doors',
                    __name__,
                    url_prefix='/doors')
+
+
+def generate_passcode():
+    res = ''.join(random.choices('ABCD' +
+                                 string.digits, k=6))
+    print('pass>>>>', res)
+    return str(res)
 
 
 @module.route('/')
@@ -40,6 +49,8 @@ def create():
     door = models.Door()
     form.populate_obj(door)
     door.creator = current_user._get_current_object()
+    if form.have_passcode.data:
+        door.passcode = generate_passcode()
     door.save()
 
     door_group.members.append(door)
@@ -66,12 +77,19 @@ def edit(door_id):
     form = DoorForm(obj=door)
 
     if not form.validate_on_submit():
+        if len(door.passcode) == 6:
+            form.have_passcode.data = True
         return render_template('/administration/doors/create-edit.html',
                                form=form,
                                door_group=door_group)
 
     if door.device_id == form.device_id.data:
         form.populate_obj(door)
+        if len(door.passcode) == 6:
+            if not form.have_passcode.data:
+                door.passcode = ''
+        else:
+            door.passcode = generate_passcode()
         door.save()
         return redirect(url_for('administration.doors.doors_list',
                                 doorgroup_id=group_id))
@@ -82,6 +100,11 @@ def edit(door_id):
                                door_group=door_group,
                                device_id_error="True")
     form.populate_obj(door)
+    if len(door.passcode) == 6:
+        if not form.have_passcode.data:
+            door.passcode = ''
+    else:
+        door.passcode = generate_passcode()
     door.save()
 
     return redirect(url_for('administration.doors.doors_list',
@@ -98,3 +121,12 @@ def delete(door_id):
     selected_door.delete()
     door_group.save()
     return redirect(url_for('administration.doors.index'))
+
+
+@module.route('/<door_id>/revoke_passcode')
+@acl.allows.requires(acl.is_admin)
+def revoke_passcode(door_id):
+    door = models.Door.objects.get(id=door_id)
+    door.passcode = generate_passcode()
+    door.save()
+    return redirect(url_for('dashboard.index'))

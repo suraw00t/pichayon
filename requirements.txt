@@ -2,6 +2,8 @@
 asyncio-nats-client
 RPi.GPIO
 mfrc522
+tinydb
+
 
 # WEB
 flask

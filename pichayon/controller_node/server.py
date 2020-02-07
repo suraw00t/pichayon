@@ -13,6 +13,7 @@ from nats.aio.errors import ErrTimeout
 from . import devices
 from . import keypad
 from . import rfid
+from . import data_storage
 
 class NodeControllerServer:
     def __init__(self, settings):
@@ -26,7 +27,8 @@ class NodeControllerServer:
         # self.passcode = ''
         self.id_read = 0
         self.rfid = rfid.RFID()
-    
+        self.data_storage = data_storage.DataStorage(self.settings)
+
     async def handle_controller_command(self, msg):
         subject = msg.subject
         reply = msg.reply
@@ -106,7 +108,8 @@ class NodeControllerServer:
                         )
                 self.is_register = True
                 data = json.loads(response.data.decode())
-                logger.debug(data)
+                self.data_storage.initial_data_after_restart(data)
+                logger.debug('Data was saved')
             except Exception as e:
                 logger.debug(e)
 

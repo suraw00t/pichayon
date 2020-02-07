@@ -24,22 +24,33 @@
             <th>Email</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Groups</th>
+            <th>RFID</th>
+            <th>Operation</th>
         </tr>
     </thead>
 
     <tbody>
 
-        {% for user in users %}
-        <tr>
+    {% for user in users %}
+    <tr>
 	  <td>
 	    <a href="{{url_for('accounts.index', user=user.id)}}">{{ user.username }}</a>
 	  </td>
           <td>{{ user.email }}</td>
 	  <td>{{ user.first_name }} {{ user.last_name }}</td>
-	  <td>{{ user.roles[-1] }}</td>
-          <td>{{ user.rooms | join(', ') }}</td>
-        </tr>
+	  <td>{{ user.roles[-1].capitalize()}}</td>
+    <td>
+    {% if user.rfid | length > 0%}
+        <i class="large check icon green"></i>
+        {% else %}
+        <i class="large delete icon red"></i>
+    {% endif %}
+
+    </td>
+    <td>
+    <a href="{{url_for('administration.users.edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
+    </td>
+    </tr>
         {% endfor %}
     </tbody>
   </table>

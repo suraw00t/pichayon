@@ -40,6 +40,9 @@
 {{ render_field(field, class_='ui fluid search dropdown') }}
 {%- endmacro %}
 
+{% macro render_select_no_search(field) -%}
+{{ render_field(field, class_='ui fluid dropdown') }}
+{%- endmacro %}
 
 {% macro render_multiple_select(field) -%}
 {{ render_field(field, class_='ui fluid search dropdown') }}
