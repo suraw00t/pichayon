@@ -26,9 +26,10 @@ class DataResourceManager:
             return {}
         # logger.debug('res2')
         for user_group in door_auth.user_group:
-            # logger.debug(user_group.group)
+            logger.debug(user_group.group.name)
             ugroup.append(user_group.group)
         
+        res['user_groups'] = list()
         for group in ugroup:
             # logger.debug('res3')
             if door_auth.is_authority(group):
@@ -38,9 +39,9 @@ class DataResourceManager:
                     ugroup_selected['members'].append(
                             {'username': member.user.username,
                              'rfid':member.user.rfid})
+                res['user_groups'].append(ugroup_selected)
 
-        res['user_groups'] = ugroup_selected
         res['passcode'] = door.passcode
-        # logger.debug('res5')
+        logger.debug(res)
         # logger.debug(ugroup_selected)
         return res
