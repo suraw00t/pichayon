@@ -10,4 +10,7 @@ class DataStorage:
         self.db = TinyDB(self.settings['TINYDB_STORAGE_PATH']) 
 
     def initial_data_after_restart(self, data):
+        for key, value in data.items:
+            logger.debug(key)
+            logger.debug(value)
         logger.debug(f'>>>>>>>{data}')
