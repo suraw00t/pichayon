@@ -9,11 +9,12 @@ logger = logging.getLogger(__name__)
 
 from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
-
+from tinydb import TinyDB, Query
 from . import devices
 from . import keypad
 from . import rfid
 from . import data_storage
+
 
 class NodeControllerServer:
     def __init__(self, settings):
@@ -28,6 +29,8 @@ class NodeControllerServer:
         self.id_read = 0
         self.rfid = rfid.RFID()
         self.data_storage = data_storage.DataStorage(self.settings)
+        self.db = TinyDB(self.settings['TINYDB_STORAGE_PATH'])
+        self.query = Query()
 
     async def handle_controller_command(self, msg):
         subject = msg.subject
@@ -60,13 +63,17 @@ class NodeControllerServer:
             passcode += key
             logger.debug(f'passcode: >>>{passcode}')
             if len(passcode) == 6:
-                passcode = ''
-                await asyncio.sleep(1)
+                device_passcode = self.db.search(self.query.passcode == passcode)
+                if device_passcode:
+                    await self.device.open_door()
+                await asyncio.sleep(2)
             await asyncio.sleep(.25)
 
     def read_rfid(self):
         while self.running:
             self.id_read = self.rfid.get_id()
+            if self.id_read:
+                time.sleep(1.5)
             time.sleep(.025)
          
     async def process_rfid(self):
@@ -75,6 +82,10 @@ class NodeControllerServer:
         while self.running:
             # logger.debug(f'while in process{type(self.id_read)}')
             if self.id_read > 0:
+                user_rfid = self.db.search(self.query.rfid == str(self.id_read))
+                if user_rfid:
+                    await self.device.open_door()
+                    await asyncio.sleep(.5)
                 logger.debug(f'len : rfid: >>>{self.id_read}')
                 self.id_read = 0
             await asyncio.sleep(.025)
