@@ -40,7 +40,7 @@ class DataResourceManager:
                              'rfid':member.user.rfid})
 
         res['user_groups'] = ugroup_selected
-        res['passcodee'] = door.passcode
+        res['passcode'] = door.passcode
         # logger.debug('res5')
         # logger.debug(ugroup_selected)
         return res
