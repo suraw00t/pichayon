@@ -11,6 +11,7 @@ class DataStorage:
         self.query = Query()
 
     def initial_data_after_restart(self, data):
+        logger.debug(f'>>>>>>>{data}')
         passcode = self.db.search(self.query.type=='passcode')
         if passcode:
             self.db.update({'passcode': data['passcode']}, self.query.type=='passcode')

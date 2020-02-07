@@ -5,6 +5,7 @@ import datetime
 import os
 import time
 import logging
+import RPi.GPIO as GPIO
 logger = logging.getLogger(__name__)
 
 from nats.aio.client import Client as NATS
@@ -149,4 +150,5 @@ class NodeControllerServer:
             self.nc.close()
         finally:
             loop.close()
+            GPIO.cleanup()
 
