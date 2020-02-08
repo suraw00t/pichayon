@@ -67,6 +67,7 @@ class NodeControllerServer:
                 device_passcode = self.db.search(self.query.passcode == passcode)
                 if device_passcode:
                     await self.device.open_door()
+                passcode = ''
                 await asyncio.sleep(2)
             await asyncio.sleep(.25)
 
@@ -75,14 +76,15 @@ class NodeControllerServer:
             self.id_read = self.rfid.get_id()
             if self.id_read:
                 time.sleep(1.5)
-            time.sleep(.025)
+            time.sleep(.5)
+        #    logger.debug(f'rfid in read rfid>>>{self.id_read}')
          
     async def process_rfid(self):
         read_rfid_thread = threading.Thread(target=self.read_rfid)
         read_rfid_thread.start()
         while self.running:
             # logger.debug(f'while in process{type(self.id_read)}')
-            if self.id_read > 0:
+            if self.id_read:
                 user_rfid = self.db.search(self.query.rfid == str(self.id_read))
                 if user_rfid:
                     await self.device.open_door()
