@@ -69,7 +69,7 @@ class NodeControllerServer:
                     await self.device.open_door()
                 passcode = ''
                 await asyncio.sleep(2)
-            await asyncio.sleep(.25)
+            await asyncio.sleep(.2)
 
     def read_rfid(self):
         while self.running:
