@@ -40,9 +40,19 @@ class ControllerServer:
 
     async def process_command(self):
         while self.running:
+
             data = await self.command_queue.get()
             logger.debug('command: {}'.format(data))
-            
+            if 'update_passcode' in data['action']:
+                door = models.Door.objects.get(id=data['door_id'])
+                topic = f'pichayon.node_controller.{door.device_id}'
+                logger.debug('update passcode')
+                response = await self.data_resource.get_authorization_data(door.device_id)
+                await self.nc.publish(topic,
+                                json.dumps(response).encode())
+                logger.debug('update Success')
+                continue
+                
             door = models.Door.objects.get(id=data['door_id'])
             user = models.User.objects.get(id=data['user_id'])
             user_group = models.UserGroup.objects.get(id=data['user_group_id'])

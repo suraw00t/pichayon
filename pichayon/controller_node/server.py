@@ -47,6 +47,14 @@ class NodeControllerServer:
             logger.debug('process command')
             if data['action'] == 'open':
                 await self.device.open_door()
+                await asyncio.sleep(.5)
+                continue
+            elif data['action'] == 'update':
+                self.data_storage.update_data(data)
+                await asyncio.sleep(.5)
+                continue
+            await asyncio.sleep(.5)
+
 
     async def process_keypad(self):
         time_stamp = datetime.datetime.now()

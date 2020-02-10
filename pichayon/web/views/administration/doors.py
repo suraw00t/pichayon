@@ -11,6 +11,8 @@ from pichayon.web.forms.admin import DoorForm, DoorGroupForm
 from flask_login import login_user, logout_user, login_required, current_user
 import string
 import random
+import json
+
 module = Blueprint('administration.doors',
                    __name__,
                    url_prefix='/doors')
@@ -129,4 +131,14 @@ def revoke_passcode(door_id):
     door = models.Door.objects.get(id=door_id)
     door.passcode = generate_passcode()
     door.save()
+    loop = g.get_loop()
+    data = json.dumps({
+        'action': 'update_passcode',
+        'door_id': door_id
+        })
+    nats_client = g.get_nats_client()
+    loop.run_until_complete(nats_client.publish(
+        'pichayon.controller.command',
+        data.encode()
+        ))
     return redirect(url_for('dashboard.index'))
