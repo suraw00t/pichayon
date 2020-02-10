@@ -12,6 +12,7 @@ from pichayon.web import acl
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
                                       AddRoleUserForm,
+                                      EditForm,
                                       AddingRoomForm)
 
 module = Blueprint('administration.users',
@@ -104,3 +105,20 @@ def delete(group_id):
     group.save()
 
     return redirect(url_for('administration.users.list', group_id=group_id))
+
+
+@module.route('/<user_id>/edit', methods=["GET", "POST"])
+@acl.allows.requires(acl.is_admin)
+def edit(user_id):
+    user = models.User.objects.get(id=user_id)
+    form = EditForm(obj=user)
+    form.roles.choices = [('admin', 'Admin'), ('teacher', 'Teacher'), ('student', 'Student')]
+    if not form.validate_on_submit():
+        form.roles.data = user.roles[-1]
+        return render_template('administration/users/add_rfid.html',
+                               form=form,
+                               user=user)
+    user.roles[-1] = form.roles.data
+    user.rfid = form.rfid.data
+    user.save()
+    return redirect(url_for('administration.users.index'))

@@ -1,16 +1,20 @@
 import asyncio
-
+import threading
 import json
 import datetime
 import os
-
+import time
 import logging
+import RPi.GPIO as GPIO
 logger = logging.getLogger(__name__)
 
 from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
-
+from tinydb import TinyDB, Query
 from . import devices
+from . import keypad
+from . import rfid
+from . import data_storage
 
 
 class NodeControllerServer:
@@ -21,7 +25,14 @@ class NodeControllerServer:
         self.device = devices.Device()
         self.device_id = self.device.get_device_id()
         self.running = False
-    
+        self.keypad = keypad.Keypad()
+        # self.passcode = ''
+        self.id_read = 0
+        self.rfid = rfid.RFID()
+        self.data_storage = data_storage.DataStorage(self.settings)
+        self.db = TinyDB(self.settings['TINYDB_STORAGE_PATH'])
+        self.query = Query()
+
     async def handle_controller_command(self, msg):
         subject = msg.subject
         reply = msg.reply
@@ -37,6 +48,52 @@ class NodeControllerServer:
             if data['action'] == 'open':
                 await self.device.open_door()
 
+    async def process_keypad(self):
+        time_stamp = datetime.datetime.now()
+        passcode = ''
+        while self.running:
+            # passcode will expire in 3 sec
+            if datetime.datetime.now() > time_stamp+datetime.timedelta(seconds=3):
+                passcode = ''
+
+            key = self.keypad.get_key()
+            if key is None:
+                await asyncio.sleep(.25)
+                continue
+            time_stamp = datetime.datetime.now()
+            passcode += key
+            logger.debug(f'passcode: >>>{passcode}')
+            if len(passcode) == 6:
+                device_passcode = self.db.search(self.query.passcode == passcode)
+                if device_passcode:
+                    await self.device.open_door()
+                passcode = ''
+                await asyncio.sleep(2)
+            await asyncio.sleep(.2)
+
+    def read_rfid(self):
+        while self.running:
+            self.id_read = self.rfid.get_id()
+            if self.id_read:
+                time.sleep(1.5)
+            time.sleep(.5)
+        #    logger.debug(f'rfid in read rfid>>>{self.id_read}')
+         
+    async def process_rfid(self):
+        read_rfid_thread = threading.Thread(target=self.read_rfid)
+        read_rfid_thread.start()
+        while self.running:
+            # logger.debug(f'while in process{type(self.id_read)}')
+            if self.id_read:
+                user_rfid = self.db.search(self.query.rfid == str(self.id_read))
+                if user_rfid:
+                    await self.device.open_door()
+                    await asyncio.sleep(.5)
+                logger.debug(f'len : rfid: >>>{self.id_read}')
+                self.id_read = 0
+            await asyncio.sleep(.025)
+        read_rfid_thread.join(timeout=1)
+
     async def set_up(self, loop):
         self.nc = NATS()
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
@@ -46,7 +103,6 @@ class NodeControllerServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
-
  
         data = dict(action='register',
                     device_id=self.device_id,
@@ -66,7 +122,8 @@ class NodeControllerServer:
                         )
                 self.is_register = True
                 data = json.loads(response.data.decode())
-                logger.debug(data)
+                self.data_storage.initial_data_after_restart(data)
+                logger.debug('Data was saved')
             except Exception as e:
                 logger.debug(e)
 
@@ -84,7 +141,8 @@ class NodeControllerServer:
         loop.run_until_complete(self.set_up(loop))
         # controller_command_task = loop.create_task(self.a())
         controller_command_task = loop.create_task(self.process_controller_command())
-
+        process_keypad_task = loop.create_task(self.process_keypad())
+        process_rfid_task = loop.create_task(self.process_rfid())
         
         try:
             loop.run_forever()
@@ -94,4 +152,5 @@ class NodeControllerServer:
             self.nc.close()
         finally:
             loop.close()
+            GPIO.cleanup()
 

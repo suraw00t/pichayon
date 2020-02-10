@@ -1,0 +1,28 @@
+{% extends '/administration/users/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+{% block dashboard_title %}
+	Edit
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">Edit {{user.username}}</div>
+{%- endblock %}
+{% block content %}
+<form class="ui big form" method="POST">
+	{{ form.csrf_token }}
+	<div class="six wide field">
+      {{ renderer.render_select_no_search(form.roles) }}
+	</div>
+	<div class="six wide field">
+      {{ renderer.render_field(form.rfid) }}
+	</div>
+<button class="ui submit primary button" type="submit">Confirm</button>
+</form>
+<script>
+$('#roles')
+  .dropdown();
+</script>
+
+{% endblock %}

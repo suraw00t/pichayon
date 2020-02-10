@@ -2,11 +2,14 @@ import mongoengine as me
 import datetime
 from pichayon import models
 
+
 class Door(me.Document):
     name = me.StringField(required=True)
     device_id = me.StringField(unique=True)
     description = me.StringField()
-
+    camera_url = me.StringField(default='', required=True)
+    # have_passcode = me.BooleanField(default=False, required=True)
+    passcode = me.StringField(default='')
     creator = me.ReferenceField('User', dbref=True)
 
     created_date = me.DateTimeField(required=True,
@@ -17,7 +20,7 @@ class Door(me.Document):
     status = me.StringField(required=True, default='active')
 
     meta = {'collection': 'doors'}
-   
+
     def get_door_auth(self):
         door_group = models.DoorGroup.objects()
         door_auth = None
