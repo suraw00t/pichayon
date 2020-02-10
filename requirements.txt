@@ -14,3 +14,5 @@ python-dateutil
 flask-mongoengine
 loginpass
 
+# Spartbit smart door lock
+cloudant
