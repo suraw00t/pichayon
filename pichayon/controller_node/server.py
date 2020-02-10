@@ -27,8 +27,8 @@ class NodeControllerServer:
         self.running = False
         self.keypad = keypad.Keypad()
         # self.passcode = ''
-        self.id_read = 0
-        self.rfid = rfid.RFID()
+        self.id_read = '' 
+        self.rfid = rfid.RFIDReader()
         self.data_storage = data_storage.DataStorage(self.settings)
         self.db = TinyDB(self.settings['TINYDB_STORAGE_PATH'])
         self.query = Query()
@@ -74,23 +74,24 @@ class NodeControllerServer:
     def read_rfid(self):
         while self.running:
             self.id_read = self.rfid.get_id()
-            if self.id_read:
+            if len(self.id_read) > 0:
                 time.sleep(1.5)
             time.sleep(.5)
-        #    logger.debug(f'rfid in read rfid>>>{self.id_read}')
+            # logger.debug(f'rfid in read rfid>>>{self.id_read}')
          
     async def process_rfid(self):
         read_rfid_thread = threading.Thread(target=self.read_rfid)
         read_rfid_thread.start()
         while self.running:
-            # logger.debug(f'while in process{type(self.id_read)}')
-            if self.id_read:
-                user_rfid = self.db.search(self.query.rfid == str(self.id_read))
+            #logger.debug(f'while in process{type(self.id_read)}')
+            #self.id_read = self.rfid.get_id()
+            if len(self.id_read)>0:
+                user_rfid = self.db.search(self.query.rfid == self.id_read)
                 if user_rfid:
                     await self.device.open_door()
                     await asyncio.sleep(.5)
                 logger.debug(f'len : rfid: >>>{self.id_read}')
-                self.id_read = 0
+                self.id_read = ''
             await asyncio.sleep(.025)
         read_rfid_thread.join(timeout=1)
 
