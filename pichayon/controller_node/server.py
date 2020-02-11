@@ -83,7 +83,7 @@ class NodeControllerServer:
         while self.running:
             self.id_read = self.rfid.get_id()
             if len(self.id_read) > 0:
-                time.sleep(1.5)
+                time.sleep(.5)
             time.sleep(.5)
             # logger.debug(f'rfid in read rfid>>>{self.id_read}')
          

@@ -22,15 +22,16 @@ class RFIDReader:
       return n
 
     def get_id(self):
-        while True:
+        #while True:
             #logger.debug('okayy')
             #self.reader.wait_for_tag()
             #logger.debug('readddd')
             
-            (error, tag_type) = self.reader.request()
+        (error, tag_type) = self.reader.request()
+        if not error:
+            (error, uid) = self.reader.anticoll()
             if not error:
-                (error, uid) = self.reader.anticoll()
-                if not error:
-                    self.reader.stop_crypto()
-                    return str(self.uid_to_num(uid))
-            time.sleep(0.5)
+                self.reader.stop_crypto()
+                return str(self.uid_to_num(uid))
+            #time.sleep(0.5)
+        return ''
