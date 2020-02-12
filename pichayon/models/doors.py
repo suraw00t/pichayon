@@ -18,6 +18,7 @@ class Door(me.Document):
                                     default=datetime.datetime.now,
                                     auto_now=True)
     status = me.StringField(required=True, default='active')
+    type = me.StringField(required=True, default='pichayon')
 
     meta = {'collection': 'doors'}
 
@@ -31,4 +32,10 @@ class Door(me.Document):
         if door_auth:
             return door_auth
         return
+
+    def get_door_attributes(self):
+        if type == 'sparkbit':
+            return models.SparkbitDoorSystem.object.get(door=self)
+
+        return None
 
