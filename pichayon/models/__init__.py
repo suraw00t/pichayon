@@ -1,8 +1,10 @@
 from .users import User
 from .doors import Door
+from .door_systems import SparkbitDoorSystem
 from .oauth2 import OAuth2Token
 from .groups import UserGroup, UserMember, DoorGroup
 from .door_authorizations import DoorAuthorizations, GroupMember, Rrule
+
 __all__ = [User,
            Door,
            OAuth2Token,
@@ -11,7 +13,9 @@ __all__ = [User,
            DoorGroup,
            DoorAuthorizations,
            GroupMember,
-           Rrule]
+           Rrule,
+           SparkbitDoorSystem
+           ]
 
 from flask_mongoengine import MongoEngine
 

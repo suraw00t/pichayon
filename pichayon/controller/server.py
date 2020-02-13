@@ -6,6 +6,7 @@ from pichayon import models
 
 logger = logging.getLogger(__name__)
 from . import data_resources
+from . import sparkbit
 
 class ControllerServer:
     def __init__(self, settings):
@@ -14,7 +15,15 @@ class ControllerServer:
         self.running = False
         self.command_queue = asyncio.Queue()
         self.data_resource = data_resources.DataResourceManager()
-    
+        self.sparkbit_controller = sparkbit.DoorController(self.settings)
+
+    async def handle_sparkbit_command(self, msg):
+        subject = msg.subject
+        reply = msg.reply
+        data = msg.data.decode()
+        data = json.loads(data)
+        await self.sparkbit_controller.put_command(data)
+
     async def handle_command(self, msg):
         subject = msg.subject
         reply = msg.reply
@@ -57,12 +66,15 @@ class ControllerServer:
             user = models.User.objects.get(id=data['user_id'])
             user_group = models.UserGroup.objects.get(id=data['user_group_id'])
             door_auth = door.get_door_auth()
+
             if not user_group.is_member(user):
                 continue
+
             # logger.debug(user_group.name)
             if not door_auth.is_authority(user_group):
                 logger.debug('No Authority')
                 continue
+
             topic = f'pichayon.node_controller.{door.device_id}'
             command = dict(device_id=door.device_id, action='open')
             await self.nc.publish(
@@ -80,29 +92,42 @@ class ControllerServer:
                 )
         greeting_topic = 'pichayon.node_controller.greeting'
         command_topic = 'pichayon.controller.command'
+        sparkbit_topic = 'pichayon.controller.sparkbit.command'
         # logger.debug('OK')
 
         nc_id = await self.nc.subscribe(
                 greeting_topic,
-                cb=self.handle_node_controller_greeting)
+                cb=self.handle_node_controller_greeting
+                )
         cc_id = await self.nc.subscribe(
                 command_topic,
-                cb=self.handle_command)
+                cb=self.handle_command
+                )
+        spb_id = await self.nc.subscribe(
+                sparkbit_topic,
+                cb=self.handle_sparkbit_command
+                )
+
+        logger.debug('pichayon setup finish, start door controller')
+
 
     def run(self):
         self.running = True
+
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
+        sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
         # handle_expired_data_task = loop.create_task(self.process_expired_controller())
         # handle_controller_task = loop.create_task(self.handle_controller())
 
         try:
             loop.run_forever()
         except Exception as e:
-            print(e)
+            print('got:', e)
             self.running = False
+            self.sparkbit_controller.stop()
             # self.cn_report_queue.close()
             # self.processor_command_queue.close()
             self.nc.close()
