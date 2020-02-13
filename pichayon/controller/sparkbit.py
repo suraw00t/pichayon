@@ -23,19 +23,33 @@ class DoorController:
     async def put_command(self, data):
         await self.command_queue.put(data)
 
-    async def process(self):
+    async def process_command(self):
         self.running = True
-        logger.debug('Databases: {0}'.format(client.all_dbs()))
         while self.running:
-            data = await self.command_queue.get()
-            action = data.get('action', '')
+            command = await self.command_queue.get()
+            action = command.get('action', None)
+            if not action:
+                return
+
+            if action == 'list':
+                db = self.client['door-r202-test']
+                logger.debug('all document')
+                for document in db:
+                    logger.debug(document)
+
             if action == 'add_user':
                 print('add user')
                 user = get_document()
-                db = client['door-r202-test']
+                db = self.client['door-r202-test']
+                door_auth = models.DoorAuthorizations.objects.get(
+                        id=command.get('door_auth_id'))
+
+                data = get_document(
+                        door_id=command.get('door_id'),
+                        )
                 doc = db.create_document(data)
             elif action == 'delete_user':
-                db = client['door-r202-test']
+                db = self.client['door-r202-test']
                 doc = db.get_design_document('user_id')
                 doc.delete()
             print('finish cloudant process')
@@ -46,7 +60,7 @@ class DoorController:
 
         self.client.disconnect()
 
-    def get_document(user_id, start_date, end_date, **params):
+    def get_document(door_auth):
         start_date = int(datetime.datetime.timestamp(
                 start_date.date()) * 1000)
         end_date = int(datetime.datetime.timestamp(

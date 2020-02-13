@@ -118,14 +118,14 @@ class ControllerServer:
         # loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
-        sparkbit_task = loop.create_task(self.sparkbit_controller.process())
+        sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
         # handle_expired_data_task = loop.create_task(self.process_expired_controller())
         # handle_controller_task = loop.create_task(self.handle_controller())
 
         try:
             loop.run_forever()
         except Exception as e:
-            print(e)
+            print('got:', e)
             self.running = False
             self.sparkbit_controller.stop()
             # self.cn_report_queue.close()
