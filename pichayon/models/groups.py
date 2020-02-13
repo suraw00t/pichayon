@@ -10,7 +10,10 @@ class UserMember(me.EmbeddedDocument):
     added_by = me.ReferenceField('User', dbref=True)
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
-
+    start_date = me.DateTimeField(required=True,
+                                  default=datetime.datetime.now)
+    expire_date = me.DateTimeField(required=True,
+                                  default=datetime.datetime.now)
 
 class UserGroup(me.Document):
     name = me.StringField(required=True, unique=True)
