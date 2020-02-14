@@ -38,16 +38,21 @@ class UserGroup(me.Document):
 
     meta = {'collection': 'user_groups'}
 
-    def is_member(self, user):
-        member = UserGroupMember.objects(user=user, group=self).first()
-        if member:
+    def get_user_members(self):
+        return UserGroupMember.objects(group=self)
+
+    def is_user_member(self, user):
+        user_group_member = UserGroupMember.objects(
+                user=user, group=self).first()
+        if user_group_member:
             return True
 
         return False
 
     def is_supervisor(self, user):
-        member = UserGroupMember.objects(user=user, group=self).first()
-        if 'superisor' == member.role:
+        user_group_member = UserGroupMember.objects(
+                user=user, group=self).first()
+        if 'superisor' == user_group_member.role:
             return True
 
         return False

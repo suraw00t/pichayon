@@ -115,7 +115,7 @@ class ControllerServer:
         self.running = True
 
         loop = asyncio.get_event_loop()
-        # loop.set_debug(True)
+        loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
         sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())

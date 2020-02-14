@@ -4,6 +4,8 @@ import logging
 
 from cloudant.client import Cloudant
 
+from pichayon import models
+
 logger = logging.getLogger(__name__) 
 
 class DoorController:
@@ -38,16 +40,7 @@ class DoorController:
                     logger.debug(document)
 
             if action == 'add_user':
-                print('add user')
-                user = get_document()
-                db = self.client['door-r202-test']
-                door_auth = models.DoorAuthorizations.objects.get(
-                        id=command.get('door_auth_id'))
-
-                data = get_document(
-                        door_id=command.get('door_id'),
-                        )
-                doc = db.create_document(data)
+                self.add_user(command)
             elif action == 'delete_user':
                 db = self.client['door-r202-test']
                 doc = db.get_design_document('user_id')
@@ -60,7 +53,29 @@ class DoorController:
 
         self.client.disconnect()
 
-    def get_document(door_auth):
+    def add_user(self, command):
+        logger.debug('add user')
+        door = None
+        try: 
+            door = models.Door.objects.get(id=command.get('door_id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+        except Exception as e:
+            logger.exception(e)
+
+        if not door:
+            return
+
+        db = self.client[sparkbit_door.name]
+
+        data = get_document(command)
+
+        doc = db.create_document(data)
+
+
+    def get_document(command):
+        user = models.User.objects.get(id=command.get('user_id'))
+        door = models.Door.objects.get(id=command.get('door_id'))
+
         start_date = int(datetime.datetime.timestamp(
                 start_date.date()) * 1000)
         end_date = int(datetime.datetime.timestamp(
