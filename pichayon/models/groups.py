@@ -12,6 +12,8 @@ class UserGroupMember(me.Document):
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
 
+    start_date = me.DateTimeField(required=True,
+                                  default=datetime.datetime.now)
     expired_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
 
@@ -20,6 +22,7 @@ class UserGroupMember(me.Document):
                                     auto_now=True)
 
     meta = {'collection': 'user_group_members'}
+
 
 
 class UserGroup(me.Document):
