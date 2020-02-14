@@ -4,18 +4,27 @@ import datetime
 # from .users import User
 
 
-class UserMember(me.EmbeddedDocument):
+class UserGroupMember(me.Document):
     user = me.ReferenceField('User', dbref=True)
+    group = me.ReferenceField('UserGroup', dbref=True)
     role = me.StringField(required=True, default='Member')
     added_by = me.ReferenceField('User', dbref=True)
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
 
+    expired_date = me.DateTimeField(required=True,
+                                    default=datetime.datetime.now)
+
+    updated_date = me.DateTimeField(required=True,
+                                    default=datetime.datetime.now,
+                                    auto_now=True)
+
+    meta = {'collection': 'user_group_members'}
+
 
 class UserGroup(me.Document):
     name = me.StringField(required=True, unique=True)
     description = me.StringField()
-    members = me.ListField(me.EmbeddedDocumentField('UserMember'))
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
@@ -27,17 +36,19 @@ class UserGroup(me.Document):
     meta = {'collection': 'user_groups'}
 
     def is_member(self, user):
-        for member in self.members:
-            if member.user == user:
-                return True
+        member = UserGroupMember.objects(user=user, group=self).first()
+        if member:
+            return True
+
         return False
 
     def is_supervisor(self, user):
-        for member in self.members:
-            if member.user == user and 'Member' not in member.role:
-                return True
+        member = UserGroupMember.objects(user=user, group=self).first()
+        if 'superisor' == member.role:
+            return True
 
         return False
+
 
 class DoorGroup(me.Document):
     name = me.StringField(required=True, unique=True)

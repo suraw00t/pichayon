@@ -8,7 +8,7 @@ class Rrule(me.EmbeddedDocument):
     end_time = me.StringField(required=True, default='17:00')
 
 
-class GroupMember(me.EmbeddedDocument):
+class AuthorizationGroup(me.EmbeddedDocument):
     group = me.ReferenceField('UserGroup',
                               dbref=True)
     granter = me.ReferenceField('User', dbref=True)
@@ -19,44 +19,52 @@ class GroupMember(me.EmbeddedDocument):
                                     default=datetime.datetime.now)
 
     def check_rrule(self):
-        if datetime.datetime.now() < self.started_date or datetime.datetime.now() > self.expired_date:
+        if datetime.datetime.now() < self.started_date \
+                or datetime.datetime.now() > self.expired_date:
             return False
         from dateutil.rrule import rrule, DAILY
         h_start, m_start, _ = self.rrule.start_time.split(':')
-        expected_datetime = list(rrule(freq=DAILY,
-                                       dtstart=datetime.datetime.combine(datetime.date.today(),
-                                           datetime.time(0,0)),
-                                       byweekday=self.rrule.days,
-                                       count=1,
-                                       byhour=int(h_start),
-                                       byminute=int(m_start),
-                                       bysecond=0))
+        expected_datetime = list(
+                rrule(
+                    freq=DAILY,
+                    dtstart=datetime.datetime.combine(
+                        datetime.date.today(),
+                        datetime.time(0, 0)),
+                    byweekday=self.rrule.days,
+                    count=1,
+                    byhour=int(h_start),
+                    byminute=int(m_start),
+                    bysecond=0))
         h_end, m_end, _ = self.rrule.end_time.split(':')
         exp_datetime = datetime.datetime.combine(datetime.date.today(),
                                                  datetime.time(int(h_end),
                                                                int(m_end)))
         print(expected_datetime)
         for dt in expected_datetime:
-            if datetime.datetime.now() > dt and datetime.datetime.now() < exp_datetime:
+            if datetime.datetime.now() > dt \
+                    and datetime.datetime.now() < exp_datetime:
                 return True
         return False
 
 
 class DoorAuthorizations(me.Document):
     door_group = me.ReferenceField('DoorGroup', dbref=True, required=True)
-    user_group = me.ListField(me.EmbeddedDocumentField('GroupMember'))
+    authorization_groups = me.ListField(me.EmbeddedDocumentField('AuthorizationGroup'))
     status = me.StringField(required=True, default='active')
 
     meta = {'collection': 'door_authorizations'}
 
     def is_group_member(self, group):
-        for ugroup in self.user_group:
+        for ugroup in self.group_members:
             if ugroup.group == group:
                 return True
         return False
 
     def is_authority(self, group):
-        for ugroup in self.user_group:
-            if ugroup.group == group and datetime.datetime.now() < ugroup.expired_date and datetime.datetime.now() > ugroup.started_date and ugroup.check_rrule():
+        for ugroup in self.group_members:
+            if ugroup.group == group \
+                    and datetime.datetime.now() < ugroup.expired_date \
+                    and datetime.datetime.now() > ugroup.started_date \
+                    and ugroup.check_rrule():
                 return True
         return False
