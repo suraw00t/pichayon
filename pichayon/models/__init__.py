@@ -3,7 +3,7 @@ from .doors import Door
 from .door_systems import SparkbitDoorSystem
 from .oauth2 import OAuth2Token
 from .groups import UserGroup, UserGroupMember, DoorGroup
-from .door_authorizations import DoorAuthorizations, AuthorizationGroup, Rrule
+from .door_authorizations import DoorAuthorization, AuthorizationGroup, Rrule
 
 __all__ = [User,
            Door,
@@ -11,7 +11,7 @@ __all__ = [User,
            UserGroup,
            UserGroupMember,
            DoorGroup,
-           DoorAuthorizations,
+           DoorAuthorization,
            AuthorizationGroup,
            Rrule,
            SparkbitDoorSystem

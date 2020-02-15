@@ -9,8 +9,8 @@ class Rrule(me.EmbeddedDocument):
 
 
 class AuthorizationGroup(me.EmbeddedDocument):
-    group = me.ReferenceField('UserGroup',
-                              dbref=True)
+    user_group = me.ReferenceField('UserGroup',
+                                   dbref=True)
     granter = me.ReferenceField('User', dbref=True)
     rrule = me.EmbeddedDocumentField('Rrule')
     started_date = me.DateTimeField(required=True,
@@ -47,21 +47,26 @@ class AuthorizationGroup(me.EmbeddedDocument):
         return False
 
 
-class DoorAuthorizations(me.Document):
+class DoorAuthorization(me.Document):
     door_group = me.ReferenceField('DoorGroup', dbref=True, required=True)
-    authorization_groups = me.ListField(me.EmbeddedDocumentField('AuthorizationGroup'))
+    authorization_groups = me.ListField(
+            me.EmbeddedDocumentField('AuthorizationGroup'))
     status = me.StringField(required=True, default='active')
 
     meta = {'collection': 'door_authorizations'}
 
     def is_group_member(self, group):
-        for ugroup in self.group_members:
+        print('g', group.id)
+        print('ag', self.authorization_groups)
+
+        for ugroup in self.authorization_groups:
+            print(ugroup.group, group)
             if ugroup.group == group:
                 return True
         return False
 
     def is_authority(self, group):
-        for ugroup in self.group_members:
+        for ugroup in self.authorization_groups:
             if ugroup.group == group \
                     and datetime.datetime.now() < ugroup.expired_date \
                     and datetime.datetime.now() > ugroup.started_date \

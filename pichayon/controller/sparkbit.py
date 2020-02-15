@@ -13,14 +13,18 @@ class DoorController:
         self.settings = settings
 
         self.client = Cloudant(
-                settings.get('SPARKBIT_APT_USERNAME'),
-                settings.get('SPARKBIT_APT_PASSWORD'),
-                url=settings.get('SPARKBIT_APT_URL'),
+                settings.get('SPARKBIT_API_DATABASE_USERNAME'),
+                settings.get('SPARKBIT_API_DATABASE_PASSWORD'),
+                url=settings.get('SPARKBIT_API_DATABASE_URL'),
                 connect=True,
                 auto_renew=True)
         self.session = self.client.session()
         self.command_queue = asyncio.Queue()
         self.running = False
+
+        self.door_status_url = settings.get('SPARKBIT_API_DOOR_STATUS')
+        self.door_lock_url = settings.get('SPARKBIT_API_DOOR_LOCK')
+        self.door_unlock_url = settings.get('SPARKBIT_API_DOOR_UNLOCLK')
 
     async def put_command(self, data):
         await self.command_queue.put(data)
@@ -38,13 +42,10 @@ class DoorController:
                 logger.debug('all document')
                 for document in db:
                     logger.debug(document)
-
             if action == 'add_user':
                 self.add_user(command)
             elif action == 'delete_user':
-                db = self.client['door-r202-test']
-                doc = db.get_design_document('user_id')
-                doc.delete()
+                self.delete_user(command)
             print('finish cloudant process')
 
     def stop(self):
@@ -53,40 +54,60 @@ class DoorController:
 
         self.client.disconnect()
 
+    def delete_user(self, command):
+        logger.debug('delete user')
+        try:
+            door = models.Door.objects.get(id=command.get('door_id'))
+            user = models.User.objects.get(id=command.get('user_id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+        except Exception as e:
+            logger.exception(e)
+            return
+
+        db = self.client[sparkbit_door.device_id]
+        doc = db.get_design_document('user-{}'.format(user.system_id))
+        doc.delete()
+
+
     def add_user(self, command):
         logger.debug('add user')
         door = None
         try: 
             door = models.Door.objects.get(id=command.get('door_id'))
+            user = models.User.objects.get(id=command.get('user_id'))
             sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+            user_group_member = models.UserGroupMember.objects.get(user=user)
+            door_group = models.DoorGroup.objects(members=door).first()
+
+            door_auth = models.DoorAuthorizations.objects(door_group=door_group).first()
+            if not door_auth.is_group_member(user_group_member.group):
+                return
         except Exception as e:
             logger.exception(e)
 
         if not door:
             return
 
-        db = self.client[sparkbit_door.name]
+        db = self.client[sparkbit_door.device_id]
 
-        data = get_document(command)
+        data = get_document(user)
 
         doc = db.create_document(data)
 
 
-    def get_document(command):
-        user = models.User.objects.get(id=command.get('user_id'))
-        door = models.Door.objects.get(id=command.get('door_id'))
+    def get_document(user, member_group):
 
         start_date = int(datetime.datetime.timestamp(
-                start_date.date()) * 1000)
+                member_group.start_date.date()) * 1000)
         end_date = int(datetime.datetime.timestamp(
-                end_date.date()) * 1000)
+                member_group.expired_date.date()) * 1000)
         data = dict(
-                _id='user-{}'.format(user_id),
-                thFirstName=params.get('th_first_name', ''),
-                thLastName=params.get('th_last_name', ''),
-                enFirstName=params.get('en_first_name', ''),
-                enLastName=params.get('en_last_name', ''),
-                idCardNumber=params.get('id_card_number', ''),
+                _id='user-{}'.format(user.system_id),
+                thFirstName=user.first_name_th,
+                thLastName=user.last_name_th,
+                enFirstName=user.first_name,
+                enLastName=user.last_name,
+                idCardNumber=user.id_card_number,
                 calendarsEvents=[
                     dict(
                         startDate=start_date,

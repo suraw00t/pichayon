@@ -49,8 +49,11 @@ def handle_authorize_google(remote, token, user_info):
             status='active')
         user.resources[remote.name] = user_info
         email = user_info.get('email')
-        if email[:email.find('@')].isdigit():
+        check_id = email[:email.find('@')]
+        if check_id.isdigit():
             user.roles.append('student')
+            user.system_id = check_id
+
         user.save()
 
     login_user(user)

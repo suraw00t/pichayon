@@ -112,6 +112,7 @@ def authorized_engpsu():
     if not user:
         user = models.User(
                 username=userinfo.get('username'),
+                system_id=userinfo.get('username'),
                 email=userinfo.get('email'),
                 first_name=userinfo.get('first_name'),
                 last_name=userinfo.get('last_name'),

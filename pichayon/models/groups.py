@@ -38,7 +38,7 @@ class UserGroup(me.Document):
 
     meta = {'collection': 'user_groups'}
 
-    def get_user_members(self):
+    def get_user_group_members(self):
         return UserGroupMember.objects(group=self)
 
     def is_user_member(self, user):

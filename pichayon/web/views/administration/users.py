@@ -76,7 +76,7 @@ def add_role(group_id):
     user = models.User.objects.get(id=user_id)
     form = AddRoleUserForm()
     form.role.choices = [('Supervisor', 'Supervisor'), ('Member', 'Member')]
-    for member in group.members:
+    for member in group.get_user_group_members():
         if user == member.user:
             selected_member = member
             break

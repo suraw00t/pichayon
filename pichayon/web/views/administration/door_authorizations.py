@@ -20,7 +20,7 @@ module = Blueprint('administration.door_authorizations',
 def index():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
-    door_auth = models.DoorAuthorizations.objects.get(door_group=door_group)
+    door_auth = models.DoorAuthorization.objects.get(door_group=door_group)
     return render_template('/administration/authorizations/door_auth.html',
                            door_group=door_group,
                            door_auth=door_auth)
@@ -31,7 +31,7 @@ def index():
 def add_authority():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
-    door_auth = models.DoorAuthorizations.objects.get(door_group=door_group)
+    door_auth = models.DoorAuthorization.objects.get(door_group=door_group)
     form = AddAuthorityForm()
     user_group = models.UserGroup.objects()
     choices = []
@@ -57,13 +57,14 @@ def add_authority():
     rrule.end_time = str(form.end_time.data)
     g_name = form.user_group.data
     u_group = models.UserGroup.objects.get(name=g_name)
-    group_member = models.GroupMember(group=u_group,
-                                      granter=current_user._get_current_object(),
-                                      rrule=rrule,
-                                      started_date=form.started_date.data,
-                                      expired_date=form.expired_date.data
-                                      )
-    door_auth.user_group.append(group_member)
+    auth_group = models.AuthorizationGroup(
+            user_group=u_group,
+            granter=current_user._get_current_object(),
+            rrule=rrule,
+            started_date=form.started_date.data,
+            expired_date=form.expired_date.data
+            )
+    door_auth.authorization_groups.append(auth_group)
     door_auth.save()
     return redirect(url_for('administration.door_authorizations.index',
                             group_id=group_id))
@@ -75,13 +76,13 @@ def edit_authority():
     doorgroup_id = request.args.get('doorgroup_id')
     usergroup_id = request.args.get('usergroup_id')
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
-    door_auth = models.DoorAuthorizations.objects.get(door_group=door_group)
+    door_auth = models.DoorAuthorization.objects.get(door_group=door_group)
     form = AddAuthorityForm(obj=door_auth)
     user_group = models.UserGroup.objects.get(id=usergroup_id)
     selected_groupmember = None
     rrule = None
-    for group_member in door_auth.user_group:
-        if group_member.group == user_group:
+    for group_member in door_auth.authorization_groups:
+        if group_member.user_group == user_group:
             selected_groupmember = group_member
             rrule = group_member.rrule
     choices = [(str(user_group.id), user_group.name)]
@@ -100,8 +101,8 @@ def edit_authority():
                                door_group=door_group,
                                door_auth=door_auth)
 
-    for group_member in door_auth.user_group:
-        if group_member.group == user_group:
+    for group_member in door_auth.authorization_groups:
+        if group_member.user_group == user_group:
             group_member.started_date = form.started_date.data
             group_member.expired_date = form.expired_date.data
             group_member.rrule.days = [int(d) for d in form.days.data]
