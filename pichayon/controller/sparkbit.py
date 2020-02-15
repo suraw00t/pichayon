@@ -73,34 +73,50 @@ class DoorController:
         logger.debug('add user')
         door = None
         try: 
-            door = models.Door.objects.get(id=command.get('door_id'))
+            door_group = models.DoorGroup.objects.get(id=command.get('door_group_id'))
             user = models.User.objects.get(id=command.get('user_id'))
-            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
-            user_group_member = models.UserGroupMember.objects.get(user=user)
-            door_group = models.DoorGroup.objects(members=door).first()
-
-            door_auth = models.DoorAuthorizations.objects(door_group=door_group).first()
-            if not door_auth.is_group_member(user_group_member.group):
-                return
+            
+            door_auth = models.DoorAuthorization.objects.get(
+                    door_group=door_group)
+            
         except Exception as e:
             logger.exception(e)
 
-        if not door:
-            return
+        has_auth = False
+        user_group = None
 
-        db = self.client[sparkbit_door.device_id]
+        for auth_group in door_auth.authorization_groups:
+            if auth_group.user_group.is_user_member(user):
+                has_auth = True
+                user_group = models.UserGroupMember.objects.get(
+                        user=user,
+                        group=auth_group.user_group)
+                break
 
-        data = get_document(user)
+        sparkbit_doors = []
+        if has_auth:
+            for door in door_group.members:
+                sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+                sparkbit_doors.append(sparkbit_door)
 
-        doc = db.create_document(data)
+        for sb_door in sparkbit_doors:
+            db = self.client[sb_door.device_id]
+            logger.debug(f'db: {db} {sb_door.device_id}')
+            logger.debug('user-{}'.format(user.system_id))
+            if 'user-{}'.format(user.system_id) in db:
+
+                continue
+
+            data = self.get_document(user, user_group)
+            doc = db.create_document(data)
 
 
-    def get_document(user, member_group):
+    def get_document(self, user, member_group):
 
-        start_date = int(datetime.datetime.timestamp(
-                member_group.start_date.date()) * 1000)
-        end_date = int(datetime.datetime.timestamp(
-                member_group.expired_date.date()) * 1000)
+        started_date = int(datetime.datetime.timestamp(
+                member_group.started_date) * 1000)
+        ended_date = int(datetime.datetime.timestamp(
+                member_group.expired_date) * 1000)
         data = dict(
                 _id='user-{}'.format(user.system_id),
                 thFirstName=user.first_name_th,
@@ -110,9 +126,9 @@ class DoorController:
                 idCardNumber=user.id_card_number,
                 calendarsEvents=[
                     dict(
-                        startDate=start_date,
+                        startDate=started_date,
                         duration=86400000,
-                        endDate=end_date,
+                        endDate=ended_date,
                         rRule=dict(
                             type='text',
                             value='every day'

@@ -25,7 +25,7 @@
   </div>
 
   <div class="ui container" style="margin-top: 1em;">
-  {% set members = group.get_user_members() %}
+  {% set members = group.get_user_group_members() %}
   {% if members | count > 0 %}
   <table class="ui selectable celled table">
     <thead>

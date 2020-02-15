@@ -12,8 +12,8 @@ class UserGroupMember(me.Document):
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
 
-    start_date = me.DateTimeField(required=True,
-                                  default=datetime.datetime.now)
+    started_date = me.DateTimeField(required=True,
+                                    default=datetime.datetime.now)
     expired_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
 
