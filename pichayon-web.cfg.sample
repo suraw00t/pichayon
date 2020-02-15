@@ -1,4 +1,5 @@
 SECRET_KEY = 'pichayon-secretkey-web' # change it when deploy web
+PICHAYON_MESSAGE_NATS_HOST = 'localhost:4222'
 
 OAUTH_CLIENT_CACHE_TYPE = 'simple'
 AUTHLIB_CACHE_THRESHOLD = 500
@@ -12,6 +13,11 @@ PRINCIPAL_AUTHORIZE_URL = 'http://localhost:5000/oauth2/authorize'
 PRINCIPAL_API_BASE_URL = 'http://localhost:5000/api/'
 PRINCIPAL_CLIENT_KWARGS = {'scope': ['email', 'profile']}
 
-# change to pichayon api
-PICHAYON_API_BASE_URL = 'http://localhost:8000/v1/'
-PICHAYON_API_SECRET = 'pichayon-secretkey-api'
+
+SPARKBIT_API_DATABASE_USERNAME = ''
+SPARKBIT_API_DATABASE_PASSWORD = ''
+SPARKBIT_API_DATABASE_URL = ''
+
+SPARKBIT_API_DOOR_STATUS = ''
+SPARKBIT_API_DOOR_LOCK = ''
+SPARKBIT_API_DOOR_UNLOCK = ''
