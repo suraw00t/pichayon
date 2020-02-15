@@ -7,3 +7,5 @@ from .users import (UserForm,
                     EditForm,
                     AddingRoomForm)
 from .authorizations import AddAuthorityForm
+
+from .sparkbit import SparkbitDoorForm

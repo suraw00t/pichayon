@@ -1,0 +1,46 @@
+{% extends '/administration/sparkbit/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block dashboard_title %}
+  {% if 'edit' in request.path %}
+    Edit: {{ form.name.data }}
+  {% else %}
+    Create New Door
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+  <i class="right angle icon divider"></i>
+  {% if 'edit' in request.path %}
+    <div class="active section">Edit: {{ form.name.data }}</div>
+  {% else %}
+    <div class="active section">Create New Door</div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <form method="POST" class="ui form">
+      {{ form.csrf_token }}
+      {{ renderer.render_field(form.name) }}
+      {{ renderer.render_field(form.description) }}
+      {{ renderer.render_select(form.door) }}
+      {{ renderer.render_field(form.device_id) }}
+      {{ renderer.render_field(form.host) }}
+      <button type="submit" class="ui button primary">
+        {% if 'edit' in request.path %}
+          Edit
+        {% else %}
+          Create
+        {% endif %}
+      </button>
+    </form>
+  </div>
+{% endblock %}
+{% block additional_js %}
+  {{ super() }}
+  <script type="text/javascript">
+  $('.selection.dropdown').dropdown();
+  </script>
+{% endblock %}

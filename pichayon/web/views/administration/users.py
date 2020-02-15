@@ -45,7 +45,7 @@ def add(group_id):
     form = AddingUserForm()
     choices = []
     for user in users:
-        if not group.is_member(user):
+        if not group.is_user_member(user):
             choices.append((user.username, user.username))
     choices.sort()
     form.username.choices = choices
@@ -55,14 +55,15 @@ def add(group_id):
                                group=group)
     for username in form.username.data:
         user = models.User.objects.get(username=username)
-        if group.is_member(user):
+        if group.is_user_member(user):
             continue
-        member = models.UserMember(user=user,
-                                   added_by=current_user._get_current_object(),
-                                   added_date=datetime.datetime.now())
+        member = models.UserGroupMember(
+                group=group,
+                user=user,
+                added_by=current_user._get_current_object(),
+                added_date=datetime.datetime.now())
 
-        group.members.append(member)
-        group.save()
+        member.save()
 
     return redirect(url_for('administration.users.list', group_id=group_id))
 

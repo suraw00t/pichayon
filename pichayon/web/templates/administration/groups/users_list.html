@@ -25,7 +25,8 @@
   </div>
 
   <div class="ui container" style="margin-top: 1em;">
-  {% if group.members and group.members | count > 0 %}
+  {% set members = group.get_user_members() %}
+  {% if members | count > 0 %}
   <table class="ui selectable celled table">
     <thead>
       <tr>
@@ -38,9 +39,9 @@
 
       </tr>
     </thead>
-
+    
     <tbody>
-      {% for member in group.members |sort(attribute='user.username') %}
+      {% for member in members | sort(attribute='user.username') %}
       <tr>
         <td>{{ member.user.username }}</td>
 	<td>{{ member.user.first_name }} {{ member.user.last_name}}</td>

@@ -24,7 +24,7 @@ def index():
     cu_groups = list()
     user_group = dict()
     for group in groups:
-        if group.is_member(current_user._get_current_object()):
+        if group.is_user_member(current_user._get_current_object()):
             cu_groups.append(group)
 
     for door_auth in door_auths:
