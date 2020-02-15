@@ -27,7 +27,6 @@
       {{ renderer.render_field(form.description) }}
       {{ renderer.render_select(form.door) }}
       {{ renderer.render_field(form.device_id) }}
-      {{ renderer.render_field(form.host) }}
       <button type="submit" class="ui button primary">
         {% if 'edit' in request.path %}
           Edit

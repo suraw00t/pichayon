@@ -33,7 +33,6 @@
         <th>Door</th>
         <th>Name</th>
         <th>Description</th>
-        <th>Host</th>
         <th>Device ID</th>
         <th>Creator</th>
         <th>Updated Date</th>
@@ -48,7 +47,6 @@
 	      <td><a href="{{ url_for('administration.doors.index') }}">{{ sb_door.door.name }}</a></td>
 	      <td>{{ sb_door.name }}</td>
         <td>{{ sb_door.description }}</td>
-        <td>{{ sb_door.host }}</td>
         <td>{{ sb_door.device_id }}</td>
         <td>{{ sb_door.creator.username }}</td>
         <td>{{ sb_door.updated_date.ctime() }}</td>

@@ -10,7 +10,6 @@ class SparkbitDoorSystem(me.Document):
     description = me.StringField()
 
     device_id = me.StringField(required=True)
-    host = me.StringField(required=True)
     creator = me.ReferenceField('User', required=True)
 
     status = me.StringField(default='active')

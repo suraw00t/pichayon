@@ -19,7 +19,3 @@ class SparkbitDoorForm(FlaskForm):
             'Device ID',
             validators=[validators.InputRequired()]
             )
-    host = fields.StringField(
-            'Host',
-            validators=[validators.InputRequired()]
-            )
