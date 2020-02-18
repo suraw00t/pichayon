@@ -54,6 +54,7 @@ services:
         networks:
             - default
         restart: always
+        extra_hosts:
         environment:
             PICHAYON_SETTINGS: /app/pichayon-production.cfg
         command: pichayon-controller

@@ -16,6 +16,7 @@ marshmallow
 python-dateutil
 flask-mongoengine
 loginpass
+requests
 
 # Spartbit smart door lock
 cloudant

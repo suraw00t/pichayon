@@ -1,6 +1,7 @@
 import datetime
 import asyncio
 import logging
+import requests
 
 from cloudant.client import Cloudant
 
@@ -46,6 +47,8 @@ class DoorController:
                 self.add_user(command)
             elif action == 'delete_user':
                 self.delete_user(command)
+            elif action == 'open_door':
+                self.open_door(command)
             print('finish cloudant process')
 
     def stop(self):
@@ -67,6 +70,32 @@ class DoorController:
         db = self.client[sparkbit_door.device_id]
         doc = db.get_design_document('user-{}'.format(user.system_id))
         doc.delete()
+
+    
+    def open_door(self, command):
+        try: 
+            door = models.Door.objects.get(id=command.get('door_id'))
+            user = models.User.objects.get(id=command.get('user_id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+
+            if not sparkbit_door:
+                logger.debug(f'door id {command.get("door_id")} is not sparkbit member')
+
+            
+        except Exception as e:
+            logger.exception(e)
+
+        db = self.client[sparkbit_door.device_id]
+        if not 'user-{}'.format(user.system_id) in db:
+            logger.debug(f'user {user.system_id} is not in db')
+            return
+
+        response = requests.get(self.door_lock_url.format(sparkbit_door.device_id))
+        if response.status_code != 200:
+            logger.debug(f'door {user.system_id} is not open')
+            return
+        
+        logger.debug(f'door {user.system_id} is open')
 
 
     def add_user(self, command):

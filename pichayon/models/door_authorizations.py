@@ -56,9 +56,6 @@ class DoorAuthorization(me.Document):
     meta = {'collection': 'door_authorizations'}
 
     def is_group_member(self, group):
-        print('g', group.id)
-        print('ag', self.authorization_groups)
-
         for ugroup in self.authorization_groups:
             print(ugroup.group, group)
             if ugroup.group == group:
