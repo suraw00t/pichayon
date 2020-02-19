@@ -90,7 +90,7 @@ class DoorController:
             logger.debug(f'user {user.system_id} is not in db')
             return
 
-        response = requests.get(self.door_lock_url.format(sparkbit_door.device_id))
+        response = requests.get(self.door_unlock_url.format(sparkbit_door.device_id), verify=False)
         if response.status_code != 200:
             logger.debug(f'door {user.system_id} is not open')
             return
