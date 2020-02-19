@@ -64,7 +64,7 @@ def create_doorgroup():
     form.populate_obj(door_group)
 
     door_group.save()
-    door_auth = models.DoorAuthorizations(door_group=door_group)
+    door_auth = models.DoorAuthorization(door_group=door_group)
     door_auth.save()
     return redirect(url_for('administration.doors.index'))
 

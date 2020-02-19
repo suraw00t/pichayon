@@ -64,7 +64,7 @@ class DoorAuthorization(me.Document):
 
     def is_authority(self, group):
         for ugroup in self.authorization_groups:
-            if ugroup.group == group \
+            if ugroup.user_group == group \
                     and datetime.datetime.now() < ugroup.expired_date \
                     and datetime.datetime.now() > ugroup.started_date \
                     and ugroup.check_rrule():

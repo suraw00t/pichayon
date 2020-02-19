@@ -18,7 +18,7 @@ def index():
     if not current_user.gave_informations:
         return redirect(url_for('accounts.edit_profile'))
 
-    door_auths = models.DoorAuthorizations.objects()
+    door_auths = models.DoorAuthorization.objects()
     groups = models.UserGroup.objects()
     door_groups = list()
     cu_groups = list()
