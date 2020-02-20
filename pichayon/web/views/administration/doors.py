@@ -37,6 +37,7 @@ def index():
 @acl.allows.requires(acl.is_admin)
 def create():
     form = DoorForm()
+    form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
     if models.Door.objects(device_id=form.device_id.data).first():
@@ -54,7 +55,16 @@ def create():
     if form.have_passcode.data:
         door.passcode = generate_passcode()
     door.save()
-
+    
+    if form.type.data == 'sparkbit':
+        sparkbit_system = models.SparkbitDoorSystem()
+        form.populate_obj(sparkbit_system)
+        sparkbit_system.door = door
+        sparkbit_system.name = f'{door_group.name}-{form.name.data}'
+        sparkbit_system.status = 'active'
+        sparkbit_system.creator = current_user._get_current_object()
+        sparkbit_system.save()
+    
     door_group.members.append(door)
     door_group.save()
     return redirect(url_for('administration.doors.doors_list',
@@ -77,6 +87,7 @@ def edit(door_id):
     door = models.Door.objects.get(id=door_id)
 
     form = DoorForm(obj=door)
+    form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
 
     if not form.validate_on_submit():
         if len(door.passcode) == 6:
@@ -90,7 +101,7 @@ def edit(door_id):
         if len(door.passcode) == 6:
             if not form.have_passcode.data:
                 door.passcode = ''
-        else:
+        elif form.have_passcode.data:
             door.passcode = generate_passcode()
         door.save()
         return redirect(url_for('administration.doors.doors_list',
@@ -105,9 +116,16 @@ def edit(door_id):
     if len(door.passcode) == 6:
         if not form.have_passcode.data:
             door.passcode = ''
-    else:
+    elif form.have_passcode.data:
         door.passcode = generate_passcode()
     door.save()
+    if form.type.data == 'sparkbit':
+        sparkbit_system = models.SparkbitDoorSystem.objects(door=door).first()
+        form.populate_obj(sparkbit_system)
+        sparkbit_system.name = f'{door_group.name}-{form.name.data}'
+        sparkbit_system.status = 'active'
+        sparkbit_system.creator = current_user._get_current_object()
+        sparkbit_system.save()
 
     return redirect(url_for('administration.doors.doors_list',
                             doorgroup_id=group_id))
@@ -119,10 +137,15 @@ def delete(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
     selected_door = models.Door.objects.get(id=door_id)
+    if selected_door.type == 'sparkbit':
+        sparkbit_system = models.SparkbitDoorSystem.objects(door=selected_door).first()
+        if sparkbit_system:
+            sparkbit_system.delete()
     door_group.members.remove(selected_door)
     selected_door.delete()
     door_group.save()
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('administration.doors.doors_list',
+                            doorgroup_id=group_id))
 
 
 @module.route('/<door_id>/revoke_passcode')
