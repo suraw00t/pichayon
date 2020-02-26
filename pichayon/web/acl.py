@@ -10,6 +10,8 @@ allows = Allows(identity_loader=lambda: current_user)
 def is_admin(ident, request):
     return 'admin' in ident.roles
 
+def is_supervisor(ident, request):
+    return 'supervisor' in ident.roles
 
 def is_developer(ident, request):
     return 'developer' in ident.roles
@@ -17,6 +19,10 @@ def is_developer(ident, request):
 
 def is_staff(ident, request):
     return 'staff' in ident.roles
+
+def is_admin_and_supervisor(ident, request):
+    return 'admin' in ident.roles or 'supervisor' in ident.roles
+
 
 
 def init_acl(app):

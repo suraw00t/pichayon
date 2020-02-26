@@ -57,8 +57,13 @@ class DoorAuthorization(me.Document):
 
     def is_group_member(self, group):
         for ugroup in self.authorization_groups:
-            print(ugroup.group, group)
-            if ugroup.group == group:
+            if ugroup.user_group == group:
+                return True
+        return False
+
+    def is_user_member(self, user):
+        for ugroup in self.authorization_groups:
+            if ugroup.user_group.is_user_member(user):
                 return True
         return False
 

@@ -74,6 +74,7 @@ class DoorController:
     
     def open_door(self, command):
         try: 
+            logger.debug('open door')
             door = models.Door.objects.get(id=command.get('door_id'))
             user = models.User.objects.get(id=command.get('user_id'))
             sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)

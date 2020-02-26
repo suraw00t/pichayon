@@ -43,11 +43,13 @@ def index():
 def open_door():
     door_id = request.form.get('door_id')
     user_group_id = request.form.get('user_group_id')
+    door = models.Door.objects.get(id=door_id)
     # print(door_id)
     loop = g.get_loop()
     data = json.dumps({
             'action': 'open',
             'door_id': door_id,
+            'type': door.type,
             'user_group_id': user_group_id,
             'user_id': str(current_user._get_current_object().id)
         })

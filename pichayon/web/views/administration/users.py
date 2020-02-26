@@ -62,7 +62,8 @@ def add(group_id):
                 user=user,
                 added_by=current_user._get_current_object(),
                 added_date=datetime.datetime.now())
-
+        if 'supervisor' in user.roles:
+            member.role = 'supervisor'
         member.save()
 
     return redirect(url_for('administration.users.list', group_id=group_id))
@@ -75,7 +76,7 @@ def add_role(group_id):
     user_id = request.args.get('user_id')
     user = models.User.objects.get(id=user_id)
     form = AddRoleUserForm()
-    form.role.choices = [('Supervisor', 'Supervisor'), ('Member', 'Member')]
+    form.role.choices = [('supervisor', 'Supervisor'), ('member', 'Member')]
     for member in group.get_user_group_members():
         if user == member.user:
             selected_member = member
@@ -86,10 +87,13 @@ def add_role(group_id):
         return render_template('administration/users/add_role.html',
                                group=group,
                                form=form)
-    for member in group.members:
-        if user == member.user:
-            member.role = form.role.data
-    group.save()
+    user_group = models.UserGroupMember.objects.get(user=user, group=group)
+    user_group.role = form.role.data
+    user_group.save()
+    if 'Supervisor' in form.role.data and 'Supervisor' not in user.roles:
+        user.roles.append('supervisor')
+        user.save()
+
 
     return redirect(url_for('administration.users.list', group_id=group_id))
 
@@ -113,7 +117,7 @@ def delete(group_id):
 def edit(user_id):
     user = models.User.objects.get(id=user_id)
     form = EditForm(obj=user)
-    form.roles.choices = [('admin', 'Admin'), ('teacher', 'Teacher'), ('student', 'Student')]
+    form.roles.choices = [('admin', 'Admin'), ('supervisor', 'Supervisor'), ('student', 'Student')]
     if not form.validate_on_submit():
         form.roles.data = user.roles[-1]
         return render_template('administration/users/add_rfid.html',

@@ -9,6 +9,8 @@ from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import DoorForm, DoorGroupForm
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_allows import Or
+
 import string
 import random
 import json
@@ -26,15 +28,22 @@ def generate_passcode():
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def index():
     door_groups = models.DoorGroup.objects(status='active').order_by('name')
+    door_groups_sup = list()
+    if 'admin' not in current_user._get_current_object().roles:
+        door_auths = models.DoorAuthorization.objects()
+        for door_auth in door_auths:
+            if door_auth.is_user_member(current_user._get_current_object()):
+                door_groups_sup.append(door_auth.door_group)
+        door_groups = door_groups_sup
     return render_template('/administration/doors/index.html',
                            door_groups=door_groups)
 
 
 @module.route('/create', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def create():
     form = DoorForm()
     form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
@@ -72,7 +81,7 @@ def create():
 
 
 @module.route('/<doorgroup_id>/doors_list', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def doors_list(doorgroup_id):
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
     return render_template('/administration/doors/door_lists.html',
@@ -80,10 +89,11 @@ def doors_list(doorgroup_id):
 
 
 @module.route('/<door_id>/edit', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def edit(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
+
     door = models.Door.objects.get(id=door_id)
 
     form = DoorForm(obj=door)
@@ -132,7 +142,7 @@ def edit(door_id):
 
 
 @module.route('/<door_id>/delete')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def delete(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -149,7 +159,7 @@ def delete(door_id):
 
 
 @module.route('/<door_id>/revoke_passcode')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def revoke_passcode(door_id):
     door = models.Door.objects.get(id=door_id)
     door.passcode = generate_passcode()

@@ -27,7 +27,7 @@ class Door(me.Document):
         door_auth = None
         for group in door_group:
             if group.is_member(self):
-                door_auth = models.DoorAuthorizations.objects(door_group=group).first()
+                door_auth = models.DoorAuthorization.objects(door_group=group).first()
                 break
         if door_auth:
             return door_auth
