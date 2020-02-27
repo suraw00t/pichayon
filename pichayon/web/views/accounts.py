@@ -125,7 +125,7 @@ def authorized_engpsu():
         if userinfo['username'].isdigit():
             user.roles.append('student')
         else:
-            user.roles.append('staff')
+            user.roles.append('supervisor')
             user.gave_informations = True
 
         user.save()

@@ -10,13 +10,12 @@
 </div>
 
 <a class="item" href="{{ url_for('dashboard.index') }}"><i class="icon dashboard"></i>Dashboard</a>
-{% if current_user.has_roles(['lecturer', 'admin']) %}
+{% if current_user.has_roles(['supervisor', 'admin']) %}
   <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Doors</a>
   <a class="item" href="{{ url_for('administration.groups.index') }}"><i class="group closed icon"></i>User Groups</a>
+{% endif %}
+{% if current_user.has_roles(['admin']) %}
   <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>Users</a>
-{% else %}
-  {# for user
-  <a class="item" href="{{ url_for('accounts.index') }}"><i class="icon user"></i>Account</a> #}
 {% endif %}
 <a class="item" href="{{ url_for('accounts.index') }}"><i class="icon user"></i>Account</a>
 <a class="item" href="{{ url_for('accounts.logout') }}"><i class="icon sign out"></i>Logout</a>

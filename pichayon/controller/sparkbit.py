@@ -25,7 +25,7 @@ class DoorController:
 
         self.door_status_url = settings.get('SPARKBIT_API_DOOR_STATUS')
         self.door_lock_url = settings.get('SPARKBIT_API_DOOR_LOCK')
-        self.door_unlock_url = settings.get('SPARKBIT_API_DOOR_UNLOCLK')
+        self.door_unlock_url = settings.get('SPARKBIT_API_DOOR_UNLOCK')
 
     async def put_command(self, data):
         await self.command_queue.put(data)
@@ -74,6 +74,7 @@ class DoorController:
     
     def open_door(self, command):
         try: 
+            logger.debug('open door')
             door = models.Door.objects.get(id=command.get('door_id'))
             user = models.User.objects.get(id=command.get('user_id'))
             sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
@@ -90,12 +91,19 @@ class DoorController:
             logger.debug(f'user {user.system_id} is not in db')
             return
 
-        response = requests.get(self.door_unlock_url.format(sparkbit_door.device_id), verify=False)
-        if response.status_code != 200:
-            logger.debug(f'door {user.system_id} is not open')
-            return
+        try:
+            response = requests.post(
+                    self.door_unlock_url.format(
+                        sparkbit_door.device_id.replace('door-', '')),
+                    verify=False)
+            logger.debug(response.status_code)
+            if response.status_code != 200:
+                logger.debug(f'door {user.system_id} is not open')
+                return
         
-        logger.debug(f'door {user.system_id} is open')
+            logger.debug(f'door {user.system_id} is open')
+        except Exception as e:
+            logger.debug(e)
 
 
     def add_user(self, command):

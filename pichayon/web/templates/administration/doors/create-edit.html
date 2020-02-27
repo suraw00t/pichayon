@@ -28,8 +28,16 @@
       {{ renderer.render_field(form.name) }}
   </div>
 	<div class="ten wide field">
+  {% if 'edit' in request.path %}
+      {{ renderer.render_select_disabled(form.type) }}
+  {% else%}
+      {{ renderer.render_select(form.type) }}
+  {% endif %}
+  </div>
+	<div class="ten wide field">
       {{ renderer.render_field(form.device_id) }}
   </div>
+
   <div class="twelve wide field">
       {{ renderer.render_field(form.description) }}
   </div>
@@ -38,6 +46,7 @@
   </div>
   <div class="twelve wide field">
       {{ renderer.render_checkbox(form.have_passcode) }}
+      {{ renderer.render_checkbox(form.have_web_open) }}
   </div>
   {% if device_id_error == 'True' %}
     <div class="ui error message">
@@ -56,3 +65,10 @@
     </form>
   </div>
 {% endblock %}
+{% block additional_js %}
+  {{ super() }}
+  <script type="text/javascript">
+  $('.selection.dropdown').dropdown();
+  </script>
+{% endblock %}
+

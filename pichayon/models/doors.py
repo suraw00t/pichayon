@@ -11,7 +11,7 @@ class Door(me.Document):
     # have_passcode = me.BooleanField(default=False, required=True)
     passcode = me.StringField(default='')
     creator = me.ReferenceField('User', dbref=True)
-
+    have_web_open = me.BooleanField(default=False, required=True)
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
     updated_date = me.DateTimeField(required=True,
@@ -27,7 +27,7 @@ class Door(me.Document):
         door_auth = None
         for group in door_group:
             if group.is_member(self):
-                door_auth = models.DoorAuthorizations.objects(door_group=group).first()
+                door_auth = models.DoorAuthorization.objects(door_group=group).first()
                 break
         if door_auth:
             return door_auth

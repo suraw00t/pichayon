@@ -26,8 +26,10 @@
     <thead>
       <tr>
         <th>Door Name</th>
+        <th>Door Type</th>
         <th>Device ID</th>
         <th>Description</th>
+        <th>Open via web</th>
         <th>Passcode</th>
         <th>Camera</th>
         <th>Updated Date</th>
@@ -40,8 +42,14 @@
 
       <tr>
 	      <td><a href="{{url_for('administration.doors.edit', door_id=door.id, group_id=door_group.id)}}">{{ door.name }}</a></td>
+        <td>{{ door.type }}</td>
         <td>{{ door.device_id }}</td>
         <td>{{ door.description }}</td>
+        {% if door.have_web_open %}
+        <td><i class="large check icon green"></i></td>
+        {% else %}
+        <td><i class="large delete icon red"></i></td>
+        {% endif %}
         {% if door.passcode | length > 0%}
         <td><i class="large check icon green"></i></td>
         {% else %}

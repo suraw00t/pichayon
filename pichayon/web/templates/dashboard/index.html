@@ -5,8 +5,8 @@
 <div class="ui grid">
 
   {% for door_group in door_groups %}
-  <div class="four wide column">
-  <div class="ui cards">
+  <div class="four wide computer column sixteen wide mobile column">
+  <div class="ui centered cards">
     <div class="card">
       <div class="content">
          <!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">-->
@@ -22,6 +22,8 @@
     </div>
       <div class="extra content">
         {% for door in door_group.members %}
+
+
           Door: {{ door.name }}
           {% if door.passcode|length == 6%}
             <div>
@@ -31,10 +33,17 @@
             {% endif %}
            </div>
           {% endif %}
+          {% if not door.have_web_open %}
+          <div class="opendoor ui two buttons">
+            <div id="{{door.id}}/{{user_group[door_group.id].id}}" class="ui basic disabled button">Opening via Web was disabled</div>
+          </div>
+        {% else%}
           <div class="opendoor ui two buttons">
             <div id="{{door.id}}/{{user_group[door_group.id].id}}" class="ui basic green button">Open</div>
-            <!-- <div class="ui basic red button">Decline</div>-->
           </div>
+
+
+            {% endif %}
         {% if loop.index != door_group.members| length%}
           <div class="ui divider"></div>
         {% endif %}

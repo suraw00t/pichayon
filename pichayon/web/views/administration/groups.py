@@ -5,6 +5,7 @@ from flask import (Blueprint,
                    g)
 
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_allows import Or
 from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
@@ -15,7 +16,7 @@ module = Blueprint('administration.groups',
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def index():
     groups = models.UserGroup.objects(status='active').order_by('name')
     return render_template('/administration/groups/index.html',
@@ -23,7 +24,7 @@ def index():
 
 
 @module.route('/create_usergroup', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def create_usergroup():
     form = UserGroupForm()
     if not form.validate_on_submit():
@@ -38,7 +39,7 @@ def create_usergroup():
 
 
 @module.route('/<group_id>/edit', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def edit_usergroup(group_id):
     group = models.UserGroup.objects.get(id=group_id)
 
@@ -54,7 +55,7 @@ def edit_usergroup(group_id):
 
 
 @module.route('/create_doorgroup', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def create_doorgroup():
     form = DoorGroupForm()
     if not form.validate_on_submit():
@@ -64,13 +65,13 @@ def create_doorgroup():
     form.populate_obj(door_group)
 
     door_group.save()
-    door_auth = models.DoorAuthorizations(door_group=door_group)
+    door_auth = models.DoorAuthorization(door_group=door_group)
     door_auth.save()
     return redirect(url_for('administration.doors.index'))
 
 
 @module.route('/<doorgroup_id>/edit_doorgroup', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def edit_doorgroup(doorgroup_id):
     group = models.DoorGroup.objects.get(id=doorgroup_id)
 
@@ -86,7 +87,7 @@ def edit_doorgroup(doorgroup_id):
 
 
 @module.route('user_group/<group_id>/delete')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def delete_usergroup(group_id):
     selected_group = models.UserGroup.objects.get(id=group_id)
     door_auths = models.DoorAuthorizations.objects()
@@ -99,7 +100,7 @@ def delete_usergroup(group_id):
 
 
 @module.route('door_group/<doorgroup_id>/delete')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def delete_doorgroup(doorgroup_id):
     group = models.DoorGroup.objects.get(id=doorgroup_id)
     # group.status = 'delete'

@@ -56,10 +56,12 @@ def edit(sparkbit_door_id):
     form = SparkbitDoorForm(obj=sparkbit_door) 
     form.door.choices = [(str(door.id), door.name) for door in doors]
 
-    if len(request.data) == 0:
+    if request.method == 'GET':
         form.door.data = str(sparkbit_door.id)
 
     if not form.validate_on_submit():
+        print(form.errors)
+        print(form.door.choices)
         return render_template('/administration/sparkbit/create-edit.html',
                                form=form
                                )

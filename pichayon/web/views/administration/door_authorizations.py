@@ -9,6 +9,8 @@ from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import AddAuthorityForm
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_allows import Or
+
 import datetime
 module = Blueprint('administration.door_authorizations',
                    __name__,
@@ -16,7 +18,7 @@ module = Blueprint('administration.door_authorizations',
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def index():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -27,7 +29,7 @@ def index():
 
 
 @module.route('add_authority', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def add_authority():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -71,7 +73,7 @@ def add_authority():
 
 
 @module.route('edit_authority', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def edit_authority():
     doorgroup_id = request.args.get('doorgroup_id')
     usergroup_id = request.args.get('usergroup_id')
@@ -114,16 +116,16 @@ def edit_authority():
 
 
 @module.route('delete_authority', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def delete_authority():
     doorgroup_id = request.args.get('doorgroup_id')
     usergroup_id = request.args.get('usergroup_id')
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
-    door_auth = models.DoorAuthorizations.objects.get(door_group=door_group)
+    door_auth = models.DoorAuthorization.objects.get(door_group=door_group)
     user_group = models.UserGroup.objects.get(id=usergroup_id)
-    for ugroup in door_auth.user_group:
-        if ugroup.group == user_group:
-            door_auth.user_group.remove(ugroup)
+    for ugroup in door_auth.authorization_groups:
+        if ugroup.user_group == user_group:
+            door_auth.authorization_groups.remove(ugroup)
             door_auth.save()
     return redirect(url_for('administration.door_authorizations.index',
                             group_id=doorgroup_id))
