@@ -127,6 +127,7 @@ def authorized_engpsu():
         else:
             user.roles.append('supervisor')
             user.gave_informations = True
+            user.system_id = userinfo.get('staff_id', user.system_id)
 
         user.save()
 
