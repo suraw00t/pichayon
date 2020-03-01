@@ -40,4 +40,5 @@ class AddingRoomForm(FlaskForm):
 class EditForm(FlaskForm):
     roles = fields.SelectField('Role')
     rfid = fields.TextField('RFID')
+    system_id = fields.TextField('System ID')
 
