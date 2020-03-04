@@ -9,6 +9,7 @@ from flask_allows import Or
 from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
+import datetime
 
 module = Blueprint('administration.groups',
                    __name__,
@@ -32,9 +33,18 @@ def create_usergroup():
                                form=form)
     user_group = models.UserGroup()
     form.populate_obj(user_group)
+    logs = models.HistoryLog(
+                action = 'create',
+                message = f'{current_user._get_current_object().username} has created a user group: {user_group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'user_group': user_group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
 
     user_group.save()
-
+    logs.save()
     return redirect(url_for('administration.groups.index'))
 
 
@@ -49,7 +59,17 @@ def edit_usergroup(group_id):
                                form=form)
 
     form.populate_obj(group)
+    logs = models.HistoryLog(
+                action = 'update',
+                message = f'{current_user._get_current_object().username} has updated a user group: {group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'user_group': group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
     group.save()
+    logs.save()
 
     return redirect(url_for('administration.groups.index'))
 
@@ -66,6 +86,16 @@ def create_doorgroup():
 
     door_group.save()
     door_auth = models.DoorAuthorization(door_group=door_group)
+    logs = models.HistoryLog(
+                action = 'create',
+                message = f'{current_user._get_current_object().username} has created a door group: {door_group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'door_group': door_group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
+    logs.save()
     door_auth.save()
     return redirect(url_for('administration.doors.index'))
 
@@ -82,6 +112,16 @@ def edit_doorgroup(doorgroup_id):
 
     form.populate_obj(group)
     group.save()
+    logs = models.HistoryLog(
+                action = 'update',
+                message = f'{current_user._get_current_object().username} has updated a door group: {group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'door_group': group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
+    logs.save()
 
     return redirect(url_for('administration.doors.index'))
 
@@ -90,11 +130,21 @@ def edit_doorgroup(doorgroup_id):
 @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def delete_usergroup(group_id):
     selected_group = models.UserGroup.objects.get(id=group_id)
-    door_auths = models.DoorAuthorizations.objects()
+    door_auths = models.DoorAuthorization.objects()
     for door_auth in door_auths:
         door_auth.remove_member(selected_group)
     # group.status = 'delete'
     selected_group.delete()
+    logs = models.HistoryLog(
+                action = 'delete',
+                message = f'{current_user._get_current_object().username} has deleted a user group: {selected_group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'user_group': selected_group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
+    logs.save()
 
     return redirect(url_for('administration.groups.index'))
 
@@ -104,8 +154,18 @@ def delete_usergroup(group_id):
 def delete_doorgroup(doorgroup_id):
     group = models.DoorGroup.objects.get(id=doorgroup_id)
     # group.status = 'delete'
-    door_auth = models.DoorAuthorizations.objects.get(door_group=group)
+    door_auth = models.DoorAuthorization.objects.get(door_group=group)
     door_auth.delete()
     group.delete()
+    logs = models.HistoryLog(
+                action = 'delete',
+                message = f'{current_user._get_current_object().username} has deleted a door group: {group.name}',
+                details = {
+                    'user': current_user._get_current_object().username,
+                    'door_group': group.name,
+                    },
+                recorded_date = datetime.datetime.now()
+            )
+    logs.save()
 
     return redirect(url_for('administration.doors.index'))

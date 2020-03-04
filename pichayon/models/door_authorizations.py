@@ -75,3 +75,9 @@ class DoorAuthorization(me.Document):
                     and ugroup.check_rrule():
                 return True
         return False
+
+    def remove_member(self, user_group):
+        for author_group in self.authorization_groups:
+            if author_group.user_group == user_group:
+                self.authorization_groups.remove(author_group)
+                break

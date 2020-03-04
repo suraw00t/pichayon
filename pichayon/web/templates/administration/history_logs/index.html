@@ -1,0 +1,54 @@
+{% extends '/administration/index.html' %}
+
+{% block dashboard_title %}
+  History Log
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if url_for('administration.history_logs.index') == request.path %}
+  <div class="active section">History Logs</div>
+{% else %}
+  <a href="{{ url_for('administration.history_logs.index') }}" class="section">History Logs</a>
+{% endif %}
+{%- endblock %}
+
+{% block content %}
+  <div class="ui container" style="margin-top: 1em;">
+    {% if logs and logs | count > 0 %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th class="four wide">Date</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.recorded_date.ctime() }}</td>
+        <td>
+          {% if 'delete' in log.action %}
+            <i class="window close red icon"></i>
+          {% elif 'update' in log.action %}
+            <i class="pen blue icon"></i>
+          {% elif 'create' in log.action %}
+            <i class="add green icon"></i>
+          {% endif %}
+          {{ log.message }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+     <div class="ui info message">
+        <div class="header">
+          Don't have any Logs.
+        </div>
+      </div>
+  {% endif %}
+</div>
+{% endblock %}

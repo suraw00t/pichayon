@@ -13,6 +13,7 @@
 {% if current_user.has_roles(['supervisor', 'admin']) %}
   <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Doors</a>
   <a class="item" href="{{ url_for('administration.groups.index') }}"><i class="group closed icon"></i>User Groups</a>
+  <a class="item" href="{{ url_for('administration.history_logs.index') }}"><i class="history closed icon"></i>History Log</a>
 {% endif %}
 {% if current_user.has_roles(['admin']) %}
   <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>Users</a>
