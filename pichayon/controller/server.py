@@ -46,6 +46,19 @@ class ControllerServer:
                             json.dumps(response).encode())
             logger.debug('client {} is registed'.format(data['device_id']))
         return
+    
+    async def update_data_to_node_controller(self):
+        while self.running:
+            doors = models.Door.objects()
+            for door in door:
+                if len(door.device_id) == 0:
+                    continue
+                topic = f'pichayon.node_controller.{door.device_id}'
+                response = await self.data_resource.get_authorization_data(door.device_id)
+                await self.nc.publish(topic,
+                                      json.dumps(response).encode())
+            await asyncio.sleep(3600)
+            
 
     async def process_command(self):
         while self.running:
@@ -131,7 +144,7 @@ class ControllerServer:
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
         sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
-        # handle_expired_data_task = loop.create_task(self.process_expired_controller())
+        handle_update_data_to_node_task = loop.create_task(self.update_data_to_node_controller())
         # handle_controller_task = loop.create_task(self.handle_controller())
 
         try:
