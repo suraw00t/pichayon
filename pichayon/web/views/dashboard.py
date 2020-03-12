@@ -8,6 +8,7 @@ from flask import (Blueprint,
 from flask_login import login_required, current_user
 from pichayon import models
 import json
+import datetime
 
 module = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -60,5 +61,15 @@ def open_door():
         ))
     response = Response()
     response.status_code = 200
+    history_log = models.HistoryLog(
+            action = 'open',
+            message = f'{current_user._get_current_object().username} was opened Door: {door.name} via Web Application',
+            details = {
+                'door': str(door.id),
+                'user': str(current_user._get_current_object().id)
+                },
+            recorded_date = datetime.datetime.now()
+            )
+    history_log.save()
     return response
 
