@@ -15,27 +15,30 @@ class DataResourceManager:
         ugroup = list()
         ugroup_selected = dict()
         door = models.Door.objects(device_id=device_id).first()
-        # logger.debug('data res1')
+        logger.debug('data res1')
         for door_group in door_groups:
             # logger.debug(door_group.name)
             if door_group.search_device_id(device_id):
-                door_auth = models.DoorAuthorizations.objects(door_group=door_group).first()
+                door_auth = models.DoorAuthorization.objects(door_group=door_group).first()
                 # logger.debug(door_auth)
                 break
         if door_auth is None:
             return {}
-        # logger.debug('res2')
-        for user_group in door_auth.user_group:
-            logger.debug(user_group.group.name)
-            ugroup.append(user_group.group)
+        logger.debug('res2')
+        for authorization_group in door_auth.authorization_groups:
+            logger.debug(authorization_group.user_group.name)
+            ugroup.append(authorization_group.user_group)
         
         res['user_groups'] = list()
         for group in ugroup:
-            # logger.debug('res3')
+            logger.debug('res3')
             if door_auth.is_authority(group):
+                logger.debug('res4')
                 ugroup_selected['name'] = group.name
                 ugroup_selected['members'] = list()
-                for member in group.members:
+                members = models.UserGroupMember.objects(group=group)
+                for member in members:
+
                     ugroup_selected['members'].append(
                             {'username': member.user.username,
                              'rfid':member.user.rfid})

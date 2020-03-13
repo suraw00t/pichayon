@@ -66,7 +66,7 @@ def open_door():
             message = f'{current_user._get_current_object().username} was opened Door: {door.name} via Web Application',
             details = {
                 'door': str(door.id),
-                'user': str(current_user._get_current_object().id)
+                'user': str(current_user._get_current_object().username)
                 },
             recorded_date = datetime.datetime.now()
             )

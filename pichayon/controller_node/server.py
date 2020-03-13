@@ -93,13 +93,16 @@ class NodeControllerServer:
         while self.running:
             #logger.debug(f'while in process{type(self.id_read)}')
             #self.id_read = self.rfid.get_id()
-            if len(self.id_read)>0:
-                user_rfid = self.db.search(self.query.rfid == self.id_read)
-                if user_rfid:
-                    await self.device.open_door()
-                    await asyncio.sleep(.5)
-                logger.debug(f'len : rfid: >>>{self.id_read}')
-                self.id_read = ''
+            try:
+                if len(self.id_read)>0:
+                    user_rfid = self.db.search(self.query.rfid == self.id_read)
+                    if user_rfid:
+                        await self.device.open_door()
+                        await asyncio.sleep(.5)
+                    logger.debug(f'rfid: >>>{self.id_read}')
+                    self.id_read = ''
+            except Exception as e:
+                logger.exception(e)
             await asyncio.sleep(.025)
         read_rfid_thread.join(timeout=1)
 

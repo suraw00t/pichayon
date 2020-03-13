@@ -49,8 +49,11 @@ class ControllerServer:
     
     async def update_data_to_node_controller(self):
         while self.running:
-            doors = models.Door.objects()
-            for door in door:
+            logger.debug('start sync data')
+            doors = models.Door.objects(status='active', type='pichayon')
+            logger.debug('after query')
+            for door in doors:
+                logger.debug(f'>>>>{door.device_id}')
                 if len(door.device_id) == 0:
                     continue
                 topic = f'pichayon.node_controller.{door.device_id}'
