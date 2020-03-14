@@ -21,7 +21,7 @@ class Door(me.Document):
     type = me.StringField(required=True, default='pichayon')
 
     meta = {'collection': 'doors'}
-
+    
     def get_door_auth(self):
         door_group = models.DoorGroup.objects()
         door_auth = None
