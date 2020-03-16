@@ -50,7 +50,7 @@
         {% else %}
         <td><i class="large delete icon red"></i></td>
         {% endif %}
-        {% if door.passcode | length > 0%}
+        {% if door.have_passcode %}
         <td><i class="large check icon green"></i></td>
         {% else %}
         <td><i class="large delete icon red"></i></td>

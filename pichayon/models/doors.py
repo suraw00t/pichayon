@@ -8,8 +8,8 @@ class Door(me.Document):
     device_id = me.StringField(unique=True)
     description = me.StringField()
     camera_url = me.StringField(default='', required=True)
-    # have_passcode = me.BooleanField(default=False, required=True)
-    passcode = me.StringField(default='')
+    have_passcode = me.BooleanField(default=False, required=True)
+    # passcode = me.StringField(default='')
     creator = me.ReferenceField('User', dbref=True)
     have_web_open = me.BooleanField(default=False, required=True)
     created_date = me.DateTimeField(required=True,

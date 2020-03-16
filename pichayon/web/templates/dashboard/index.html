@@ -25,12 +25,12 @@
 
 
           Door: {{ door.name }}
-          {% if door.passcode|length == 6%}
+          {% if door.have_passcode %}
             <div>
-            Passcode: {{door.passcode}}
-            {% if user_group[door_group.id].is_supervisor(current_user) %}
+            Passcode: {{ current_user.passcode }}
+            {#% if user_group[door_group.id].is_supervisor(current_user) %}
             <a href="{{url_for('administration.doors.revoke_passcode', door_id=door.id)}}"><i class="redo icon"></i></a>
-            {% endif %}
+            {% endif %#}
            </div>
           {% endif %}
           {% if not door.have_web_open %}

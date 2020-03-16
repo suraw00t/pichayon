@@ -14,10 +14,16 @@ from pichayon.web.forms.admin import (UserForm,
                                       AddRoleUserForm,
                                       EditForm,
                                       AddingRoomForm)
-
+import string
+import random
 module = Blueprint('administration.users',
                    __name__,
                    url_prefix='/users')
+
+
+def generate_passcode():
+    res = ''.join(random.choices('ABCD' + string.digits, k=6))
+    return str(res)
 
 
 @module.route('/')

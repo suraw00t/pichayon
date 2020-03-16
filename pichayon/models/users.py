@@ -22,6 +22,7 @@ class User(me.Document, UserMixin):
             default='',
             max_length=13)
     rfid = me.StringField(default='', required=True)
+    passcode = me.StringField(default='', required=True)
     gave_informations = me.BooleanField(
             required=True,
             default=False)
