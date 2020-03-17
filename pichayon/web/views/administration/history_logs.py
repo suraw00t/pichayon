@@ -17,7 +17,8 @@ module = Blueprint('administration.history_logs',
 @module.route('/')
 @acl.allows.requires(acl.is_admin)
 def index():
-    logs = models.HistoryLog.objects().order_by('-id')
+    actions = ['create', 'update']
+    logs = models.HistoryLog.objects(action__in=actions).order_by('-id')
     return render_template('/administration/history_logs/index.html',
                            logs=logs)
 
