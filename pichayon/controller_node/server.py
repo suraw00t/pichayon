@@ -72,8 +72,9 @@ class NodeControllerServer:
             passcode += key
             logger.debug(f'passcode: >>>{passcode}')
             if len(passcode) == 6:
-                device_passcode = self.db.search(self.query.passcode == passcode)
-                if device_passcode:
+                # device_passcode = self.db.search(self.query.passcode == passcode)
+                user_passcode = self.db.search(self.query.passcode == passcode)
+                if user_passcode:
                     await self.device.open_door()
                 passcode = ''
                 await asyncio.sleep(2)
