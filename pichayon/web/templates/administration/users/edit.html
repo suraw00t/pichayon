@@ -10,6 +10,7 @@
 <div class="active section">Edit {{user.username}}</div>
 {%- endblock %}
 {% block content %}
+  <div class="ui container" style="margin-top: 1em;">
 <form class="ui big form" method="POST">
 	{{ form.csrf_token }}
 	<div class="six wide field">
@@ -23,6 +24,8 @@
 	</div>
 <button class="ui submit primary button" type="submit">Confirm</button>
 </form>
+</div>
+
 <script>
 $('#roles')
   .dropdown();

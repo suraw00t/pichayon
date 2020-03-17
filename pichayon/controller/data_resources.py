@@ -38,13 +38,12 @@ class DataResourceManager:
                 ugroup_selected['members'] = list()
                 members = models.UserGroupMember.objects(group=group)
                 for member in members:
-
                     ugroup_selected['members'].append(
                             {'username': member.user.username,
-                             'rfid':member.user.rfid})
+                             'rfid': member.user.rfid,
+                             'passcode': member.user.passcode})
                 res['user_groups'].append(ugroup_selected)
 
-        res['passcode'] = door.passcode
         res['action'] = 'update'
         logger.debug(res)
         # logger.debug(ugroup_selected)

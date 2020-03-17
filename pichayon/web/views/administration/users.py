@@ -126,10 +126,26 @@ def edit(user_id):
     form.roles.choices = [('admin', 'Admin'), ('supervisor', 'Supervisor'), ('student', 'Student')]
     if not form.validate_on_submit():
         form.roles.data = user.roles[-1]
-        return render_template('administration/users/add_rfid.html',
+        return render_template('administration/users/edit.html',
                                form=form,
                                user=user)
     user.roles[-1] = form.roles.data
     user.rfid = form.rfid.data
     user.save()
     return redirect(url_for('administration.users.index'))
+
+
+@module.route('/<user_id>/revoke_passcode', methods=["GET", "POST"])
+@acl.allows.requires(acl.is_admin)
+def revoke_passcode(user_id):
+    user = models.User.objects.get(id=user_id)
+    passcode = generate_passcode()
+    user_passcode = models.User.objects(passcode=passcode).first()
+    while (user_passcode):
+        passcode = generate_passcode()
+        user_passcode = models.User.objects(passcode=passcode).first()
+
+    user.passcode = passcode
+    user.save()
+    return redirect(url_for('administration.users.index'))
+

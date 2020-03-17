@@ -25,6 +25,7 @@
             <th>Name</th>
             <th>Status</th>
             <th>RFID</th>
+            <th>Passcode</th>
             <th>Operation</th>
         </tr>
     </thead>
@@ -46,6 +47,14 @@
         <i class="large delete icon red"></i>
     {% endif %}
 
+    </td>
+    <td>
+      {% if user.passcode |length >0 %}
+      {{ user.passcode}}
+        {% else %}
+        <i class="large delete icon red"></i>
+    {% endif %}
+    <a href="{{url_for('administration.users.revoke_passcode', user_id=user.id)}}"><i class="large undo alternate icon rigth"></i></a>
     </td>
     <td>
     <a href="{{url_for('administration.users.edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
