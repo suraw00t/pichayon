@@ -20,13 +20,6 @@ module = Blueprint('administration.doors',
                    url_prefix='/doors')
 
 
-def generate_passcode():
-    res = ''.join(random.choices('ABCD' +
-                                 string.digits, k=6))
-    print('pass>>>>', res)
-    return str(res)
-
-
 @module.route('/')
 @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 def index():
