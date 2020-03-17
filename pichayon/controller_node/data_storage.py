@@ -34,6 +34,6 @@ class DataStorage:
                 self.db.insert(
                         {'username': member['username'],
                          'rfid': member['rfid'],
-                         'passcode': memner['passcode']})
+                         'passcode': member['passcode']})
         logger.debug(f'>>>>>>>{data}')
 
