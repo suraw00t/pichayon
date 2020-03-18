@@ -107,24 +107,11 @@ class NodeControllerServer:
             await asyncio.sleep(.025)
         read_rfid_thread.join(timeout=1)
 
-    async def set_up(self, loop):
-        self.nc = NATS()
-        await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
-        
-        logging.basicConfig(
-                format='%(asctime)s - %(name)s:%(levelname)s - %(message)s',
-                datefmt='%d-%b-%y %H:%M:%S',
-                level=logging.DEBUG,
-                )
- 
+    async def register_node(self):
         data = dict(action='register',
-                    device_id=self.device_id,
-                    data=datetime.datetime.now().isoformat()
-                    )
-        command_topic = f'pichayon.node_controller.{self.device_id}'
-        cc_id = await self.nc.subscribe(
-                command_topic,
-                cb=self.handle_controller_command)
+                device_id=self.device_id,
+                data=datetime.datetime.now().isoformat()
+                )
         while not self.is_register:        
             try:
                 logger.debug('Try to register node controller')
@@ -142,8 +129,25 @@ class NodeControllerServer:
 
             if not self.is_register:
                 await asyncio.sleep(1)
-        
+            
         logger.debug('Register success')
+
+    async def set_up(self, loop):
+        self.nc = NATS()
+        await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
+        
+        logging.basicConfig(
+                format='%(asctime)s - %(name)s:%(levelname)s - %(message)s',
+                datefmt='%d-%b-%y %H:%M:%S',
+                level=logging.DEBUG,
+                )
+ 
+
+        command_topic = f'pichayon.node_controller.{self.device_id}'
+        cc_id = await self.nc.subscribe(
+                command_topic,
+                cb=self.handle_controller_command)
+        logger.debug('setup success')
 
 
     def run(self):
@@ -152,6 +156,7 @@ class NodeControllerServer:
         self.running = True
     
         loop.run_until_complete(self.set_up(loop))
+        register_node_task = loop.create_task(self.register_node())
         # controller_command_task = loop.create_task(self.a())
         controller_command_task = loop.create_task(self.process_controller_command())
         process_keypad_task = loop.create_task(self.process_keypad())
