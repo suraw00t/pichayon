@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from tinydb import TinyDB, Query
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -37,3 +38,28 @@ class DataStorage:
                          'passcode': member['passcode']})
         logger.debug(f'>>>>>>>{data}')
 
+    def send_log_to_server(self, device_id):
+        logger.debug('Start to send log to server')
+        is_send = False
+        while not is_send:
+            logs = self.db.search(self.query.status=='wait')
+            data = dict(
+                device_id=device_id,
+                data=logs
+            )
+            try:
+                response = await self.nc.request(
+                                'pichayon.node_controller.send_log',
+                                json.dumps(data).encode(),
+                                timeout=5
+                            )
+                is_send = True
+                db.update({'status': 'send'}, self.query.status=='wait')
+                logger.debug('Data was send')
+            except Exception as e:
+                logger.debug(e)
+
+            if not is_send:
+                await asyncio.sleep(1)
+        
+        logger.debug('Send success')

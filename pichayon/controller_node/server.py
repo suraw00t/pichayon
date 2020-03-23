@@ -76,6 +76,13 @@ class NodeControllerServer:
                 user_passcode = self.db.search(self.query.passcode == passcode)
                 if user_passcode:
                     await self.device.open_door()
+                    self.db.insert({
+                        'username': user_passcode[0]['username'],
+                        'action': 'open_door',
+                        'type': 'passcode',
+                        'datetime': datetime.datetime.now(),
+                        'status': 'wait'
+                        })
                 passcode = ''
                 await asyncio.sleep(2)
             await asyncio.sleep(.2)
@@ -99,6 +106,13 @@ class NodeControllerServer:
                     user_rfid = self.db.search(self.query.rfid == self.id_read)
                     if user_rfid:
                         await self.device.open_door()
+                        self.db.insert({
+                            'username': user_passcode[0]['username'],
+                            'action': 'open_door',
+                            'type': 'rfid',
+                            'datetime': datetime.datetime.now(),
+                            'status': 'wait'
+                            })
                         await asyncio.sleep(.5)
                     logger.debug(f'rfid: >>>{self.id_read}')
                     self.id_read = ''
@@ -106,6 +120,13 @@ class NodeControllerServer:
                 logger.exception(e)
             await asyncio.sleep(.025)
         read_rfid_thread.join(timeout=1)
+
+    async def process_rfid(self):
+        while self.running:
+            self.data_storage.send_log_to_server(self.device_id)
+            await asyncio.sleep(300)
+
+        
 
     async def register_node(self):
         data = dict(action='register',
@@ -161,6 +182,7 @@ class NodeControllerServer:
         controller_command_task = loop.create_task(self.process_controller_command())
         process_keypad_task = loop.create_task(self.process_keypad())
         process_rfid_task = loop.create_task(self.process_rfid())
+        process_logging_task = loop.create_task(self.process_log())
         
         try:
             loop.run_forever()
