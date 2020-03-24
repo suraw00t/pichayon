@@ -81,7 +81,7 @@ class NodeControllerServer:
                         'username': user_passcode[0]['username'],
                         'action': 'open_door',
                         'type': 'passcode',
-                        'datetime': datetime.datetime.now(),
+                        'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
                         'status': 'wait'
                         })
                 passcode = ''
@@ -109,10 +109,10 @@ class NodeControllerServer:
                     if user_rfid:
                         await self.device.open_door()
                         self.db.insert({
-                            'username': user_passcode[0]['username'],
+                            'username': user_rfid[0]['username'],
                             'action': 'open_door',
                             'type': 'rfid',
-                            'datetime': datetime.datetime.now(),
+                            'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
                             'status': 'wait'
                             })
                         await asyncio.sleep(.5)
@@ -121,13 +121,37 @@ class NodeControllerServer:
                 logger.exception(e)
             await asyncio.sleep(.025)
 
-
-    async def process_rfid(self):
+    async def process_log(self):
         while self.running:
-            self.data_storage.send_log_to_server(self.device_id)
-            await asyncio.sleep(300)
+            logger.debug('Start to send log to server')
+            is_send = False
+            while not is_send:
+                logs = self.db.search(self.query.status=='wait')
+                if len(logs) == 0:
+                    await asyncio.sleep(1)
+                    continue
+                data = dict(
+                    device_id=self.device_id,
+                    data=logs
+                )
+                try:
+                    response = await self.nc.request(
+                                    'pichayon.node_controller.send_log',
+                                    json.dumps(data).encode(),
+                                    timeout=5
+                                )
+                    is_send = True
+                    self.db.update({'status': 'send'}, self.query.status=='wait')
+                    self.db.remove(self.query.status == 'send')
+                    logger.debug('Data was send')
+                except Exception as e:
+                    logger.debug(e)
 
-        
+                if not is_send:
+                    await asyncio.sleep(1)
+            
+            logger.debug('Send success')
+            await asyncio.sleep(5)
 
     async def register_node(self):
         data = dict(action='register',

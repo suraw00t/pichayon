@@ -13,7 +13,7 @@ class DataStorage:
 
     def initial_data_after_restart(self, data):
         logger.debug('Initial data')
-        self.db.purge()
+        self.db.remove(self.query.type=='user')
         user_groups = data['user_groups']
         for group in user_groups:
             for member in group['members']:
@@ -24,7 +24,7 @@ class DataStorage:
 
     def update_data(self, data):
         logger.debug(f'>>>>>>>{data}')
-        self.db.purge()
+        self.db.remove(self.query.type=='user')
         user_groups = data['user_groups']
         #for user in users:
         for group in user_groups:
@@ -32,13 +32,10 @@ class DataStorage:
                 user = self.db.search(self.query.username==member['username'])
                 if user:
                     continue
-                self.db.insert(
-                        {'username': member['username'],
-                         'rfid': member['rfid'],
-                         'passcode': member['passcode']})
+                self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
         logger.debug(f'>>>>>>>{data}')
 
-    def send_log_to_server(self, device_id):
+    async def send_log_to_server(self, device_id):
         logger.debug('Start to send log to server')
         is_send = False
         while not is_send:
