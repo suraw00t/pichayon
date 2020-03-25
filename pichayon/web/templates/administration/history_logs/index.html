@@ -10,7 +10,7 @@
 {% if url_for('administration.history_logs.index') == request.path %}
   <div class="active section">History Logs</div>
 {% else %}
-  <a href="{{ url_for('administration.history_logs.index') }}" class="section">History Logs</a>
+  History Logs Door Group: {{ door_group.name }}
 {% endif %}
 {%- endblock %}
 
@@ -36,6 +36,12 @@
             <i class="pen blue icon"></i>
           {% elif 'create' in log.action %}
             <i class="add green icon"></i>
+          {% elif 'Web' in log.message %}
+            <i class="laptop code blue icon"></i>
+          {% elif 'RFID' in log.message %}
+            <i class="credit card outline blue icon"></i>
+          {% elif 'Passcode' in log.message %}
+            <i class="th blue icon"></i>
           {% endif %}
           {{ log.message }}
         </td>

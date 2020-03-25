@@ -117,18 +117,18 @@ class ControllerServer:
         data = msg.data.decode()
         logger.debug('start save log')
         data = json.loads(data)
-        logger.debug(f'{type(data)}')
+        # logger.debug(f'{type(data)}')
         logger.debug(f"recieve log >>>{data['device_id']}")
         device_id = data['device_id']
         door = models.Door.objects(device_id=device_id).first()
         logs = data['data']
-        logger.debug(f'{door.id}')
-        logger.debug('before loop')
+        # logger.debug(f'{door.id}')
+        # logger.debug('before loop')
 
         for log in logs:
-            logger.debug('1 loop')
+            # logger.debug('1 loop')
             y, m, d, h, min, sec = log['datetime'].split(', ')
-            logger.debug('2 loop')
+            # logger.debug('2 loop')
             history_log = models.HistoryLog(
                 action = 'open',
                 details = {
@@ -137,13 +137,13 @@ class ControllerServer:
                     },
                 recorded_date = datetime.datetime(int(y), int(m), int(d), int(h), int(min), int(sec))
             )
-            logger.debug('3 loop')
+            # logger.debug('3 loop')
             if 'passcode' in log['type']:
-                history_log.message = f"{log['username']} was opened Door: {door.name} via Passcode"
+                history_log.message = f"{log['username']} opened Door: {door.name} via Passcode"
             elif 'rfid' in log['type']:
-                history_log.message = f"{log['username']} was opened Door: {door.name} via RFID"
+                history_log.message = f"{log['username']} opened Door: {door.name} via RFID"
             history_log.save()
-            logger.debug('4 loop')
+            # logger.debug('4 loop')
 
         
 

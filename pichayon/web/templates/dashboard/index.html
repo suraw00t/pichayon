@@ -13,8 +13,13 @@
       <div class="header">
          <i class="door closed icon"></i>{{ door_group.name |upper}}
       </div>
+
       <div class="meta">
         {{ door_group.description }}
+      </div>
+    <div style="position: absolute; right: 0;">
+        <a href="{{url_for('administration.door_authorizations.index', group_id=door_group.id)}}"><i class="circular inverted green eye icon"></i></a>
+        <a href="{{ url_for('administration.history_logs.door_group_logs', door_group_id=door_group.id) }}"><i class="circular inverted blue history icon"></i></a>
       </div>
       <!-- <div class="description">-->
       <!--   Elliot requested permission to view your contact details-->

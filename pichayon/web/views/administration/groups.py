@@ -155,6 +155,10 @@ def delete_doorgroup(doorgroup_id):
     group = models.DoorGroup.objects.get(id=doorgroup_id)
     # group.status = 'delete'
     door_auth = models.DoorAuthorization.objects.get(door_group=group)
+    
+    
+    for door in door_auth.door_group.members:
+            door.delete()
     door_auth.delete()
     group.delete()
     logs = models.HistoryLog(

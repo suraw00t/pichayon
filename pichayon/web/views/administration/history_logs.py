@@ -22,3 +22,14 @@ def index():
     return render_template('/administration/history_logs/index.html',
                            logs=logs)
 
+@module.route('door_group_log/<door_group_id>')
+@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+def door_group_logs(door_group_id):
+    door_group = models.DoorGroup.objects(id=door_group_id).first()
+    selected_door = door_group.get_all_door_id()
+    logs = models.HistoryLog.objects(action='open', details__door__in=selected_door).order_by('-id')
+    
+
+    return render_template('/administration/history_logs/index.html',
+                           logs=logs,
+                           door_group=door_group)

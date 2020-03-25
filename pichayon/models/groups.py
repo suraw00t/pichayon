@@ -86,3 +86,9 @@ class DoorGroup(me.Document):
                 return True
         return False
 
+    def get_all_door_id(self):
+        doors_id = []
+        for door in self.members:
+            doors_id.append(str(door.id))
+        return doors_id
+

@@ -63,7 +63,7 @@ def open_door():
     response.status_code = 200
     history_log = models.HistoryLog(
             action = 'open',
-            message = f'{current_user._get_current_object().username} was opened Door: {door.name} via Web Application',
+            message = f'{current_user._get_current_object().username} opened Door: {door.name} via Web Application',
             details = {
                 'door': str(door.id),
                 'user': str(current_user._get_current_object().username)
