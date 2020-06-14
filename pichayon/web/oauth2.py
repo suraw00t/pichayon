@@ -1,6 +1,7 @@
 from flask import redirect, url_for
 from flask_login import current_user, login_user
 from authlib.flask.client import OAuth
+from flask_principal import identity_changed, Identity
 import loginpass
 
 from pichayon import models
@@ -57,6 +58,10 @@ def handle_authorize_google(remote, token, user_info):
         user.save()
 
     login_user(user)
+    identity_changed.send(
+            current_app._get_current_object(),
+            identity=Identity(str(user.id)))
+
 
     if token:
         oauth2token = models.OAuth2Token(
@@ -79,9 +84,10 @@ def init_oauth(app):
                            update_token=update_token)
     oauth2_client.register('engpsu')
     # oauth2_client.register('google')
+    backends = [loginpass.Google]
 
     google_bp = loginpass.create_flask_blueprint(
-            loginpass.Google,
+            backends,
             oauth2_client,
             handle_authorize_google)
-    app.register_blueprint(google_bp, url_prefix='/google')
+    app.register_blueprint(google_bp)

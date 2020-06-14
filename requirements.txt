@@ -8,8 +8,8 @@ tinydb
 # WEB
 flask
 flask-login
-flask-allows
-authlib==0.12.1
+flask-principal
+authlib
 python-dateutil
 marshmallow-jsonapi
 marshmallow
@@ -17,6 +17,7 @@ python-dateutil
 flask-mongoengine
 loginpass
 requests
+
 
 # Spartbit smart door lock
 cloudant

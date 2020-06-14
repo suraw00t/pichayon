@@ -19,7 +19,8 @@ module = Blueprint('administration.sparkbit',
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+# @acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def index():
     sparkbit_door_systems = models.SparkbitDoorSystem.objects(
             status='active').order_by('name')
@@ -28,7 +29,8 @@ def index():
 
 
 @module.route('/create', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+# @acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def create():
     form = SparkbitDoorForm()
     doors = models.Door.objects(status='active')
@@ -47,7 +49,8 @@ def create():
 
 
 @module.route('/<sparkbit_door_id>/edit', methods=["GET", "POST"])
-@acl.allows.requires(acl.is_admin)
+# @acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def edit(sparkbit_door_id):
     doors = models.Door.objects(status='active') 
     sparkbit_door = models.SparkbitDoorSystem.objects.get(
@@ -75,7 +78,8 @@ def edit(sparkbit_door_id):
 
 
 @module.route('/<sparkbit_door_id>/delete')
-@acl.allows.requires(acl.is_admin)
+# @acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def delete(sparkbit_door_id):
     sparkbit_door = models.SparkbitDoorSystem.objects.get(
             id=sparkbit_door_id)

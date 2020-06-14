@@ -21,6 +21,6 @@ views = [users,
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def index():
     return 'admin'

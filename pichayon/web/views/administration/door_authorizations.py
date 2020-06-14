@@ -18,7 +18,8 @@ module = Blueprint('administration.door_authorizations',
 
 
 @module.route('/')
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+# @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def index():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -29,7 +30,8 @@ def index():
 
 
 @module.route('add_authority', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+# @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def add_authority():
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -73,7 +75,8 @@ def add_authority():
 
 
 @module.route('edit_authority', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+# @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def edit_authority():
     doorgroup_id = request.args.get('doorgroup_id')
     usergroup_id = request.args.get('usergroup_id')
@@ -116,7 +119,8 @@ def edit_authority():
 
 
 @module.route('delete_authority', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+# @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def delete_authority():
     doorgroup_id = request.args.get('doorgroup_id')
     usergroup_id = request.args.get('usergroup_id')

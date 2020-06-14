@@ -9,7 +9,6 @@ from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import DoorForm, DoorGroupForm
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_allows import Or
 
 import string
 import random
@@ -21,7 +20,8 @@ module = Blueprint('administration.doors',
 
 
 @module.route('/')
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def index():
     door_groups = models.DoorGroup.objects(status='active').order_by('name')
     door_groups_sup = list()
@@ -36,7 +36,8 @@ def index():
 
 
 @module.route('/create', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def create():
     form = DoorForm()
     form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
@@ -74,7 +75,8 @@ def create():
 
 
 @module.route('/<doorgroup_id>/doors_list', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def doors_list(doorgroup_id):
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
     return render_template('/administration/doors/door_lists.html',
@@ -82,7 +84,8 @@ def doors_list(doorgroup_id):
 
 
 @module.route('/<door_id>/edit', methods=["GET", "POST"])
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def edit(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -135,7 +138,8 @@ def edit(door_id):
 
 
 @module.route('/<door_id>/delete')
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def delete(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)

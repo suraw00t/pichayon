@@ -15,7 +15,8 @@ module = Blueprint('administration.history_logs',
 
 
 @module.route('/')
-@acl.allows.requires(acl.is_admin)
+#@acl.allows.requires(acl.is_admin)
+@acl.admin_permission.require()
 def index():
     actions = ['create', 'update']
     logs = models.HistoryLog.objects(action__in=actions).order_by('-id')
@@ -23,7 +24,8 @@ def index():
                            logs=logs)
 
 @module.route('door_group_log/<door_group_id>')
-@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
+@acl.admin_permission.require()
 def door_group_logs(door_group_id):
     door_group = models.DoorGroup.objects(id=door_group_id).first()
     selected_door = door_group.get_all_door_id()
