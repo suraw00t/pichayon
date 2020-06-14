@@ -12,7 +12,7 @@ RUN python3 setup.py develop
 RUN npm install --prefix pichayon/web/static
 
 ENV PICHAYON_SETTINGS=/app/pichayon-production.cfg
-ENV FLASK_ENV=prodoction
+ENV FLASK_ENV=production
 ENV AUTHLIB_INSECURE_TRANSPORT=true
 
 
