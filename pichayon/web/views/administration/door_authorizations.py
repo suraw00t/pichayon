@@ -9,7 +9,6 @@ from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import AddAuthorityForm
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_allows import Or
 
 import datetime
 module = Blueprint('administration.door_authorizations',
