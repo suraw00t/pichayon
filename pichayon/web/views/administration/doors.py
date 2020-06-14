@@ -21,7 +21,7 @@ module = Blueprint('administration.doors',
 
 @module.route('/')
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require()
+@acl.admin_permission.require(http_exception=403)
 def index():
     door_groups = models.DoorGroup.objects(status='active').order_by('name')
     door_groups_sup = list()
@@ -37,7 +37,7 @@ def index():
 
 @module.route('/create', methods=["GET", "POST"])
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require()
+@acl.admin_permission.require(http_exception=403)
 def create():
     form = DoorForm()
     form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
@@ -76,7 +76,7 @@ def create():
 
 @module.route('/<doorgroup_id>/doors_list', methods=["GET", "POST"])
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require()
+@acl.admin_permission.require(http_exception=403)
 def doors_list(doorgroup_id):
     door_group = models.DoorGroup.objects.get(id=doorgroup_id)
     return render_template('/administration/doors/door_lists.html',
@@ -85,7 +85,7 @@ def doors_list(doorgroup_id):
 
 @module.route('/<door_id>/edit', methods=["GET", "POST"])
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require()
+@acl.admin_permission.require(http_exception=403)
 def edit(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
@@ -139,7 +139,7 @@ def edit(door_id):
 
 @module.route('/<door_id>/delete')
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require()
+@acl.admin_permission.require(http_exception=403)
 def delete(door_id):
     group_id = request.args.get('group_id')
     door_group = models.DoorGroup.objects.get(id=group_id)
