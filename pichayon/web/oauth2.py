@@ -1,4 +1,4 @@
-from flask import redirect, url_for
+from flask import redirect, url_for, current_app
 from flask_login import current_user, login_user
 from authlib.integrations.flask_client import OAuth
 from flask_principal import identity_changed, Identity
