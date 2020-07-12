@@ -16,5 +16,5 @@ ENV FLASK_ENV=production
 ENV AUTHLIB_INSECURE_TRANSPORT=true
 
 
-EXPOSE 9000
-CMD uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
+# EXPOSE 9000
+# CMD uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini

@@ -6,10 +6,11 @@ from flask import (Blueprint,
                    url_for,
                    redirect,
                    request,
+                   session,
                    )
 
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_principal import identity_changed, Identity
+from flask_principal import identity_changed, Identity, AnonymousIdentity
 from pichayon import models
 from .. import oauth2
 from .. import forms
