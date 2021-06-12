@@ -10,7 +10,7 @@ from pichayon.web import acl
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
 import datetime
 
-module = Blueprint('administration.groups',
+module = Blueprint('groups',
                    __name__,
                    url_prefix='/groups')
 
@@ -46,7 +46,7 @@ def create_usergroup():
 
     user_group.save()
     logs.save()
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('groups.index'))
 
 
 @module.route('/<group_id>/edit', methods=["GET", "POST"])
@@ -73,7 +73,7 @@ def edit_usergroup(group_id):
     group.save()
     logs.save()
 
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('groups.index'))
 
 
 @module.route('/create_doorgroup', methods=["GET", "POST"])
@@ -99,7 +99,7 @@ def create_doorgroup(http_exception=403):
             )
     logs.save()
     door_auth.save()
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('doors.index'))
 
 
 @module.route('/<doorgroup_id>/edit_doorgroup', methods=["GET", "POST"])
@@ -126,7 +126,7 @@ def edit_doorgroup(doorgroup_id):
             )
     logs.save()
 
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('doors.index'))
 
 
 @module.route('user_group/<group_id>/delete')
@@ -150,7 +150,7 @@ def delete_usergroup(group_id):
             )
     logs.save()
 
-    return redirect(url_for('administration.groups.index'))
+    return redirect(url_for('groups.index'))
 
 
 @module.route('door_group/<doorgroup_id>/delete')
@@ -177,4 +177,4 @@ def delete_doorgroup(doorgroup_id):
             )
     logs.save()
 
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('doors.index'))

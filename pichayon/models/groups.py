@@ -62,7 +62,7 @@ class DoorGroup(me.Document):
     name = me.StringField(required=True, unique=True)
     description = me.StringField()
 
-    members = me.ListField(me.ReferenceField('Door', dbref=True))
+    # members = me.ListField(me.ReferenceField('Door', dbref=True))
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)

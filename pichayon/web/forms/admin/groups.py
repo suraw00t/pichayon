@@ -1,19 +1,18 @@
 from wtforms import Form
 from wtforms import fields
 from wtforms import validators
-from wtforms.fields import html5
 
 from flask_wtf import FlaskForm
 
 class DoorGroupForm(FlaskForm):
-    name = fields.TextField('Name',
+    name = fields.StringField('Name',
                             validators=[validators.InputRequired(),
                                         validators.Length(min=3)])
-    description = fields.TextField('Description')
+    description = fields.StringField('Description')
 
 
 class UserGroupForm(FlaskForm):
-    name = fields.TextField('Name',
+    name = fields.StringField('Name',
                             validators=[validators.InputRequired(),
                                         validators.Length(min=3)])
-    description = fields.TextField('Description')
+    description = fields.StringField('Description')

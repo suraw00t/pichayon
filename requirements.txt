@@ -1,8 +1,8 @@
 # CONTROLLER
 asyncio-nats-client
-RPi.GPIO
-pi-rc522
-tinydb
+# RPi.GPIO
+# pi-rc522
+# tinydb
 
 
 # WEB

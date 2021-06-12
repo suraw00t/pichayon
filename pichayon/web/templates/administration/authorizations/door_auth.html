@@ -10,7 +10,9 @@ Door Authorizations
 {% if url_for('administration.door_authorizations.index') == request.path %}
 	<div class="active section">{{door_group.name}}</div>
 {% else %}
+  {#
 	<a href="{{ url_for('administration.door_authorizations.index', group_id=door_group.id) }}" class="section">{{ door_group.name}}</a>
+  #}
 {% endif %}
 
 {%- endblock %}

@@ -7,7 +7,7 @@ import datetime
 
 logger = logging.getLogger(__name__)
 from . import data_resources
-#from . import sparkbit
+from . import sparkbit
 
 class ControllerServer:
     def __init__(self, settings):
@@ -16,14 +16,17 @@ class ControllerServer:
         self.running = False
         self.command_queue = asyncio.Queue()
         self.data_resource = data_resources.DataResourceManager()
-        # self.sparkbit_controller = sparkbit.DoorController(self.settings)
+
+        self.sparkbit_enable = self.settings.get('SPARKBIT_ENABLE', False)
+        if self.sparkbit_enable:
+            self.sparkbit_controller = sparkbit.DoorController(self.settings)
 
     async def handle_sparkbit_command(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
         data = json.loads(data)
-        # await self.sparkbit_controller.put_command(data)
+        await self.sparkbit_controller.put_command(data)
 
     async def handle_command(self, msg):
         subject = msg.subject
@@ -96,6 +99,8 @@ class ControllerServer:
                 logger.debug('No Authority')
                 continue
             if 'sparkbit' in data['type']:
+                if not self.sparkbit_enable:
+                    continue
                 logger.debug('open sparkbit')
                 topic = 'pichayon.controller.sparkbit.command'
                 command = dict(door_id=data['door_id'], user_id=data['user_id'], action='open_door')
@@ -197,16 +202,18 @@ class ControllerServer:
         loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
-        # sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
         handle_update_data_to_node_task = loop.create_task(self.update_data_to_node_controller())
-        # handle_controller_task = loop.create_task(self.handle_controller())
+
+        if self.sparkbit_enable:
+            sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
 
         try:
             loop.run_forever()
         except Exception as e:
             print('got:', e)
             self.running = False
-            self.sparkbit_controller.stop()
+            if self.sparkbit_enable:
+                self.sparkbit_controller.stop()
             # self.cn_report_queue.close()
             # self.processor_command_queue.close()
             self.nc.close()

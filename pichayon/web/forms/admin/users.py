@@ -1,7 +1,6 @@
 from wtforms import Form
 from wtforms import fields
 from wtforms import validators
-from wtforms.fields import html5
 from wtforms import widgets
 from flask_wtf import FlaskForm
 from io import StringIO
@@ -22,7 +21,7 @@ class AddRoleUserForm(FlaskForm):
 
 
 class UserForm(FlaskForm):
-    username = fields.TextField(
+    username = fields.StringField(
             'Username',
             validators=[validators.InputRequired(),
                         validators.Length(min=3)])
@@ -31,14 +30,14 @@ class UserForm(FlaskForm):
 
 class AddingRoomForm(FlaskForm):
     room = fields.SelectField('Rooms')
-    started_date = html5.DateField('Started Date',
+    started_date = fields.DateField('Started Date',
                                    format='%Y-%m-%d')
-    expired_date = html5.DateField('Expired Date',
+    expired_date = fields.DateField('Expired Date',
                                    format='%Y-%m-%d')
 
 
 class EditForm(FlaskForm):
     roles = fields.SelectField('Role')
-    rfid = fields.TextField('RFID')
-    system_id = fields.TextField('System ID')
+    rfid = fields.StringField('RFID')
+    system_id = fields.StringField('System ID')
 

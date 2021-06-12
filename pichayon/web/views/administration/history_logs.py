@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
 from pichayon.web import acl
 
-module = Blueprint('administration.history_logs',
+module = Blueprint('history_logs',
                    __name__,
                    url_prefix='/logs')
 

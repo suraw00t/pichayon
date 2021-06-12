@@ -11,7 +11,7 @@ from pichayon.web.forms.admin import AddAuthorityForm
 from flask_login import login_user, logout_user, login_required, current_user
 
 import datetime
-module = Blueprint('administration.door_authorizations',
+module = Blueprint('door_authorizations',
                    __name__,
                    url_prefix='/door_auth')
 
@@ -69,7 +69,7 @@ def add_authority():
             )
     door_auth.authorization_groups.append(auth_group)
     door_auth.save()
-    return redirect(url_for('administration.door_authorizations.index',
+    return redirect(url_for('door_authorizations.index',
                             group_id=group_id))
 
 
@@ -113,7 +113,7 @@ def edit_authority():
             group_member.rrule.start_time = str(form.start_time.data)
             group_member.rrule.end_time = str(form.end_time.data)
     door_auth.save()
-    return redirect(url_for('administration.door_authorizations.index',
+    return redirect(url_for('door_authorizations.index',
                             group_id=doorgroup_id))
 
 
@@ -130,5 +130,5 @@ def delete_authority():
         if ugroup.user_group == user_group:
             door_auth.authorization_groups.remove(ugroup)
             door_auth.save()
-    return redirect(url_for('administration.door_authorizations.index',
+    return redirect(url_for('door_authorizations.index',
                             group_id=doorgroup_id))

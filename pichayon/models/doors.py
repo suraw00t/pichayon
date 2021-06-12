@@ -4,21 +4,26 @@ from pichayon import models
 
 
 class Door(me.Document):
-    name = me.StringField(required=True)
-    device_id = me.StringField(unique=True)
+    name = me.StringField(required=True, max_length=250)
+    device_id = me.StringField(unique=True, max_length=250)
     description = me.StringField()
     camera_url = me.StringField(default='', required=True)
-    have_passcode = me.BooleanField(default=False, required=True)
     # passcode = me.StringField(default='')
+    groups = me.ListField(me.ReferenceField('DoorGroup'))
+
     creator = me.ReferenceField('User', dbref=True)
     have_web_open = me.BooleanField(default=False, required=True)
+    have_passcode = me.BooleanField(default=False, required=True)
+    
+    status = me.StringField(required=True, default='active')
+    type = me.StringField(required=True, default='pichayon')
+
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
     updated_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now,
                                     auto_now=True)
-    status = me.StringField(required=True, default='active')
-    type = me.StringField(required=True, default='pichayon')
+
 
     meta = {'collection': 'doors'}
     

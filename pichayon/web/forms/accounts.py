@@ -1,24 +1,23 @@
 from wtforms import Form
 from wtforms import fields
 from wtforms import validators
-from wtforms.fields import html5
 
 from flask_wtf import FlaskForm
 
 
 class AccountForm(FlaskForm):
-    first_name = fields.TextField('First Name',
+    first_name = fields.StringField('First Name',
                                   validators=[validators.InputRequired(),
                                   validators.Length(min=3)])
-    last_name = fields.TextField('Last Name',
+    last_name = fields.StringField('Last Name',
                                  validators=[validators.InputRequired(),
                                  validators.Length(min=3)])
-    first_name_th = fields.TextField('First Name (Thai)',
+    first_name_th = fields.StringField('First Name (Thai)',
                                   validators=[validators.InputRequired(),
                                   validators.Length(min=3)])
-    last_name_th = fields.TextField('Last Name (Thai)',
+    last_name_th = fields.StringField('Last Name (Thai)',
                                  validators=[validators.InputRequired(),
                                  validators.Length(min=3)])
-    id_card_number = fields.TextField('ID Card Number',
+    id_card_number = fields.StringField('ID Card Number',
                                  validators=[validators.InputRequired(),
                                  validators.Length(min=3)])

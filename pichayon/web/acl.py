@@ -15,7 +15,9 @@ principals = Principal()
 
 
 admin_permission = Permission(RoleNeed('admin'))
-
+supervisor_permission = Permission(RoleNeed('supervisor'))
+admin_or_supervisor_permission = Permission(
+        RoleNeed('admin'), RoleNeed('supervisor'))
 
 def init_acl(app):
     # initial login manager

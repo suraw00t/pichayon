@@ -8,7 +8,7 @@ class Rrule(me.EmbeddedDocument):
     end_time = me.StringField(required=True, default='17:00')
 
 
-class AuthorizationGroup(me.EmbeddedDocument):
+class GroupAuthorization(me.EmbeddedDocument):
     user_group = me.ReferenceField('UserGroup',
                                    dbref=True)
     granter = me.ReferenceField('User', dbref=True)
@@ -49,8 +49,9 @@ class AuthorizationGroup(me.EmbeddedDocument):
 
 class DoorAuthorization(me.Document):
     door_group = me.ReferenceField('DoorGroup', dbref=True, required=True)
+    # door = me.ReferenceField('Door', dbref=True, required=True)
     authorization_groups = me.ListField(
-            me.EmbeddedDocumentField('AuthorizationGroup'))
+            me.EmbeddedDocumentField('GroupAuthorization'))
     status = me.StringField(required=True, default='active')
 
     meta = {'collection': 'door_authorizations'}

@@ -69,6 +69,7 @@ def login_engpsu():
     client = oauth2.oauth2_client
     redirect_uri = url_for('accounts.authorized_engpsu',
                            _external=True)
+    print(redirect_uri)
     response = client.engpsu.authorize_redirect(redirect_uri)
     return response
 

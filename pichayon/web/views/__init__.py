@@ -25,10 +25,11 @@ def get_subblueprints(views=[]):
 
         if 'views' in dir(view):
             for module in get_subblueprints(view.views):
-                if view.module.url_prefix and module.url_prefix:
-                    module.url_prefix = view.module.url_prefix + \
-                            module.url_prefix
-                blueprints.append(module)
+                view.module.register_blueprint(module)
+                # if view.module.url_prefix and module.url_prefixi:
+                #     module.url_prefix = view.module.url_prefix + \
+                #             module.url_prefix
+                # blueprints.append(module)
 
     return blueprints
 

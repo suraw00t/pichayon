@@ -7,6 +7,10 @@ services:
             - ../deployment/pichayon/mongodb/data/db:/data/db
             - /etc/localtime:/etc/localtime:ro
         restart: always
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
         networks:
             - default
     nats-server:
@@ -17,6 +21,10 @@ services:
         volumes:
             - /etc/localtime:/etc/localtime:ro
         restart: always
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
         networks:
             - default
     web:
@@ -35,6 +43,10 @@ services:
         networks:
             - default
         restart: always
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
         environment:
             PICHAYON_SETTINGS: /app/pichayon-production.cfg
         command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
@@ -54,6 +66,10 @@ services:
         networks:
             - default
         restart: always
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
         environment:
             PICHAYON_SETTINGS: /app/pichayon-production.cfg
         command: pichayon-controller

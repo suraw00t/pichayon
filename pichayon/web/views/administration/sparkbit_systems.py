@@ -13,7 +13,7 @@ import string
 import random
 import json
 
-module = Blueprint('administration.sparkbit',
+module = Blueprint('sparkbit',
                    __name__,
                    url_prefix='/doors/sparkbit')
 
@@ -45,7 +45,7 @@ def create():
     sparkbit_door.door = models.Door.objects.get(id=form.door.data)
     sparkbit_door.save()
 
-    return redirect(url_for('administration.sparkbit.index'))
+    return redirect(url_for('sparkbit.index'))
 
 
 @module.route('/<sparkbit_door_id>/edit', methods=["GET", "POST"])
@@ -74,7 +74,7 @@ def edit(sparkbit_door_id):
     sparkbit_door.door = models.Door.objects.get(id=form.door.data)
     sparkbit_door.save()
 
-    return redirect(url_for('administration.sparkbit.index'))
+    return redirect(url_for('sparkbit.index'))
 
 
 @module.route('/<sparkbit_door_id>/delete')
@@ -86,4 +86,4 @@ def delete(sparkbit_door_id):
     if sparkbit_door:
         sparkbit_door.delete()
 
-    return redirect(url_for('administration.doors.index'))
+    return redirect(url_for('doors.index'))

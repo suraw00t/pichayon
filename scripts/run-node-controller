@@ -1,0 +1,3 @@
+#!/bin/sh
+
+PICHAYON_SETTINGS=$(pwd)/pichayon.cfg pichayon-node-controller

@@ -32,7 +32,7 @@ def update_token(name, token):
 oauth2_client = OAuth()
 
 
-def handle_authorize_google(remote, token, user_info):
+def handle_authorize(remote, token, user_info):
 
     if not user_info:
         return redirect(url_for('accounts.login'))
@@ -86,8 +86,8 @@ def init_oauth(app):
     # oauth2_client.register('google')
     backends = [loginpass.Google]
 
-    google_bp = loginpass.create_flask_blueprint(
-            backends,
-            oauth2_client,
-            handle_authorize_google)
-    app.register_blueprint(google_bp)
+    # bp = loginpass.create_flask_blueprint(
+    #         backends,
+    #         oauth2_client,
+    #         handle_authorize)
+    # app.register_blueprint(bp)

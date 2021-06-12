@@ -53,7 +53,7 @@ setup(name='pichayon',
       pichayon-web = pichayon.cmd.web:main
       pichayon-api = pichayon.cmd.api:main
       pichayon-controller = pichayon.cmd.controller:main
-      pichayon-controller_node = pichayon.cmd.controller_node:main
+      pichayon-node-controller = pichayon.cmd.node_controller:main
 
 
       ''',

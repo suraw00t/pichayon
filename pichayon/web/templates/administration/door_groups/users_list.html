@@ -1,0 +1,68 @@
+{% extends '/administration/groups/index.html' %}
+
+{% block dashboard_title %}
+	Group: {{group.name}}
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if url_for('administration.users.list', group_id=group.id) == request.path %}
+<div class="active section">{{ group.name}}</div>
+{% else %}
+<a href="{{ url_for('administration.users.list', group_id = group.id) }}" class="section">{{ group.name}}</a> 
+{% endif %}
+{%- endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.users.add', group_id=group.id) }}">
+        <i class="add icon"></i>
+        Add User
+      </a>
+    </div>
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+  {% set members = group.get_user_group_members() %}
+  {% if members | count > 0 %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Added Date</th>
+        <th>Added By</th>
+        <th>Operations</th>
+
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for member in members | sort(attribute='user.username') %}
+      <tr>
+        <td>{{ member.user.username }}</td>
+	<td>{{ member.user.first_name }} {{ member.user.last_name}}</td>
+        <td>{{ member.role }}</td>
+        <td>{{ member.added_date.ctime() }}</td>
+        <td>{{ member.added_by.username }}</td>
+        <td>
+	  <a href="{{ url_for('administration.users.add_role', group_id=group.id, user_id=member.user.id) }}"><i class="circular inverted edit icon"></i></a>
+          <a href="{{ url_for('administration.users.delete', group_id=group.id, user_id=member.user.id) }}"><i class="circular inverted red delete icon"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+     <div class="ui info message">
+        <div class="header">
+          Don't have any user in group.
+        </div>
+      </div>
+
+  {% endif %}
+</div>
+{% endblock %}

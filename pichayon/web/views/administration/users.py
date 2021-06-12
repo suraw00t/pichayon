@@ -16,7 +16,7 @@ from pichayon.web.forms.admin import (UserForm,
                                       AddingRoomForm)
 import string
 import random
-module = Blueprint('administration.users',
+module = Blueprint('users',
                    __name__,
                    url_prefix='/users')
 
@@ -34,19 +34,19 @@ def index():
                            users=users)
 
 
-@module.route('/<group_id>/users_list', methods=["GET", "POST"])
+@module.route('/<user_group_id>/users_list', methods=["GET", "POST"])
 @acl.admin_permission.require(http_exception=403)
-def list(group_id):
-    group = models.UserGroup.objects.get(id=group_id)
+def list(user_group_id):
+    group = models.UserGroup.objects.get(id=user_group_id)
     return render_template('administration/groups/users_list.html',
                            group=group)
 
 
-@module.route('/<group_id>/adduser', methods=["GET", "POST"])
+@module.route('/<user_group_id>/adduser', methods=["GET", "POST"])
 @acl.admin_permission.require(http_exception=403)
-def add(group_id):
+def add(user_group_id):
 
-    group = models.UserGroup.objects.get(id=group_id)
+    group = models.UserGroup.objects.get(id=user_group_id)
     users = models.User.objects(status='active')
     form = AddingUserForm()
     choices = []
@@ -72,13 +72,13 @@ def add(group_id):
             member.role = 'supervisor'
         member.save()
 
-    return redirect(url_for('administration.users.list', group_id=group_id))
+    return redirect(url_for('users.list', group_id=group_id))
 
 
-@module.route('/<group_id>/add_role', methods=["GET", "POST"])
+@module.route('/<user_group_id>/add_role', methods=["GET", "POST"])
 @acl.admin_permission.require(http_exception=403)
-def add_role(group_id):
-    group = models.UserGroup.objects.get(id=group_id)
+def add_role(user_group_id):
+    group = models.UserGroup.objects.get(id=user_group_id)
     user_id = request.args.get('user_id')
     user = models.User.objects.get(id=user_id)
     form = AddRoleUserForm()
@@ -100,7 +100,7 @@ def add_role(group_id):
         user.roles.append('supervisor')
         user.save()
 
-    return redirect(url_for('administration.users.list', group_id=group_id))
+    return redirect(url_for('users.list', group_id=group_id))
 
 
 @module.route('/<group_id>/deleteuser', methods=["GET", "POST"])
@@ -115,7 +115,7 @@ def delete(group_id):
             break
     group.save()
 
-    return redirect(url_for('administration.users.list', group_id=group_id))
+    return redirect(url_for('users.list', group_id=group_id))
 
 
 @module.route('/<user_id>/edit', methods=["GET", "POST"])
@@ -132,7 +132,7 @@ def edit(user_id):
     user.roles[-1] = form.roles.data
     user.rfid = form.rfid.data
     user.save()
-    return redirect(url_for('administration.users.index'))
+    return redirect(url_for('users.index'))
 
 
 @module.route('/<user_id>/revoke_passcode', methods=["GET", "POST"])
@@ -147,5 +147,5 @@ def revoke_passcode(user_id):
 
     user.passcode = passcode
     user.save()
-    return redirect(url_for('administration.users.index'))
+    return redirect(url_for('users.index'))
 
