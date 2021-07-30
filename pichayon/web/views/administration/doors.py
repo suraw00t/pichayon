@@ -19,45 +19,41 @@ module = Blueprint('doors',
                    url_prefix='/doors')
 
 
-@module.route('/')
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_or_supervisor_permission.require(http_exception=403)
+@module.route('')
+@acl.role_required('admin')
 def index():
-    # door_groups = models.DoorGroup.objects(status='active').order_by('name')
-    # door_groups_sup = list()
-    # if 'admin' not in current_user._get_current_object().roles:
-    #     door_auths = models.DoorAuthorization.objects()
-    #     for door_auth in door_auths:
-    #         if door_auth.is_user_member(current_user._get_current_object()):
-    #             door_groups_sup.append(door_auth.door_group)
-    #     door_groups = door_groups_sup
-
     doors = models.Door.objects(status='active').order_by('name')
     return render_template('/administration/doors/index.html',
                            doors=doors)
 
 
-@module.route('/create', methods=["GET", "POST"])
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require(http_exception=403)
-def create():
+@module.route('/create', methods=["GET", "POST"], defaults=dict(door_id=None))
+@module.route('/<door_id>/edit', methods=["GET", "POST"])
+@acl.role_required('admin')
+def create_or_edit(door_id):
     form = DoorForm()
+    
+    door = None
+    if door_id:
+        door = models.Door.objects.get(id=door_id)
+        form = DoorForm(obj=door)
+
     form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
-    # if models.Door.objects(device_id=form.device_id.data).first():
-    #     return render_template('/administration/doors/create-edit.html',
-    #                            form=form,
-    #                            device_id_error="True")
     door_groups = models.DoorGroup.objects()
+
     if not form.validate_on_submit():
-        print('error', form.errors)
         return render_template(
                 '/administration/doors/create-edit.html',
                 form=form,
                 door_groups=door_groups,
                 )
-    door = models.Door()
+
+    if not door:
+        door = models.Door()
+        door.creator = current_user._get_current_object()
+
     form.populate_obj(door)
-    door.creator = current_user._get_current_object()
+
     # if form.have_passcode.data:
         # door /.passcode = generate_passcode()
 
@@ -105,60 +101,6 @@ def view(door_id):
             door=door,
             )
 
-
-
-@module.route('/<door_id>/edit', methods=["GET", "POST"])
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require(http_exception=403)
-def edit(door_id):
-    group_id = request.args.get('group_id')
-    door_group = models.DoorGroup.objects.get(id=group_id)
-
-    door = models.Door.objects.get(id=door_id)
-
-    form = DoorForm(obj=door)
-    form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
-
-    if not form.validate_on_submit():
-        # if len(door.passcode) == 6:
-            # form.have_passcode.data = True
-        return render_template('/administration/doors/create-edit.html',
-                               form=form,
-                               door_group=door_group)
-
-    if door.device_id == form.device_id.data:
-        form.populate_obj(door)
-        # if len(door.passcode) == 6:
-        #     if not form.have_passcode.data:
-        #         door.passcode = ''
-        # elif form.have_passcode.data:
-        #     door.passcode = generate_passcode()
-        door.save()
-        return redirect(url_for('doors.doors_list',
-                                door_group_id=group_id))
-
-    if models.Door.objects(device_id=form.device_id.data).first():
-        return render_template('/administration/doors/create-edit.html',
-                               form=form,
-                               door_group=door_group,
-                               device_id_error="True")
-    form.populate_obj(door)
-    # if len(door.passcode) == 6:
-    #     if not form.have_passcode.data:
-    #         door.passcode = ''
-    # elif form.have_passcode.data:
-    #     door.passcode = generate_passcode()
-    door.save()
-    if form.type.data == 'sparkbit':
-        sparkbit_system = models.SparkbitDoorSystem.objects(door=door).first()
-        form.populate_obj(sparkbit_system)
-        sparkbit_system.name = f'{door_group.name}-{form.name.data}'
-        sparkbit_system.status = 'active'
-        sparkbit_system.creator = current_user._get_current_object()
-        sparkbit_system.save()
-
-    return redirect(url_for('doors.doors_list',
-                            door_group_id=group_id))
 
 
 @module.route('/<door_id>/delete')

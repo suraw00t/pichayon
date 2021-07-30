@@ -16,8 +16,6 @@ module = Blueprint('user_groups',
 
 
 @module.route('')
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-# @acl.admin_permission.require(http_exception=403)
 @acl.role_required('admin')
 def index():
     groups = models.UserGroup.objects(status='active').order_by('name')
@@ -26,9 +24,6 @@ def index():
 
 
 @module.route('/create', methods=["GET", "POST"])
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-# @acl.admin_permission.require(http_exception=403)
-
 @acl.role_required('admin')
 def create():
     form = UserGroupForm()
@@ -150,7 +145,7 @@ def add_member(user_group_id):
                     )
 
         member.started_date = form.started_date.data
-        member.ended_date = form.ended_date.data
+        member.expired_date = form.expired_date.data
         
         member.save()
 

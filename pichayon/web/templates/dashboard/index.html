@@ -4,68 +4,65 @@
 
 <div class="ui grid">
 
-  {% for door_group in door_groups %}
+  {% for door in doors %}
   <div class="four wide computer column sixteen wide mobile column">
-  <div class="ui centered cards">
-    <div class="card">
-      <div class="content">
-         <!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">-->
-      <div class="header">
-         <i class="door closed icon"></i>{{ door_group.name |upper}}
-      </div>
+    <div class="ui centered cards">
+      <div class="card">
+        <div class="content">
+           <!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">-->
+        <div class="header">
+           <i class="door closed icon"></i>{{ door.name |upper}}
+        </div>
 
-      <div class="meta">
-        {{ door_group.description }}
+        <div class="meta">
+          {{ door.description }}
+        </div>
+        <div style="position: absolute; right: 0;">
+          {#
+          <a href="{{url_for('administration.door_authorizations.index', group_id=door_group.id)}}"><i class="circular inverted green eye icon"></i></a>
+          #}
+          {#
+          <a href="{{ url_for('administration.history_logs.door_group_logs', door_group_id=door_group.id) }}"><i class="circular inverted blue history icon"></i></a>
+          #}
+        </div>
+        <!-- <div class="description">-->
+        <!--   Elliot requested permission to view your contact details-->
+        <!-- </div>-->
       </div>
-    <div style="position: absolute; right: 0;">
-        <a href="{{url_for('administration.door_authorizations.index', group_id=door_group.id)}}"><i class="circular inverted green eye icon"></i></a>
-        <a href="{{ url_for('administration.history_logs.door_group_logs', door_group_id=door_group.id) }}"><i class="circular inverted blue history icon"></i></a>
-      </div>
-      <!-- <div class="description">-->
-      <!--   Elliot requested permission to view your contact details-->
-      <!-- </div>-->
-    </div>
       <div class="extra content">
-        {% for door in door_group.members %}
-
-
-          Door: {{ door.name }}
-          {% if door.have_passcode %}
-            <div>
+        {% if door.have_passcode %}
+          <div>
             Passcode: {{ current_user.passcode }}
             {#% if user_group[door_group.id].is_supervisor(current_user) %}
             <a href="{{url_for('administration.doors.revoke_passcode', door_id=door.id)}}"><i class="redo icon"></i></a>
             {% endif %#}
-           </div>
-          {% endif %}
-          {% if not door.have_web_open %}
+          </div>
+        {% endif %}
+
+        {% if not door.have_web_open %}
           <div class="opendoor ui two buttons">
-            <div id="{{door.id}}/{{user_group[door_group.id].id}}" class="ui basic disabled button">Opening via Web was disabled</div>
+            <div id="{{ door.id }}" class="ui basic disabled button">Opening via Web was disabled</div>
           </div>
         {% else%}
           <div class="opendoor ui two buttons">
-            <div id="{{door.id}}/{{user_group[door_group.id].id}}" class="ui green button">Open</div>
+            <div id="{{ door.id }}" class="ui green button">Open</div>
           </div>
-
-
-            {% endif %}
-        {% if loop.index != door_group.members| length%}
-          <div class="ui divider"></div>
         {% endif %}
-        {% endfor %}
+        
+
+        
+      {#
         {% if door_group.members | length == 0 %}
           Don't have any door in this group.<br>
           {% if user_group[door_group.id].is_supervisor(current_user) %}
             <a style="color: green" href='{{url_for('administration.doors.create', group_id=door_group.id)}}'>Create now!</a>
           {% endif %}
         {% endif%}
-
+        #}
       </div>
     </div>
   </div>
-  </div>
   {% endfor %}
-
 </div>
-<script type="text/python" src="{{ url_for('static', filename='scripting/controller.py') }}"></script>
+<script type="text/python" src="{{ url_for('static', filename='brython/controller.py') }}"></script>
 {% endblock %}

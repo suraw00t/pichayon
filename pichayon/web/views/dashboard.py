@@ -19,26 +19,27 @@ def index():
     if not current_user.gave_informations:
         return redirect(url_for('accounts.edit_profile'))
 
-    # door_auths = models.DoorAuthorization.objects()
-    # groups = models.UserGroup.objects()
-    # door_groups = list()
-    # cu_groups = list()
-    # user_group = dict()
-    # for group in groups:
-    #     if group.is_user_member(current_user._get_current_object()):
-    #         cu_groups.append(group)
+    user_group_members = models.UserGroupMember.objects(
+            user=current_user._get_current_object(),
+            )
 
-    # for door_auth in door_auths:
-    #     for group in cu_groups:
-    #         if not door_auth.is_authority(group):
-    #             continue
-    #         door_groups.append(door_auth.door_group)
-    #         user_group[door_auth.door_group.id] = group
-    door_groups = []
-    user_group = []
-    return render_template('/dashboard/index.html',
-                           door_groups=door_groups,
-                           user_group=user_group)
+    user_groups = [m.group for m in user_group_members]
+    group_auths = models.GroupAuthorization.objects(
+            user_group__in=user_groups
+            )
+    
+    door_groups = [ga.door_group for ga in group_auths]
+
+    doors = []
+    for door_group in door_groups:
+        doors.extend(door_group.doors)
+
+    return render_template(
+            '/dashboard/index.html',
+            door_groups=door_groups,
+            user_groups=user_groups,
+            doors=doors,
+            )
 
 
 @module.route('/open_door', methods=('GET', 'POST'))
