@@ -1,6 +1,7 @@
 from wtforms import Form
 from wtforms import fields
 from wtforms import validators
+from wtforms import widgets
 import datetime
 from flask_wtf import FlaskForm
 
@@ -8,17 +9,33 @@ DAYS = ['Monday', 'Tuesday', 'Wednesday',
         'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
-class AddAuthorityForm(FlaskForm):
+class AuthorityForm(FlaskForm):
     user_group = fields.SelectField('User Group')
-    started_date = fields.DateTimeField('Start Date',
-                                        format='%Y-%m-%d %H:%M',
-                                        default=datetime.datetime.now()
-                                        )
-    expired_date = fields.DateTimeField('Expire Date',
-                                        format='%Y-%m-%d %H:%M',
-                                        default=datetime.datetime.now()
-                                        )
-    days = fields.SelectMultipleField('Select Days',
-                                      choices=[(str(i), day) for i, day in enumerate(DAYS)])
-    start_time = fields.TimeField('Start Time')
-    end_time = fields.TimeField('End Time')
+    door_group = fields.SelectField('Door Group')
+    started_date = fields.DateTimeField(
+            'Start Date',
+            format='%Y-%m-%d %H:%M',
+            default=datetime.datetime.now(),
+            widget=widgets.TextInput(),
+            )
+    expired_date = fields.DateTimeField(
+            'Expire Date',
+            format='%Y-%m-%d %H:%M',
+            default=datetime.datetime.now(),
+            widget=widgets.TextInput(),
+            )
+    days = fields.SelectMultipleField(
+            'Select Days',
+            choices=[(i, day) for i, day in enumerate(DAYS)],
+            coerce=int,
+            )
+    start_time = fields.TimeField(
+            'Start Time',
+            default=datetime.time(0, 0),
+            widget=widgets.TextInput(),
+            )
+    end_time = fields.TimeField(
+            'End Time',
+            default=datetime.time(0, 0),
+            widget=widgets.TextInput(),
+            )

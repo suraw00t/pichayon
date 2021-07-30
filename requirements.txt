@@ -11,8 +11,8 @@ flask-login
 flask-principal
 authlib
 python-dateutil
-marshmallow-jsonapi
-marshmallow
+# marshmallow-jsonapi
+# marshmallow
 python-dateutil
 flask-mongoengine
 loginpass

@@ -7,17 +7,17 @@
 {%- block breadcrumbs %}
 {{ super() }}
 <i class="right angle icon divider"></i>
-{% if url_for('administration.groups.index') == request.path %}
-  <div class="active section">Groups</div>
+{% if url_for('administration.user_groups.index') == request.path %}
+  <div class="active section">User Groups</div>
 {% else %}
-  <a href="{{ url_for('administration.groups.index') }}" class="section">Groups</a>
+  <a href="{{ url_for('administration.user_groups.index') }}" class="section">User Groups</a>
 {% endif %}
 {%- endblock %}
 
 {% block content %}
   <div class="ui container">
     <div class="ui labeled icon menu">
-      <a class="item" href="{{ url_for('administration.groups.create_usergroup') }}">
+      <a class="item" href="{{ url_for('administration.user_groups.create') }}">
         <i class="add icon"></i>
         Create Group
       </a>
@@ -38,12 +38,12 @@
     <tbody>
       {% for group in groups %}
       <tr>
-	      <td><a href="{{url_for('administration.users.list', group_id=group.id)}}">{{ group.name }}</a></td>
+	      <td><a href="{{url_for('administration.user_groups.view', user_group_id=group.id)}}">{{ group.name }}</a></td>
         <td>{{ group.description }}</td>
         <td>{{ group.updated_date.ctime() }}</td>
         <td>
-	  <a href="{{ url_for('administration.groups.edit_usergroup', group_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
-          <a href="{{ url_for('administration.groups.delete_usergroup', group_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
+	  <a href="{{ url_for('administration.user_groups.edit', user_group_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
+          <a href="{{ url_for('administration.user_groups.delete', user_group_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
         </td>
       </tr>
       {% endfor %}

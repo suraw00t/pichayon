@@ -1,6 +1,5 @@
 import mongoengine as me
 import datetime
-from pichayon import models
 
 
 class Door(me.Document):
@@ -9,7 +8,7 @@ class Door(me.Document):
     description = me.StringField()
     camera_url = me.StringField(default='', required=True)
     # passcode = me.StringField(default='')
-    groups = me.ListField(me.ReferenceField('DoorGroup'))
+    # groups = me.ListField(me.ReferenceField('DoorGroup'))
 
     creator = me.ReferenceField('User', dbref=True)
     have_web_open = me.BooleanField(default=False, required=True)
@@ -28,7 +27,7 @@ class Door(me.Document):
     meta = {'collection': 'doors'}
     
     def get_door_auth(self):
-        door_group = models.DoorGroup.objects()
+        door_group = groups.DoorGroup.objects()
         door_auth = None
         for group in door_group:
             if group.is_member(self):
@@ -43,4 +42,8 @@ class Door(me.Document):
             return models.SparkbitDoorSystem.object.get(door=self)
 
         return None
+
+    def get_groups(self):
+        from . import groups
+        return groups.DoorGroup.objects(doors=self)
 

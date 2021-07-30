@@ -1,0 +1,29 @@
+{% extends '/administration/index.html' %}
+
+{% block dashboard_title %}
+  {{ door.name }}
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<a href="{{ url_for('administration.doors.index') }}" class="section">Doors Management</a>
+<i class="right angle icon divider"></i>
+<a class="active section">{{ door.name }}</a>
+{%- endblock %}
+
+{% block content %}
+<div class="ui container">
+  <div>
+    <b>Name</b> {{ door.name }}<br>
+    <b>Description</b> {{ door.description }}<br>
+    <b>Device ID</b> {{ door.device_id }}<br>
+    <b>Groups</b>
+    {% for group in door.groups %}
+      <a href="{{ url_for('administration.door_groups.view', door_group_id=group.id) }}">{{ group.name }}</a>
+    {% endfor %}
+    <br>
+    <b>Updated Date</b>{{ door.updatged_date }}<br>
+  </div>
+</div>
+{% endblock %}

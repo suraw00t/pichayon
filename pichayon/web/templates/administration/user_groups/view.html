@@ -1,0 +1,120 @@
+{% extends '/administration/user_groups/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block dashboard_title %}
+	{{ group.name }} User Group
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">{{ group.name}}</div>
+{%- endblock %}
+
+{% block additional_js %}
+  <script>
+    $('.ui.dropdown').dropdown();
+
+    datetime_formatter = {
+      datetime: function (datetime, settings) {
+        if (!datetime) return '';
+        var day = datetime.getDate();
+        var month = datetime.getMonth() + 1;
+        var year = datetime.getFullYear();
+        var hour = datetime.getHours();
+        var minute = datetime.getMinutes();
+        return year + '-' + ("0" + month).slice(-2) + '-' + ("0" + day).slice(-2) + " " + ("0" + hour).slice(-2) + ":" + ("0" + minute).slice(-2);
+        {# return year + '-' + ("0" + month).slice(-2) + '-' + ("0" + day).slice(-2); #}
+      }};
+
+    $('#started_date_calendar').calendar({
+      //type: 'date',
+      formatter: datetime_formatter,
+      endCalendar: $('#expired_date_calendar')
+    });
+    $('#expired_date_calendar').calendar({
+      //type: 'date',
+      formatter: datetime_formatter,
+      startCalendar: $('#started_date_calendar')
+    });
+
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <div class="ui message">
+      <b>Description</b> {{ group.description }} <br>
+      <b>Create By</b> {{ group.creator }} <br>
+      <b>Create Date</b> {{ group.created_date }} <br>
+      <b>Update Date</b> {{ group.updated_date }} <br>
+    </div>
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+    <h3>Add Users to Group</h3>
+    <form class="ui form" action="{{ url_for('administration.user_groups.add_member', user_group_id=group.id) }}" method="POST">
+      {{ form.hidden_tag() }}
+      <div class="two fields">
+        {{ renderer.render_multiple_select(form.users) }}
+        {{ renderer.render_select(form.role) }}
+      </div>
+      <div class="two fields">
+        {{ renderer.render_calendar(form.started_date, calendar_id='started_date_calendar') }}
+        {{ renderer.render_calendar(form.expired_date, calendar_id='expired_date_calendar') }}
+      </div>
+      <button type='submit' class="ui button primary">Add User</button>
+    </form>
+    {#
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.user_groups.add_users', user_group_id=group.id) }}">
+        <i class="add icon"></i>
+        Add User
+      </a>
+    </div>
+    #}
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+  {% set members = group.get_user_group_members() %}
+  {% if members | count > 0 %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Started Date</th>
+        <th>Expired Date</th>
+        <th>Added By</th>
+        <th>Operations</th>
+
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for member in members | sort(attribute='user.username') %}
+      <tr>
+        <td>{{ member.user.username }}</td>
+	<td>{{ member.user.first_name }} {{ member.user.last_name}}</td>
+        <td>{{ member.role }}</td>
+        <td>{{ member.started_date.ctime() }}</td>
+        <td>{{ member.expired_date.ctime() if member.expired_date else '' }}</td>
+        <td>{{ member.added_by.username }}</td>
+        <td>
+          <a href="{{ url_for('administration.user_groups.delete_member', user_group_id=group.id, member_id=member.id) }}"><i class="circular inverted red delete icon"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+     <div class="ui info message">
+        <div class="header">
+          Don't have any user in group.
+        </div>
+      </div>
+
+  {% endif %}
+</div>
+{% endblock %}

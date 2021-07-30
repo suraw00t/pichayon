@@ -1,0 +1,49 @@
+{% extends '/administration/door_groups/index.html' %}
+
+{% block dashboard_title %}
+	{{ door_group.name }}
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<a class="active section">{{ door_group.name}}</a> 
+{%- endblock %}
+
+{% block content %}
+  {#
+  <div class="ui container">
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.users.add', door_group_id=door_group.id) }}">
+        <i class="add icon"></i>
+        Add User
+      </a>
+    </div>
+  </div>
+  #}
+
+  <div class="ui container" style="margin-top: 1em;">
+  <h3>Door Group {{ door_group.name }}</h3>
+  {% set members = door_group.doors %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for member in members %}
+      <tr>
+        <td>{{ member.name }}</td>
+        <td>{{ member.type }}</td>
+        <td>{{ member.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

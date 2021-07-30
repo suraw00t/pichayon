@@ -15,8 +15,9 @@
 {% endif %}
 {% if current_user.has_roles(['admin']) %}
   <a class="item" href="{{ url_for('administration.doors.index') }}"><i class="door closed icon"></i>Door Manager</a>
-  <a class="item" href="{{ url_for('administration.door_groups.index') }}"><i class="group closed icon"></i>Door Groups</a>
+  <a class="item" href="{{ url_for('administration.door_groups.index') }}"><i class="landmark icon"></i>Door Groups</a>
   <a class="item" href="{{ url_for('administration.user_groups.index') }}"><i class="group closed icon"></i>User Groups</a>
+  <a class="item" href="{{ url_for('administration.authorizations.index') }}"><i class="user shield icon"></i>Authorization</a>
   <a class="item" href="{{ url_for('administration.history_logs.index') }}"><i class="history closed icon"></i>History Log</a>
   <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>Users</a>
 {% endif %}

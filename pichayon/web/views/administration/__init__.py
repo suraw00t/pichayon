@@ -6,7 +6,7 @@ from . import doors
 from . import users
 from . import user_groups
 from . import door_groups
-from . import door_authorizations
+from . import authorizations
 from . import sparkbit_systems
 from . import history_logs
 
@@ -16,7 +16,7 @@ views = [users,
          doors,
          door_groups,
          user_groups,
-         door_authorizations,
+         authorizations,
          history_logs,
          sparkbit_systems
          ]

@@ -1,5 +1,6 @@
 import mongoengine as me
 import datetime
+from .doors import Door
 
 # from .users import User
 
@@ -7,15 +8,14 @@ import datetime
 class UserGroupMember(me.Document):
     user = me.ReferenceField('User', dbref=True)
     group = me.ReferenceField('UserGroup', dbref=True)
-    role = me.StringField(required=True, default='Member')
     added_by = me.ReferenceField('User', dbref=True)
+    role = me.StringField(required=True, default='member')
     added_date = me.DateTimeField(required=True,
                                   default=datetime.datetime.now)
 
     started_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
-    expired_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.now)
+    expired_date = me.DateTimeField()
 
     updated_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now,
@@ -28,6 +28,7 @@ class UserGroupMember(me.Document):
 class UserGroup(me.Document):
     name = me.StringField(required=True, unique=True)
     description = me.StringField()
+    creator = me.ReferenceField('User', dbref=True, required=True)
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
@@ -61,8 +62,10 @@ class UserGroup(me.Document):
 class DoorGroup(me.Document):
     name = me.StringField(required=True, unique=True)
     description = me.StringField()
+    default = me.BooleanField(default=False, required=True)
+    doors = me.ListField(me.ReferenceField('Door', dbref=True))
 
-    # members = me.ListField(me.ReferenceField('Door', dbref=True))
+    creator = me.ReferenceField('User', dbref=True, required=True)
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
@@ -72,6 +75,9 @@ class DoorGroup(me.Document):
     status = me.StringField(required=True, default='active')
 
     meta = {'collection': 'door_groups'}
+
+    def get_door_members(self):
+        return Door.objects(groups=self)
 
     def is_member(self, door):
         for member in self.members:

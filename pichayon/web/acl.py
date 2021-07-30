@@ -6,6 +6,9 @@ from flask_principal import (Principal,
                              UserNeed,
 							 identity_loaded,
                              )
+from werkzeug.exceptions import Forbidden
+from functools import wraps
+
 
 from .. import models
 
@@ -23,6 +26,20 @@ def init_acl(app):
     # initial login manager
     login_manager.init_app(app)
     principals.init_app(app)
+
+
+def role_required(*roles):
+    def wrapper(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            for role in roles:
+                if role in current_user.roles:
+                    return func(*args, **kwargs)
+            raise Forbidden()
+
+        return wrapped
+
+    return wrapper
 
 
 @login_manager.user_loader

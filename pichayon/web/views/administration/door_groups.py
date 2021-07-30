@@ -15,13 +15,25 @@ module = Blueprint('door_groups',
                    url_prefix='/doors/groups')
 
 
-@module.route('/')
+@module.route('')
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 @acl.admin_permission.require(http_exception=403)
 def index():
-    groups = models.DoorGroup.objects(status='active').order_by('name')
-    return render_template('/administration/door_groups/index.html',
-                           groups=groups)
+    door_groups = models.DoorGroup.objects(status='active').order_by('name')
+    return render_template(
+            '/administration/door_groups/index.html',
+            door_groups=door_groups)
+
+
+@module.route('/<door_group_id>')
+@acl.role_required('admin')
+def view(door_group_id):
+    door_group = models.DoorGroup.objects.get(id=door_group_id)
+
+    return render_template(
+            '/administration/door_groups/view.html',
+            door_group=door_group
+            )
 
 @module.route('/create', methods=["GET", "POST"])
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
@@ -33,7 +45,7 @@ def create():
                                form=form)
     door_group = models.DoorGroup()
     form.populate_obj(door_group)
-
+    door_group.creator = current_user._get_current_object()
     door_group.save()
     door_auth = models.DoorAuthorization(door_group=door_group)
     logs = models.HistoryLog(

@@ -17,15 +17,16 @@
 {% block content %}
   <div class="ui container">
     <div class="ui labeled icon menu">
-      <a class="item" href="{{ url_for('administration.door_groups.create') }}">
-        <i class="add icon"></i>
-        Create Group
-      </a>
+
       <a class="item" href="{{ url_for('administration.doors.create') }}">
         <i class="add icon"></i>
         Create Door
       </a>
 
+      <a class="item" href="{{ url_for('administration.door_groups.create') }}">
+        <i class="add icon"></i>
+        Create Group
+      </a>
     </div>
   </div>
   <div class="ui container" style="margin-top: 1em;">
@@ -36,6 +37,7 @@
         <th>Name</th>
         <th>Description</th>
         <th>Device ID</th>
+        <th>Groups</th>
         <th>Updated Date</th>
         <th>Operation</th>
       </tr>
@@ -44,11 +46,17 @@
     <tbody>
 	    {% for door in doors %}
         <tr>
-	        <td><a href="{{url_for('administration.doors.view', door_id=door.id)}}">{{ door.name }} <i class="large eye icon"></i></a></td>
+	        <td><a href="{{ url_for('administration.doors.view', door_id=door.id) }}">{{ door.name }} <i class="large eye icon"></i></a></td>
           <td>{{ door.description }}</td>
           <td>{{ door.device_id }}</td>
+          <td>
+            {% for group in door.get_groups() %}
+              <a href="{{ url_for('administration.door_groups.view', door_group_id=group.id) }}">{{ group.name }}</a>
+            {% endfor %}
+          </td>
           <td>{{ door.updated_date.ctime() }}</td>
           <td>
+          <a href="{{ url_for('administration.doors.delete', door_id=door.id) }}"><i class="circular inverted red delete icon"></i></a>
           {#
           <a href="{{ url_for('administration.history_logs.door_group_logs', group_id=group.id) }}"><i class="circular inverted blue history icon"></i></a>
           <a href="{{ url_for('administration.groups.edit_doorgroup', doorgroup_id=group.id) }}"><i class="circular inverted edit icon"></i></a>

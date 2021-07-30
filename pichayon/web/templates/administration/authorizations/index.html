@@ -1,0 +1,75 @@
+{% extends '/administration/doors/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+{% block dashboard_title %}
+Door Authorizations
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if url_for('administration.authorizations.index') == request.path %}
+	<div class="active section">Authorization</div>
+{% else %}  
+  <a href="{{ url_for('administration.authorizations.index') }}" class="section">Authorization</a>
+{% endif %}
+
+{%- endblock %}
+{% block content %}
+<div class="ui container">
+  <div class="ui labeled icon menu">
+    <a class="item" href="{{ url_for('administration.authorizations.add_or_edit') }}">
+      <i class="add icon"></i>
+      Add Authority
+    </a>
+  </div>
+</div>
+
+  
+  <div class="ui container" style="margin-top: 1em;">
+  {% if group_auth | count > 0 %}
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Door Group</th>
+        <th>User Group</th>
+        <th>Started Date</th>
+        <th>Expired Date</th>
+        <th>Grantor</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+
+    <tbody>
+     {% for group in group_auth %}
+
+      <tr>
+	      <td><a href="{{ url_for('administration.door_groups.view', door_group_id=group.door_group.id) }}">{{ group.door_group.name }}</a></td>
+	      <td><a href="{{ url_for('administration.user_groups.view', user_group_id=group.user_group.id) }}">{{ group.user_group.name }}</a></td>
+        <td>{{ group.started_date.ctime() }}</td>
+        <td>{{ group.expired_date.ctime() }}</td>
+        <td>{{ group.granter.username }}</td>
+        <td>
+          <a href="{{ url_for('administration.authorizations.add_or_edit', auth_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
+          <a href="{{ url_for('administration.authorizations.delete', auth_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
+
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else%}
+    <div class="ui info message">
+        <div class="header">
+          No UserGroup in this Door
+        </div>
+      </div>
+
+    {% endif %}
+</div>
+
+<script>
+$('#username')
+  .dropdown();
+</script>
+{% endblock %}

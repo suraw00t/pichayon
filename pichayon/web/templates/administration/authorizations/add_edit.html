@@ -1,8 +1,10 @@
 {% import '/base/html-renderer.html' as renderer %}
 {% extends '/administration/authorizations/index.html' %}
 {% block dashboard_title %}
-{% if 'add_authority' in request.args %}
-<div class="active section">Add Authority</div>
+  {{ super() }}
+  <span class="divider">/</span>
+{% if 'add' in request.args %}
+  <div class="active section">Add Authority</div>
 {% else %}
 	<div class="active section">Edit Authority</div>
 {% endif %}

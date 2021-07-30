@@ -19,21 +19,23 @@ def index():
     if not current_user.gave_informations:
         return redirect(url_for('accounts.edit_profile'))
 
-    door_auths = models.DoorAuthorization.objects()
-    groups = models.UserGroup.objects()
-    door_groups = list()
-    cu_groups = list()
-    user_group = dict()
-    for group in groups:
-        if group.is_user_member(current_user._get_current_object()):
-            cu_groups.append(group)
+    # door_auths = models.DoorAuthorization.objects()
+    # groups = models.UserGroup.objects()
+    # door_groups = list()
+    # cu_groups = list()
+    # user_group = dict()
+    # for group in groups:
+    #     if group.is_user_member(current_user._get_current_object()):
+    #         cu_groups.append(group)
 
-    for door_auth in door_auths:
-        for group in cu_groups:
-            if not door_auth.is_authority(group):
-                continue
-            door_groups.append(door_auth.door_group)
-            user_group[door_auth.door_group.id] = group
+    # for door_auth in door_auths:
+    #     for group in cu_groups:
+    #         if not door_auth.is_authority(group):
+    #             continue
+    #         door_groups.append(door_auth.door_group)
+    #         user_group[door_auth.door_group.id] = group
+    door_groups = []
+    user_group = []
     return render_template('/dashboard/index.html',
                            door_groups=door_groups,
                            user_group=user_group)

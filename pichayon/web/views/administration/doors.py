@@ -60,7 +60,15 @@ def create():
     door.creator = current_user._get_current_object()
     # if form.have_passcode.data:
         # door /.passcode = generate_passcode()
+
     door.save()
+    door_group = models.DoorGroup(
+            name=f'Default {door.name}',
+            default=True,
+            creator = current_user._get_current_object(),
+            doors=[door],
+            )
+    door_group.save()
     
     if form.type.data == 'sparkbit':
         sparkbit_system = models.SparkbitDoorSystem()
@@ -73,25 +81,29 @@ def create():
     
     # door_group.members.append(door)
     # door_group.save()
-    return redirect(url_for('doors.doors_list',
-                            door_group_id=group_id))
+    return redirect(
+            url_for('administration.doors.index')
+            )
 
 
 @module.route('/<door_group_id>/doors_list', methods=["GET", "POST"])
 #@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 @acl.admin_permission.require(http_exception=403)
-def doors_list(door_group_id):
-    door_group = models.DoorGroup.objects.get(id=door_group_id)
-    return render_template('/administration/doors/door_lists.html',
-                           door_group=door_group)
+def list():
+    doors = models.Door.objects.all()
+    return render_template(
+            '/administration/doors/list.html',
+            door_group=door_group,
+            )
 
-@module.route('/<door_group_id>')
+@module.route('/<door_id>')
 @acl.admin_permission.require(http_exception=403)
 def view(door_id):
     door = models.Door.objects.get(id=door_id)
-    return render_template(i
+    return render_template(
             '/administration/doors/view.html',
-            door=door)
+            door=door,
+            )
 
 
 
@@ -150,21 +162,18 @@ def edit(door_id):
 
 
 @module.route('/<door_id>/delete')
-#@acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
 @acl.admin_permission.require(http_exception=403)
 def delete(door_id):
-    group_id = request.args.get('group_id')
-    door_group = models.DoorGroup.objects.get(id=group_id)
-    selected_door = models.Door.objects.get(id=door_id)
-    if selected_door.type == 'sparkbit':
-        sparkbit_system = models.SparkbitDoorSystem.objects(door=selected_door).first()
-        if sparkbit_system:
-            sparkbit_system.delete()
-    door_group.members.remove(selected_door)
-    selected_door.delete()
-    door_group.save()
-    return redirect(url_for('doors.doors_list',
-                            door_group_id=group_id))
+    door = models.Door.objects.get(id=door_id)
+
+    for group in door.groups:
+        if group.default:
+            group.delete()
+
+
+    door.delete()
+    return redirect(url_for('administration.doors.index'))
+
 
 # @module.route('/<door_id>/revoke_passcode')
 # @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
