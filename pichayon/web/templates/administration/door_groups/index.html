@@ -21,7 +21,7 @@
 {% block content %}
   <div class="ui container">
     <div class="ui labeled icon menu">
-      <a class="item" href="{{ url_for('administration.door_groups.create') }}">
+      <a class="item" href="{{ url_for('administration.door_groups.create_or_edit') }}">
         <i class="add icon"></i>
         Create Group
       </a>
@@ -49,7 +49,7 @@
         <td>{{ group.updated_date.ctime() }}</td>
         <td>
           
-	        <a href="{{ url_for('administration.door_groups.edit', door_group_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
+	        <a href="{{ url_for('administration.door_groups.create_or_edit', door_group_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
           <a href="{{ url_for('administration.door_groups.delete', door_group_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
           
         </td>
