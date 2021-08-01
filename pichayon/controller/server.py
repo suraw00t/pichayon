@@ -160,7 +160,7 @@ class ControllerServer:
         logger.debug('Connecting....')
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
         logging.basicConfig(
-                format='%(asctime)s - %(name)s:%(levelname)s - %(message)s',
+                format='%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s',
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
