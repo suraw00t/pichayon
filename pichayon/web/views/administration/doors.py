@@ -58,13 +58,17 @@ def create_or_edit(door_id):
         # door /.passcode = generate_passcode()
 
     door.save()
-    door_group = models.DoorGroup(
-            name=f'Default {door.name}',
-            default=True,
-            creator = current_user._get_current_object(),
-            doors=[door],
-            )
-    door_group.save()
+
+    door_group = models.DoorGroup.objects(doors=door).first()
+    
+    if not door_group:
+        door_group = models.DoorGroup(
+                name=f'Default {door.name}',
+                default=True,
+                creator = current_user._get_current_object(),
+                doors=[door],
+                )
+        door_group.save()
     
     if form.type.data == 'sparkbit':
         sparkbit_system = models.SparkbitDoorSystem()
@@ -108,12 +112,24 @@ def view(door_id):
 def delete(door_id):
     door = models.Door.objects.get(id=door_id)
 
-    for group in door.groups:
-        if group.default:
-            group.delete()
+    door_groups = models.DoorGroup.objects(doors=door)
+    for dg in door_groups:
+        if door.name in dg.name  and dg.default:
+            group_auth = models.GroupAuthorization.objects(
+                    door_group=dg
+                    ).first()
+            if group_auth:
+                group_auth.delete()
+            dg.delete()
 
+    sb_door_systems = models.SparkbitDoorSystem.objects(
+            door=door,
+            )
+    for ds in sb_door_systems:
+        ds.delete()
 
     door.delete()
+
     return redirect(url_for('administration.doors.index'))
 
 

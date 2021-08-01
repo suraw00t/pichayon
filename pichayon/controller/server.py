@@ -31,8 +31,11 @@ class ControllerServer:
     async def handle_command(self, msg):
         subject = msg.subject
         reply = msg.reply
-        data = msg.data.decode()
-        data = json.loads(data)
+        raw_data = msg.data.decode()
+        data = json.loads(raw_data)
+        if type(data) is str:
+            data = json.loads(data)
+
         await self.command_queue.put(data)
 
     async def handle_node_controller_greeting(self, msg):
@@ -71,8 +74,8 @@ class ControllerServer:
         while self.running:
 
             data = await self.command_queue.get()
-            logger.debug('command: {}'.format(data))
-            if 'update_passcode' in data['action']:
+
+            if 'update_passcode' == data['action']:
                 door = models.Door.objects.get(id=data['door_id'])
                 topic = f'pichayon.node_controller.{door.device_id}'
                 logger.debug('update passcode')
@@ -81,25 +84,17 @@ class ControllerServer:
                                 json.dumps(response).encode())
                 logger.debug('update Success')
                 continue
-                
-            logger.debug('door')
+
             door = models.Door.objects.get(id=data['door_id'])
-            logger.debug('user')
             user = models.User.objects.get(id=data['user_id'])
-            logger.debug('user_group')
-            user_group = models.UserGroup.objects.get(id=data['user_group_id'])
-            door_auth = door.get_door_auth()
-            logger.debug(door_auth)
-
-            if not user_group.is_user_member(user):
-                continue
-
-            # logger.debug(user_group.name)
-            if not door_auth.is_authority(user_group):
+        
+            if not door.is_allow(user):
                 logger.debug('No Authority')
                 continue
+
             if 'sparkbit' in data['type']:
                 if not self.sparkbit_enable:
+                    logger.debug('Sparkbit Disable')
                     continue
                 logger.debug('open sparkbit')
                 topic = 'pichayon.controller.sparkbit.command'
@@ -108,6 +103,8 @@ class ControllerServer:
             else:
                 topic = f'pichayon.node_controller.{door.device_id}'
                 command = dict(device_id=door.device_id, action='open')
+
+
             try:
                 await self.nc.publish(
                             topic,

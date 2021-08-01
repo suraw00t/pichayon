@@ -2,6 +2,7 @@ import mongoengine as me
 import datetime
 
 
+
 class Door(me.Document):
     name = me.StringField(required=True, max_length=250)
     device_id = me.StringField(unique=True, max_length=250)
@@ -11,8 +12,8 @@ class Door(me.Document):
     # groups = me.ListField(me.ReferenceField('DoorGroup'))
 
     creator = me.ReferenceField('User', dbref=True)
-    have_web_open = me.BooleanField(default=False, required=True)
-    have_passcode = me.BooleanField(default=False, required=True)
+    is_web_open = me.BooleanField(default=False, required=True)
+    is_passcode = me.BooleanField(default=False, required=True)
     
     status = me.StringField(required=True, default='active')
     type = me.StringField(required=True, default='pichayon')
@@ -25,6 +26,26 @@ class Door(me.Document):
 
 
     meta = {'collection': 'doors'}
+
+    def is_allow(self, user):
+        from . import groups
+        from . import authorizations
+
+        door_groups = groups.DoorGroup.objects(doors=self)
+        user_group_members = groups.UserGroupMember.objects(user=user)
+       
+        user_groups = [ugm.group for ugm in user_group_members]
+        group_auths = authorizations.GroupAuthorization.objects(
+                    door_group__in=door_groups,
+                    user_group__in=user_groups,
+                )
+
+        # print('--->', group_auths)
+
+        if group_auths:
+            return True
+
+        return False
     
     def get_door_auth(self):
         door_group = groups.DoorGroup.objects()

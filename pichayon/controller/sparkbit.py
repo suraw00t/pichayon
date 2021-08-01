@@ -77,7 +77,7 @@ class DoorController:
             logger.debug('open door')
             door = models.Door.objects.get(id=command.get('door_id'))
             user = models.User.objects.get(id=command.get('user_id'))
-            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+            sparkbit_door = models.SparkbitDoorSystem.objects(door=door).first()
 
             if not sparkbit_door:
                 logger.debug(f'door id {command.get("door_id")} is not sparkbit member')
@@ -92,14 +92,25 @@ class DoorController:
             return
 
         try:
-            response = requests.post(
-                    self.door_unlock_url.format(
-                        sparkbit_door.device_id.replace('door-', '')),
-                    verify=False)
-            logger.debug(response.status_code)
-            if response.status_code != 200:
-                logger.debug(f'door {user.system_id} is not open')
-                return
+            # response = requests.post(
+            #         self.door_unlock_url.format(
+            #             sparkbit_door.device_id.replace('door-', '')),
+            #         verify=False)
+            # logger.debug(response.status_code)
+            # if response.status_code != 200:
+            #     logger.debug(f'door {user.system_id} is not open')
+            #     return
+
+            db = self.client[sparkbit_door.device_id]
+            if 'status' not in db:
+                logger.debug(f'door {user.system_id} is not open -> no status')
+            status = db['status']
+            if status['doorState'] != 'closed':
+                logger.debug(f'door {user.system_id} is not open -> status {status["doorState"]}')
+
+
+            status['doorState'] = 'opened'
+            status.save()
         
             logger.debug(f'door {user.system_id} is open')
         except Exception as e:

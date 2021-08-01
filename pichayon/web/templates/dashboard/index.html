@@ -39,7 +39,7 @@
           </div>
         {% endif %}
 
-        {% if not door.have_web_open %}
+        {% if not door.is_web_open %}
           <div class="opendoor ui two buttons">
             <div id="{{ door.id }}" class="ui basic disabled button">Opening via Web was disabled</div>
           </div>

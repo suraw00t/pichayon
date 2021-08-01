@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from pichayon import models
 import json
 import datetime
+from pichayon.web import nats
 
 module = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -46,22 +47,20 @@ def index():
 @login_required
 def open_door():
     door_id = request.form.get('door_id')
-    user_group_id = request.form.get('user_group_id')
+    # user_group_id = request.form.get('user_group_id')
     door = models.Door.objects.get(id=door_id)
     # print(door_id)
-    loop = g.get_loop()
     data = json.dumps({
             'action': 'open',
             'door_id': door_id,
             'type': door.type,
-            'user_group_id': user_group_id,
+            # 'user_group_id': user_group_id,
             'user_id': str(current_user._get_current_object().id)
         })
-    nats_client = g.get_nats_client()
-    loop.run_until_complete(nats_client.publish(
+    nats.nats_client.publish(
         'pichayon.controller.command',
-        data.encode()
-        ))
+        data
+        )
     response = Response()
     response.status_code = 200
     history_log = models.HistoryLog(

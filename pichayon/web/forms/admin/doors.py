@@ -14,8 +14,7 @@ BaseDoorForm = model_form(
             "updated_date",
             "creator",
             "camera_url",
-            "have_passcode",
-            "have_web_open",
+            "is_passcode",
             'status',
             ],
         field_args={
@@ -23,6 +22,7 @@ BaseDoorForm = model_form(
             "description": {"label": "Description"},
             "device_id": {"label": "Device ID"},
             "type": {"label": "Type"},
+            "is_web_open": {"label": "Web open"},
         },
 
         )

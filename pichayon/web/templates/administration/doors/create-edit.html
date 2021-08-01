@@ -46,11 +46,14 @@
   <div class="twelve wide field">
       {{ renderer.render_field(form.camera_url) }}
   </div>
-  <div class="twelve wide field">
-      {{ renderer.render_checkbox(form.have_passcode) }}
-      {{ renderer.render_checkbox(form.have_web_open) }}
-  </div>
   #}
+  <div class="two fields">
+    {{ renderer.render_checkbox(form.is_web_open) }}
+    {#
+    {{ renderer.render_checkbox(form.have_passcode) }}
+    #}
+  </div>
+
   {% if device_id_error == 'True' %}
     <div class="ui error message">
       <div class="header">Error</div>
