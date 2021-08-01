@@ -23,29 +23,29 @@ def index():
                            groups=groups)
 
 
-@module.route('/create', methods=["GET", "POST"])
+@module.route('/create', methods=["GET", "POST"], defaults={"user_group_id": None})
+@module.route('/<user_group_id>/edit', methods=["GET", "POST"])
 @acl.role_required('admin')
-def create():
+def create_or_edit(user_group_id=None):
     form = UserGroupForm()
+
+    group = None
+    if user_group_id:
+        group = models.UserGroup.objects(id=user_group_id).first()
+        form = UserGroupForm(obj=group)
+    
     if not form.validate_on_submit():
         return render_template('/administration/user_groups/create-edit.html',
                                form=form)
-    user_group = models.UserGroup()
-    form.populate_obj(user_group)
-    logs = models.HistoryLog(
-                action = 'create',
-                message = f'{current_user._get_current_object().username} has created a user group: {user_group.name}',
-                details = {
-                    'user': current_user._get_current_object().username,
-                    'user_group': user_group.name,
-                    },
-                recorded_date = datetime.datetime.now()
-            )
 
+    if not group:
+        user_group = models.UserGroup()
+
+    form.populate_obj(user_group)
     user_group.creator = current_user._get_current_object()
     user_group.save()
-    logs.save()
-    return redirect(url_for('user_groups.index'))
+
+    return redirect(url_for('administration.user_groups.index'))
 
 
 @module.route('/<user_group_id>')
@@ -63,54 +63,26 @@ def view(user_group_id):
                            form=form,
                            )
 
-
-@module.route('/<user_group_id>/edit', methods=["GET", "POST"])
-@acl.role_required('admin')
-def edit(user_group_id):
-    group = models.UserGroup.objects.get(id=group_id)
-
-    form = UserGroupForm(obj=group)
-    if not form.validate_on_submit():
-        return render_template('/administration/user_groups/create-edit.html',
-                               form=form)
-
-    form.populate_obj(group)
-    logs = models.HistoryLog(
-                action = 'update',
-                message = f'{current_user._get_current_object().username} has updated a user group: {group.name}',
-                details = {
-                    'user': current_user._get_current_object().username,
-                    'user_group': group.name,
-                    },
-                recorded_date = datetime.datetime.now()
-            )
-    group.save()
-    logs.save()
-
-    return redirect(url_for('user_groups.index'))
-
-
 @module.route('/<user_group_id>/delete')
 @acl.role_required('admin')
 def delete(user_group_id):
-    selected_group = models.UserGroup.objects.get(id=user_group_id)
-    door_auths = models.DoorAuthorization.objects()
-    for door_auth in door_auths:
-        door_auth.remove_member(selected_group)
-    # group.status = 'delete'
-    selected_group.delete()
-    logs = models.HistoryLog(
-                action = 'delete',
-                message = f'{current_user._get_current_object().username} has deleted a user group: {selected_group.name}',
-                details = {
-                    'user': current_user._get_current_object().username,
-                    'user_group': selected_group.name,
-                    },
-                recorded_date = datetime.datetime.now()
-            )
-    logs.save()
+    group = models.UserGroup.objects.get(id=user_group_id)
+    group_auths = models.GroupAuthorization.objects(user_group=group)
 
-    return redirect(url_for('user_groups.index'))
+    # group.status = 'delete'
+    user_group_members = models.UserGroupMember.objects(
+            group=group,
+            )
+
+    for member in user_group_members:
+        member.delete()
+
+    for group_auth in group_auths:
+        group_auth.delete()
+
+    group.delete()
+
+    return redirect(url_for('administration.user_groups.index'))
 
 
 @module.route('/<user_group_id>/add_member', methods=['POST'])
