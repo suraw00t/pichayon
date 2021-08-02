@@ -67,18 +67,12 @@ def view(user_group_id):
 @acl.role_required('admin')
 def delete(user_group_id):
     group = models.UserGroup.objects.get(id=user_group_id)
-    group_auths = models.GroupAuthorization.objects(user_group=group)
+    models.GroupAuthorization.objects(user_group=group).delete()
 
     # group.status = 'delete'
-    user_group_members = models.UserGroupMember.objects(
+    models.UserGroupMember.objects(
             group=group,
-            )
-
-    for member in user_group_members:
-        member.delete()
-
-    for group_auth in group_auths:
-        group_auth.delete()
+            ).delete()
 
     group.delete()
 

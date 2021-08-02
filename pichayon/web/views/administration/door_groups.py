@@ -63,7 +63,8 @@ def create_or_edit(door_group_id):
 @module.route('/<door_group_id>/delete')
 @acl.role_required('admin')
 def delete(door_group_id):
-    group = models.DoorGroup.objects.get(id=door_group_id)
+    door_group = models.DoorGroup.objects.get(id=door_group_id)
+    models.GroupAuthorization.objects(door_group=door_group).delete()
     
-    group.delete()
+    door_group.delete()
     return redirect(url_for('administration.door_groups.index'))
