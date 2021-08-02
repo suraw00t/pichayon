@@ -88,6 +88,8 @@ def delete(user_group_id):
 @module.route('/<user_group_id>/add_member', methods=['POST'])
 def add_member(user_group_id):
     form = forms.admin.groups.UserGroupMemberForm()
+    
+    group = models.UserGroup.objects(id=user_group_id).first()
     users = models.User.objects.all()
 
     form.users.choices = [
@@ -95,7 +97,6 @@ def add_member(user_group_id):
     if not form.validate_on_submit():
         return redirect(url_for('administration.user_groups.view', user_group_id=user_group_id))
 
-    group = models.UserGroup.objects(id=user_group_id).first()
     if not group:
         return redirect(url_for('administration.user_groups.index'))
 
@@ -116,6 +117,7 @@ def add_member(user_group_id):
                     added_by=current_user._get_current_object(),
                     )
 
+        member.role = form.role.data
         member.started_date = form.started_date.data
         member.expired_date = form.expired_date.data
         
