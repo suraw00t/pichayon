@@ -17,7 +17,7 @@ from . import rfid
 from . import data_storage
 
 
-class NodeControllerServer:
+class DoorControllerServer:
     def __init__(self, settings):
         self.settings = settings
         self.is_register = False

@@ -1,7 +1,7 @@
-from .server import NodeControllerServer
+from .server import DoorControllerServer
 
 def create_server():
     from pichayon.utils import config
     settings = config.get_settings()
-    server = NodeControllerServer(settings)
+    server = DoorControllerServer(settings)
     return server
