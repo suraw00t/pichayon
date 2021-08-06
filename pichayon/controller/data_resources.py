@@ -9,42 +9,40 @@ logger = logging.getLogger(__name__)
 
 class DataResourceManager:
     async def get_authorization_data(self, device_id):
-        door_groups = models.DoorGroup.objects()
-        res = dict()
-        door_auth = None
-        ugroup = list()
-        ugroup_selected = dict()
+        response = dict()
         door = models.Door.objects(device_id=device_id).first()
-        # logger.debug('data res1')
-        for door_group in door_groups:
-            # logger.debug(door_group.name)
-            if door_group.search_device_id(device_id):
-                door_auth = models.DoorAuthorization.objects(door_group=door_group).first()
-                # logger.debug(door_auth)
-                break
-        if door_auth is None:
-            return {}
-        # logger.debug('res2')
-        for authorization_group in door_auth.authorization_groups:
-            # logger.debug(authorization_group.user_group.name)
-            ugroup.append(authorization_group.user_group)
-        
-        res['user_groups'] = list()
-        for group in ugroup:
-            # logger.debug('res3')
-            if door_auth.is_authority(group):
-                # logger.debug('res4')
-                ugroup_selected['name'] = group.name
-                ugroup_selected['members'] = list()
-                members = models.UserGroupMember.objects(group=group)
-                for member in members:
-                    ugroup_selected['members'].append(
-                            {'username': member.user.username,
-                             'rfid': member.user.rfid,
-                             'passcode': member.user.passcode})
-                res['user_groups'].append(ugroup_selected)
 
-        res['action'] = 'update'
-        logger.debug(res)
-        # logger.debug(ugroup_selected)
-        return res
+        if not door:
+            logger.debug(f'client {device_id}: device is not found')
+            return {}
+
+        door_groups = door.get_door_groups()
+        door_auths = door.get_authorization()
+
+        if door_auths:
+            return {}
+
+        user_groups = door.get_allowed_user_groups()
+
+        response['user_groups'] = list()
+        for user_group in user_groups:
+            user_group_info = dict(
+                    nane=user_group.name,
+                    members=list(),
+                    )
+
+            for member in user_group.get_user_group_members():
+                user_group_info['members'].append(
+                        {
+                            'id': str(member.user.id),
+                            'username': member.user.username,
+                            'identifiers': member.user.rfid,
+                            'passcode': member.user.passcode,
+                        }
+                    )
+            
+            response['user_groups'].append(user_group_info)
+
+        response['action'] = 'update'
+        logger.debug(f'{response}')
+        return response

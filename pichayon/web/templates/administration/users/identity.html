@@ -1,0 +1,47 @@
+{% extends '/administration/users/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+{% block dashboard_title %}
+	Edit
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">{{user.username}} Identity</div>
+{%- endblock %}
+{% block content %}
+
+  <div class="ui container" style="margin-top: 1em;">
+    <a class="ui button primary" href="{{ url_for('administration.users.add_or_edit_identity', user_id=user.id) }}">Add</a>
+  <table class="ui selectable celled table">
+    <thead>
+      <tr>
+        <th>Identifier</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Created Date</th>
+        <th>Updated Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for identity in user.identities %}
+      <tr>
+        <td>{{ identity.identifier }}</td>
+        <td>{{ identity.type }}</td>
+        <td>{{ identity.status }}</td>
+        <td>{{ identity.created_date }}</td>
+        <td>{{ identity.updated_date }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+
+</div>
+
+<script>
+$('#roles')
+  .dropdown();
+</script>
+
+{% endblock %}

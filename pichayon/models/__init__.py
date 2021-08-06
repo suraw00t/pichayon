@@ -1,4 +1,4 @@
-from .users import User
+from .users import User, Identity
 from .doors import Door
 from .door_systems import SparkbitDoorSystem
 from .oauth2 import OAuth2Token
@@ -7,6 +7,7 @@ from .authorizations import GroupAuthorization, Rrule
 from .history_logs import HistoryLog
 
 __all__ = [User,
+           Identity,
            Door,
            OAuth2Token,
            UserGroup,

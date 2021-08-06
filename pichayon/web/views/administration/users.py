@@ -9,6 +9,7 @@ import datetime
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
 from pichayon.web import acl
+from pichayon.web import forms
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
                                       AddRoleUserForm,
@@ -115,7 +116,7 @@ def delete(group_id):
             break
     group.save()
 
-    return redirect(url_for('users.list', group_id=group_id))
+    return redirect(url_for('administration.users.list', group_id=group_id))
 
 
 @module.route('/<user_id>/edit', methods=["GET", "POST"])
@@ -125,14 +126,12 @@ def edit(user_id):
     form = EditForm(obj=user)
     form.roles.choices = [('admin', 'Admin'), ('supervisor', 'Supervisor'), ('student', 'Student')]
     if not form.validate_on_submit():
-        form.roles.data = user.roles[-1]
         return render_template('administration/users/edit.html',
                                form=form,
                                user=user)
-    user.roles[-1] = form.roles.data
-    user.rfid = form.rfid.data
+    user.roles = form.roles.data
     user.save()
-    return redirect(url_for('users.index'))
+    return redirect(url_for('administration.users.index'))
 
 
 @module.route('/<user_id>/revoke_passcode', methods=["GET", "POST"])
@@ -147,5 +146,47 @@ def revoke_passcode(user_id):
 
     user.passcode = passcode
     user.save()
-    return redirect(url_for('users.index'))
+    return redirect(url_for('administration.users.index'))
 
+
+
+@module.route('/<user_id>/identities', methods=["GET", "POST"])
+@login_required
+def identity(user_id):
+    user = models.User.objects.get(id=user_id)
+    return render_template(
+            'administration/users/identity.html',
+            user=user,
+            )
+
+@module.route('/<user_id>/identities/add', methods=["GET", "POST"], defaults={'index': None})
+@module.route('/<user_id>/identities/{index}/add', methods=["GET", "POST"])
+@login_required
+def add_or_edit_identity(user_id, index):
+    user = models.User.objects.get(id=user_id)
+
+    form = forms.admin.users.IdentityForm()
+    if request.method == 'GET' and index:
+        form = forms.admin.users.IdentityForm(obj=user.identities[index])
+
+    if not form.validate_on_submit():
+        return render_template(
+                'administration/users/add-edit-identity.html',
+                form=form,
+                )
+
+    identity = models.Identity()
+    if index:
+        identity = user.identities[index]
+
+    form.populate_obj(identity)
+    
+    if not index:
+        user.identities.append(identity)
+    
+    user.save()
+
+    return render_template(
+            'administration/users/identity.html',
+            user=user,
+            )

@@ -17,7 +17,7 @@ class AddingUserForm(FlaskForm):
 
 
 class AddRoleUserForm(FlaskForm):
-    role = fields.SelectField('Role')
+    role = fields.SelectMultipleField('Role')
 
 
 class UserForm(FlaskForm):
@@ -35,9 +35,24 @@ class AddingRoomForm(FlaskForm):
     expired_date = fields.DateField('Expired Date',
                                    format='%Y-%m-%d')
 
+class IdentityForm(FlaskForm):
+    identifier = fields.StringField(
+            'ID',
+            validators=[validators.InputRequired()],
+            )
+    type = fields.SelectField(
+            'Type',
+            choices=[('rfid', 'RFID')],
+            default='rfid'
+            )
+    status = fields.SelectField(
+            'Status',
+            choices=[('active', 'Active'), ('disactive', 'Disactive')],
+            default='active',
+            )
 
 class EditForm(FlaskForm):
-    roles = fields.SelectField('Role')
-    rfid = fields.StringField('RFID')
+    roles = fields.SelectMultipleField('Role')
     system_id = fields.StringField('System ID')
+
 

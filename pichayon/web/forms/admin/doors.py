@@ -15,6 +15,7 @@ BaseDoorForm = model_form(
             "creator",
             "camera_url",
             "is_passcode",
+            "is_web_open",
             'status',
             ],
         field_args={
@@ -22,13 +23,13 @@ BaseDoorForm = model_form(
             "description": {"label": "Description"},
             "device_id": {"label": "Device ID"},
             "type": {"label": "Type"},
-            "is_web_open": {"label": "Web open"},
         },
 
         )
 
 class DoorForm(BaseDoorForm):
     type = fields.SelectField()
+    is_web_open = fields.BooleanField('Web Open', default=False)
 
 
 

@@ -47,16 +47,19 @@ class Door(me.Document):
 
         return False
     
-    def get_door_auth(self):
-        door_group = groups.DoorGroup.objects()
-        door_auth = None
-        for group in door_group:
-            if group.is_member(self):
-                door_auth = models.DoorAuthorization.objects(door_group=group).first()
-                break
-        if door_auth:
-            return door_auth
-        return
+    def get_authorization(self):
+        door_groups = self.get_door_groups()
+        door_auths = models.GroupAuthorization.objects(
+                door_groups__in=door_groups
+                )
+
+        return door_auths
+
+    def get_allowed_user_groups(self):
+        door_auths = self.get_authorization()
+
+        return [door_auth.user_group for door_auth in door_auths]
+
 
     def get_door_attributes(self):
         if type == 'sparkbit':
@@ -64,7 +67,7 @@ class Door(me.Document):
 
         return None
 
-    def get_groups(self):
+    def get_door_groups(self):
         from . import groups
         return groups.DoorGroup.objects(doors=self)
 

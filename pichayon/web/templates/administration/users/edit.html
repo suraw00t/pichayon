@@ -10,20 +10,17 @@
 <div class="active section">Edit {{user.username}}</div>
 {%- endblock %}
 {% block content %}
-  <div class="ui container" style="margin-top: 1em;">
-<form class="ui big form" method="POST">
-	{{ form.csrf_token }}
-	<div class="six wide field">
-      {{ renderer.render_select_no_search(form.roles) }}
-	</div>
-	<div class="six wide field">
-      {{ renderer.render_field(form.rfid) }}
-	</div>
-	<div class="six wide field">
-      {{ renderer.render_field(form.system_id) }}
-	</div>
-<button class="ui submit primary button" type="submit">Confirm</button>
-</form>
+<div class="ui container" style="margin-top: 1em;">
+  <form class="ui big form" method="POST">
+    {{ form.csrf_token }}
+    <div class="six wide field">
+        {{ renderer.render_multiple_select(form.roles) }}
+    </div>
+    <div class="six wide field">
+        {{ renderer.render_field(form.system_id) }}
+    </div>
+    <button class="ui submit primary button" type="submit">Update</button>
+  </form>
 </div>
 
 <script>

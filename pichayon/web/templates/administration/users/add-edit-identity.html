@@ -1,0 +1,32 @@
+{% extends '/administration/users/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+{% block dashboard_title %}
+	Edit Role
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+  <div class="active section">Add or Edit Identity</div>
+{%- endblock %}
+{% block content %}
+<form class="ui big form" method="POST">
+  {{ form.csrf_token }}
+  <div class="field">
+    {{ renderer.render_field(form.identifier) }}
+  </div>
+	<div class="field">
+      {{ renderer.render_select(form.type) }}
+  </div>
+	<div class="field">
+      {{ renderer.render_select(form.status) }}
+  </div>
+
+<button class="ui submit primary button" type="submit">Confirm</button>
+</form>
+<script>
+$('.ui.dropdown')
+  .dropdown()
+;
+</script>
+{% endblock %}

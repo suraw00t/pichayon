@@ -3,6 +3,14 @@ import datetime
 
 from flask_login import UserMixin
 
+class Identity(me.EmbeddedDocument):
+    identifier = me.StringField(required=True, default='')
+    type = me.StringField(required=True, default='rfid')
+    status = me.StringField(default=True, status='active')
+
+    created_date = me.DateTimeField(required=True, default=datetime.datetime.now())
+    updated_date = me.DateTimeField(required=True, default=datetime.datetime.now())
+
 
 class User(me.Document, UserMixin):
     username = me.StringField(
@@ -21,26 +29,35 @@ class User(me.Document, UserMixin):
             required=True,
             default='',
             max_length=13)
-    rfid = me.StringField(default='', required=True)
-    passcode = me.StringField(default='', required=True)
+
+    identities = me.ListField(
+            me.EmbeddedDocumentField(Identity)
+            )
+
     gave_informations = me.BooleanField(
             required=True,
-            default=False)
+            default=False,
+            )
 
     profile_image = me.FileField()
 
     status = me.StringField(
             required=True,
             default='disactive')
+
     roles = me.ListField(
             me.StringField(),
             default=['user'])
 
-    created_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.now)
-    updated_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.now,
-                                    auto_now=True)
+    created_date = me.DateTimeField(
+            required=True,
+            default=datetime.datetime.now,
+            )
+    updated_date = me.DateTimeField(
+            required=True,
+            default=datetime.datetime.now,
+            auto_now=True,
+            )
 
     resources = me.DictField()
 

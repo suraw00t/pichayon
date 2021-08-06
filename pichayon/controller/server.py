@@ -47,6 +47,7 @@ class ControllerServer:
         data = json.loads(data)
         if data['action'] == 'register':
             # logger.debug('before res')
+            logger.debug(f'client {data["device_id"]} is registering')
             response = await self.data_resource.get_authorization_data(data['device_id'])
             # logger.debug('after res')
             await self.nc.publish(reply,

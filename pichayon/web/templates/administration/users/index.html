@@ -25,7 +25,7 @@
             <th>Name</th>
             <th>Status</th>
             <th>RFID</th>
-            <th>Passcode</th>
+            {# <th>Passcode</th> #}
             <th>Operation</th>
         </tr>
     </thead>
@@ -34,31 +34,40 @@
 
     {% for user in users %}
     <tr>
-	  <td>
-	    <a href="{{url_for('accounts.index', user=user.id)}}">{{ user.username }}</a>
-	  </td>
-          <td>{{ user.email }}</td>
-	  <td>{{ user.first_name }} {{ user.last_name }}</td>
-	  <td>{{ user.roles[-1].capitalize()}}</td>
-    <td>
-    {% if user.rfid | length > 0%}
-        <i class="large check icon green"></i>
-        {% else %}
-        <i class="large delete icon red"></i>
-    {% endif %}
-
-    </td>
-    <td>
-      {% if user.passcode |length >0 %}
-      {{ user.passcode}}
-        {% else %}
-        <i class="large delete icon red"></i>
-    {% endif %}
-    <a href="{{url_for('administration.users.revoke_passcode', user_id=user.id)}}"><i class="large undo alternate icon rigth"></i></a>
-    </td>
-    <td>
-    <a href="{{url_for('administration.users.edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
-    </td>
+      <td>
+        <a href="{{url_for('accounts.index', user=user.id)}}">{{ user.username }}</a>
+      </td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.first_name }} {{ user.last_name }}</td>
+      <td>{{ user.roles | join(', ') }}</td>
+      <td>
+      
+      {% if user.identities | length > 0%}
+          {#
+          <i class="large check icon green"></i>
+          {% else %}
+            <i class="large delete icon red"></i>
+          #}
+          {% for identity in user.identities if identity.status == 'active' %}
+            {{ identity.identifier }},
+          {% endfor %}
+      {% endif %}
+     
+      </td>
+      {#
+      <td>
+        {% if user.passcode |length >0 %}
+        {{ user.passcode}}
+          {% else %}
+          <i class="large delete icon red"></i>
+        {% endif %}
+        <a href="{{url_for('administration.users.revoke_passcode', user_id=user.id)}}"><i class="large undo alternate icon rigth"></i></a>
+      </td>
+      #}
+      <td>
+        <a href="{{url_for('administration.users.edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
+        <a href="{{url_for('administration.users.identity', user_id=user.id)}}"><i class="circular inverted id card icon"></i></a>
+      </td>
     </tr>
         {% endfor %}
     </tbody>
