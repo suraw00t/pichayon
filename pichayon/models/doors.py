@@ -5,7 +5,6 @@ import datetime
 
 class Door(me.Document):
     name = me.StringField(required=True, max_length=250)
-    device_id = me.StringField(unique=True, max_length=250)
     description = me.StringField()
     camera_url = me.StringField(default='', required=True)
     # passcode = me.StringField(default='')
@@ -16,7 +15,10 @@ class Door(me.Document):
     is_passcode = me.BooleanField(default=False, required=True)
     
     status = me.StringField(required=True, default='active')
-    type = me.StringField(required=True, default='pichayon')
+
+    device_type = me.StringField(required=True, default='pichayon')
+    device_id = me.StringField(unique=True, max_length=250)
+    device_updated_date = me.DateTimeField()
 
     created_date = me.DateTimeField(required=True,
                                     default=datetime.datetime.now)
@@ -48,9 +50,10 @@ class Door(me.Document):
         return False
     
     def get_authorization(self):
+        from . import authorizations
         door_groups = self.get_door_groups()
-        door_auths = models.GroupAuthorization.objects(
-                door_groups__in=door_groups
+        door_auths = authorizations.GroupAuthorization.objects(
+                door_group__in=door_groups
                 )
 
         return door_auths

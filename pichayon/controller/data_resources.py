@@ -17,17 +17,12 @@ class DataResourceManager:
             return {}
 
         door_groups = door.get_door_groups()
-        door_auths = door.get_authorization()
-
-        if door_auths:
-            return {}
-
         user_groups = door.get_allowed_user_groups()
 
         response['user_groups'] = list()
         for user_group in user_groups:
             user_group_info = dict(
-                    nane=user_group.name,
+                    name=user_group.name,
                     members=list(),
                     )
 
@@ -36,13 +31,17 @@ class DataResourceManager:
                         {
                             'id': str(member.user.id),
                             'username': member.user.username,
-                            'identifiers': member.user.rfid,
-                            'passcode': member.user.passcode,
+                            'identifiers': [
+                                dict(
+                                    identifier=identity.identifier,
+                                    status=identity.status,
+                                    ) 
+                                for identity in member.user.identities \
+                                        if identity.status == 'active'],
                         }
                     )
             
             response['user_groups'].append(user_group_info)
 
         response['action'] = 'update'
-        logger.debug(f'{response}')
         return response

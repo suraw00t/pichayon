@@ -22,13 +22,13 @@ BaseDoorForm = model_form(
             "name": {"label": "Name"},
             "description": {"label": "Description"},
             "device_id": {"label": "Device ID"},
-            "type": {"label": "Type"},
+            "device_type": {"label": "Type"},
         },
 
         )
 
 class DoorForm(BaseDoorForm):
-    type = fields.SelectField()
+    device_type = fields.SelectField('device_type')
     is_web_open = fields.BooleanField('Web Open', default=False)
 
 

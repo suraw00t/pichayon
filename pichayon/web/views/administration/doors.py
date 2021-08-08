@@ -38,7 +38,7 @@ def create_or_edit(door_id):
         door = models.Door.objects.get(id=door_id)
         form = DoorForm(obj=door)
 
-    form.type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
+    form.device_type.choices = [('pichayon', 'Pichayon'), ('sparkbit', 'Sparkbit')]
     door_groups = models.DoorGroup.objects()
 
     if not form.validate_on_submit():

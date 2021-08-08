@@ -32,11 +32,7 @@
       </div>
 
       <div class="twelve wide field">
-      {% if 'edit' in request.path %}
-          {{ renderer.render_select_disabled(form.type) }}
-      {% else %}
-          {{ renderer.render_select(form.type) }}
-      {% endif %}
+          {{ renderer.render_select(form.device_type) }}
       </div>
 
       <div class="twelve wide field">

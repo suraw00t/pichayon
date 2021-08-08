@@ -8,6 +8,7 @@ import datetime
 logger = logging.getLogger(__name__)
 from . import data_resources
 from . import sparkbit
+from . import doors
 
 class ControllerServer:
     def __init__(self, settings):
@@ -16,6 +17,7 @@ class ControllerServer:
         self.running = False
         self.command_queue = asyncio.Queue()
         self.data_resource = data_resources.DataResourceManager()
+        self.door_manager = doors.DoorManager()
 
         self.sparkbit_enable = self.settings.get('SPARKBIT_ENABLE', False)
         if self.sparkbit_enable:
@@ -38,83 +40,86 @@ class ControllerServer:
 
         await self.command_queue.put(data)
 
-    async def handle_node_controller_greeting(self, msg):
+    async def handle_door_controller_greeting(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
-        # logger.debug('Yes')
-        
+
         data = json.loads(data)
-        if data['action'] == 'register':
-            # logger.debug('before res')
-            logger.debug(f'client {data["device_id"]} is registering')
-            response = await self.data_resource.get_authorization_data(data['device_id'])
-            # logger.debug('after res')
-            await self.nc.publish(reply,
-                            json.dumps(response).encode())
-            logger.debug('client {} is registed'.format(data['device_id']))
-        return
+        logger.debug(f'===> {data}')
+        if data['action'] != 'register':
+            return
+        # logger.debug('before res')
+        logger.debug(f'client {data["device_id"]} is registering')
+        # response = await self.data_resource.get_authorization_data(data['device_id'])
+        # logger.debug('after res')
+        door = models.Door.objects(
+                device_id=data['device_id']).first()
+        response = data
+        if door:
+            response['status'] = 'registed'
+            response['door_id'] = str(door.id)
+            response['completed_date'] = datetime.datetime.now().isoformat()
+            door.device_updated_date = datetime.datetime.now()
+            door.save()
+        else:
+            response['status'] = 'rejected'
+
+        await self.nc.publish(
+                reply,
+                json.dumps(response).encode(),
+                )
+        logger.debug('client {} is registed'.format(data['device_id']))
     
-    async def update_data_to_node_controller(self):
+    async def update_data_to_door_controller(self):
         while self.running:
-            logger.debug('start sync data')
-            doors = models.Door.objects(status='active', type='pichayon')
-            logger.debug('after query')
+            logger.debug('start update data')
+            doors = models.Door.objects(status='active', door_type='pichayon')
             for door in doors:
-                logger.debug(f'>>>>{door.device_id}')
+                logger.debug(f'start send data to {door.device_id}')
                 if len(door.device_id) == 0:
                     continue
-                topic = f'pichayon.node_controller.{door.device_id}'
+                topic = f'pichayon.door_controller.{door.device_id}'
                 response = await self.data_resource.get_authorization_data(door.device_id)
-                await self.nc.publish(topic,
-                                      json.dumps(response).encode())
+                await self.nc.publish(
+                        topic,
+                        json.dumps(response).encode())
             await asyncio.sleep(3600)
             
 
     async def process_command(self):
+        logger.debug('start process command')
         while self.running:
-
             data = await self.command_queue.get()
-
-            if 'update_passcode' == data['action']:
-                door = models.Door.objects.get(id=data['door_id'])
-                topic = f'pichayon.node_controller.{door.device_id}'
-                logger.debug('update passcode')
-                response = await self.data_resource.get_authorization_data(door.device_id)
-                await self.nc.publish(topic,
-                                json.dumps(response).encode())
-                logger.debug('update Success')
-                continue
-
-            door = models.Door.objects.get(id=data['door_id'])
-            user = models.User.objects.get(id=data['user_id'])
-        
-            if not door.is_allow(user):
-                logger.debug('No Authority')
-                continue
-
-            if 'sparkbit' in data['type']:
-                if not self.sparkbit_enable:
-                    logger.debug('Sparkbit Disable')
+            logger.debug(f'process => {data}')
+            # if data['action'] == 'update_passcode':
+            #     door = models.Door.objects.get(id=data['door_id'])
+            #     topic = f'pichayon.door_controller.{door.device_id}'
+            #     logger.debug('update passcode')
+            #     response = await self.data_resource.get_authorization_data(door.device_id)
+            #     await self.nc.publish(topic,
+            #                     json.dumps(response).encode())
+            #     logger.debug('update Success')
+            #     continue
+            if data['action'] == 'request_initial_data':
+                logger.debug('got request_initial_data')
+                door = models.Door.objects(device_id=data['device_id']).first()
+                if not door:
                     continue
-                logger.debug('open sparkbit')
-                topic = 'pichayon.controller.sparkbit.command'
-                command = dict(door_id=data['door_id'], user_id=data['user_id'], action='open_door')
-                logger.debug('set success')
-            else:
-                topic = f'pichayon.node_controller.{door.device_id}'
-                command = dict(device_id=door.device_id, action='open')
 
-
-            try:
+                topic = f'pichayon.door_controller.{door.device_id}'
+                response = await self.data_resource.get_authorization_data(door.device_id)
+                logger.debug(f'response {response}')
                 await self.nc.publish(
-                            topic,
-                            json.dumps(command).encode())
-            except Exception as e:
-                logger.exception(e)
-            logger.debug('Send Success')
+                        topic,
+                        json.dumps(response).encode(),
+                        )
+            elif data['action'] == 'open':
+                self.door_manager.open(data)
 
-    async def handle_node_controller_log(self, msg):
+        logger.debug('end process command')
+
+    async def handle_door_controller_log(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
@@ -160,24 +165,27 @@ class ControllerServer:
         self.nc = NATS()
         logger.debug('Connecting....')
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
+
+        await self.door_manager.set_message_client(self.nc)
+
         logging.basicConfig(
                 format='%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s',
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
-        greeting_topic = 'pichayon.node_controller.greeting'
+        greeting_topic = 'pichayon.door_controller.greeting'
         command_topic = 'pichayon.controller.command'
         sparkbit_topic = 'pichayon.controller.sparkbit.command'
-        logging_topic = 'pichayon.node_controller.send_log'
+        logging_topic = 'pichayon.door_controller.send_log'
         logger.debug('OK')
 
         nc_id = await self.nc.subscribe(
                 greeting_topic,
-                cb=self.handle_node_controller_greeting
+                cb=self.handle_door_controller_greeting
                 )
         log_id = await self.nc.subscribe(
                 logging_topic,
-                cb=self.handle_node_controller_log
+                cb=self.handle_door_controller_log
                 )
         cc_id = await self.nc.subscribe(
                 command_topic,
@@ -200,7 +208,7 @@ class ControllerServer:
         loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())
-        handle_update_data_to_node_task = loop.create_task(self.update_data_to_node_controller())
+        update_data_task = loop.create_task(self.update_data_to_door_controller())
 
         if self.sparkbit_enable:
             sparkbit_task = loop.create_task(self.sparkbit_controller.process_command())
