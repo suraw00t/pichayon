@@ -10,10 +10,10 @@ class Device:
     def __init__(self):
         self.device_id = '0000000000000000'
 
-        GPIO.setmode(GPIO.BCM)
+        # GPIO.setmode(GPIO.BCM)
         self.relay_pin = 26 
-        GPIO.setup(self.relay_pin, GPIO.OUT)
-        GPIO.output(self.relay_pin, GPIO.HIGH)
+        # GPIO.setup(self.relay_pin, GPIO.OUT)
+        # GPIO.output(self.relay_pin, GPIO.HIGH)
 
     def get_device_id(self):
         try:
