@@ -30,12 +30,7 @@ class Manager:
     #             self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
 
     def update_data(self, data):
-        logger.debug(f'>>>>>>>{data}')
-       
-        
-        if data['action'] == 'revoke':
-            self.user.truncate()
-
+        logger.debug('update data')
         user_groups = data['user_groups']
         #for user in users:
 
@@ -51,6 +46,20 @@ class Manager:
                     self.user.insert(
                             member
                             )
+
+    def initial_data(self, data):
+        logger.debug('initial data')
+
+        self.user.truncate()
+
+        user_groups = data['user_groups']
+
+        for group in user_groups:
+            for member in group['members']:
+                self.user.insert(
+                        member
+                        )
+
 
 
     async def get_user_by_rfid(self, rfid_number):

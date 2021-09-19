@@ -71,13 +71,13 @@ class DoorControllerServer:
         while self.running:
             data = await self.controller_command_queue.get()
 
-            logger.debug(f'process command {data}')
+            logger.debug(f'process command -> {data}')
             if data['action'] == 'open':
                 await self.device.open_door()
                 await asyncio.sleep(.5)
                 continue
-            elif data['action'] == 'update':
-                self.db_manager.update_data(data)
+            elif data['action'] == 'initial':
+                self.db_manager.initial_data(data)
                 await asyncio.sleep(.5)
                 continue
             await asyncio.sleep(.5)
