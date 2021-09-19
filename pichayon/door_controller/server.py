@@ -13,7 +13,7 @@ from nats.aio.errors import ErrTimeout
 from . import devices
 from . import keypad
 from . import rfid
-from . import data_storage
+from . import database
 from . import logs
 
 logger = logging.getLogger(__name__)
@@ -32,12 +32,12 @@ class DoorControllerServer:
         # self.passcode = ''
         rfid_number = '' 
         self.rfid = rfid.RFIDReader()
-        self.data_storage = data_storage.DataStorage(
+        self.db_manager = database.Manager(
                 self.settings,
                 self.device_id)
 
         self.log_manager = logs.LogManager(
-                self.data_storage,
+                self.db_manager,
                 self.device_id,
                 )
 
@@ -77,7 +77,7 @@ class DoorControllerServer:
                 await asyncio.sleep(.5)
                 continue
             elif data['action'] == 'update':
-                self.data_storage.update_data(data)
+                self.db_manager.update_data(data)
                 await asyncio.sleep(.5)
                 continue
             await asyncio.sleep(.5)
@@ -99,7 +99,7 @@ class DoorControllerServer:
                 continue
             time_stamp = datetime.datetime.now()
             passcode += key
-            logger.debug(f'passcode: >>>{passcode}')
+            logger.debug(f'passcode >>> {passcode}')
             if len(passcode) == 6:
                 # device_passcode = self.db.search(self.query.passcode == passcode)
                 user_passcode = self.db.search(self.query.passcode == passcode)
@@ -139,23 +139,17 @@ class DoorControllerServer:
 
             rfid_number = await self.rfid_queue.get()
             try:
-                logger.debug(f'rfid: >>>{rfid_number}')
+                logger.debug(f'rfid >>> {rfid_number}')
                 # user_rfid = self.db.search(self.query.rfid == rfid_number)
-                user = await self.data_storage.get_user_by_rfid(rfid_number)
+                user = await self.db_manager.get_user_by_rfid(rfid_number)
 
                 print(f'---> {user}')
                 if not user:
+                    logger.debug('There are no user rfid {rfid_number}')
                     continue
 
                 await self.device.open_door()
-                self.db.insert({
-                    'username': user_rfid[0]['username'],
-                    'action': 'open_door',
-                    'type': 'rfid',
-                    'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
-                    'status': 'wait'
-                    })
-                # rfid_number = ''
+                await self.log_manager.put_log(user, type='rfid', action='open-door')
             except Exception as e:
                 logger.exception(e)
 
@@ -166,6 +160,16 @@ class DoorControllerServer:
 
             logger.debug('Send success')
             await asyncio.sleep(5)
+
+    async def listen_open_switch(self):
+        while self.running:
+            is_open = await self.device.is_turn_on_switch()
+            if is_open:
+                logger.debug(f'Listen switch {is_open}')
+                await self.device.open_door()
+                await self.log_manager.put_log(None, type='switch', action='open-door')
+                await asyncio.sleep(0.3)
+            await asyncio.sleep(0.1)
 
     async def register_node(self):
         data = dict(action='register',
@@ -194,7 +198,7 @@ class DoorControllerServer:
                             cb=self.handle_controller_command,
                             )
 
-                # self.data_storage.initial_data_after_restart(data)
+                # self.db_manager.initial_data_after_restart(data)
                 # logger.debug('Data was saved')
             except Exception as e:
                 logger.debug(e)
@@ -229,12 +233,13 @@ class DoorControllerServer:
     
         loop.run_until_complete(self.set_up(loop))
         loop.run_until_complete(self.register_node())
-        # controller_command_task = loop.create_task(self.a())
         controller_command_task = loop.create_task(self.process_controller_command())
+        
         # process_keypad_task = loop.create_task(self.process_keypad())
         process_rfid_task = loop.create_task(self.process_rfid())
         # process_logging_task = loop.create_task(self.process_log())
-        
+        listen_switch_task = loop.create_task(self.listen_open_switch())
+
         try:
             loop.run_forever()
         except Exception as e:

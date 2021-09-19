@@ -7,13 +7,14 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class DataStorage:
+class Manager:
     def __init__(self, settings, device_id):
         self.settings = settings
         dbpath = pathlib.Path(self.settings['TINYDB_STORAGE_PATH'])
         dbpath.parent.mkdir(parents=True, exist_ok=True)
         self.db = TinyDB(str(dbpath))
-        self.User = self.db.table('users')
+        self.user = self.db.table('users')
+        self.log = self.db.table('logs')
 
         self.device_id = device_id
 
@@ -32,32 +33,41 @@ class DataStorage:
         logger.debug(f'>>>>>>>{data}')
        
         
-        if 'action' in data and data['action'] == 'revoke':
-            self.User.truncate()
+        if data['action'] == 'revoke':
+            self.user.truncate()
 
         user_groups = data['user_groups']
         #for user in users:
 
-        query = Query()
+        User = Query()
 
         for group in user_groups:
             for member in group['members']:
-                user = self.User.get(query.id==member['id'])
+                user = self.user.get(User.id==member['id'])
                 if user:
                     user.update(member)
-                    self.User.update(user)
+                    self.user.update(user)
                 else:
-                    self.User.insert(
+                    self.user.insert(
                             member
                             )
 
-        logger.debug(f'>>>>>>>{data}')
 
     async def get_user_by_rfid(self, rfid_number):
-        query = Query()
-        user = self.User.get(query.identifiers.identifier==rfid_number)
+        User = Query()
+
+        def filter(ids, rfid_number):
+            for id in ids:
+                if id['identifier'].upper() == rfid_number.upper():
+                    return True
+            return False
+
+        user = self.user.get(User.identifiers.test(filter, rfid_number))
+
         return user
 
+    async def put_log(self, log):
+        self.log.insert(log)
 
     async def get_waiting_logs(self):
         query = Query()

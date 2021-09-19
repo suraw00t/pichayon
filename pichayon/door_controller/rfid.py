@@ -12,7 +12,7 @@ class RFIDReader:
         # GPIO.setmode(GPIO.BCM)
         # self.reader = RFID(pin_mode=GPIO.BCM)
         # GPIO.setmode(GPIO.BOARD)
-        print(GPIO.getmode())
+        # print(GPIO.getmode())
         self.reader = RFID()
         #self.buzzer = 4
         #GPIO.setup(self.buzzer, GPIO.OUT)
@@ -34,9 +34,7 @@ class RFIDReader:
     def get_id(self):
         #while True:
             #logger.debug('okayy')
-        print('this')
         self.reader.wait_for_tag()
-        print('go')
         try:   
             (error, tag_type) = self.reader.request()
             if not error:
