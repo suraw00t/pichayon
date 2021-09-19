@@ -106,7 +106,7 @@ class ControllerServer:
                 door = models.Door.objects(device_id=data['device_id']).first()
                 if not door:
                     continue
-
+                
                 topic = f'pichayon.door_controller.{door.device_id}'
                 response = await self.data_resource.get_authorization_data(door.device_id)
                 logger.debug(f'response {response}')
