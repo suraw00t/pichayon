@@ -140,8 +140,8 @@ class DoorControllerServer:
             rfid_number = await self.rfid_queue.get()
             try:
                 logger.debug(f'rfid >>> {rfid_number}')
-                # user_rfid = self.db.search(self.query.rfid == rfid_number)
-                user = await self.db_manager.get_user_by_rfid(rfid_number)
+                # user = await self.db_manager.get_user_by_rfid(rfid_number)
+                user = await self.db_manager.get_user_by_rfid_with_current_date(rfid_number)
 
                 print(f'---> {user}')
                 if not user:

@@ -1,0 +1,7 @@
+# CONTROLLER
+asyncio-nats-client
+RPi.GPIO
+pi-rc522
+tinydb
+tinydb-serialization
+

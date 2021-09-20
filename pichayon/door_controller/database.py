@@ -5,6 +5,12 @@ import pathlib
 from tinydb import TinyDB, Query
 import json
 
+from tinydb.storages import JSONStorage
+from tinydb_serialization import SerializationMiddleware
+from tinydb_serialization.serializers import DateTimeSerializer
+
+import datetime
+
 logger = logging.getLogger(__name__)
 
 class Manager:
@@ -12,7 +18,11 @@ class Manager:
         self.settings = settings
         dbpath = pathlib.Path(self.settings['TINYDB_STORAGE_PATH'])
         dbpath.parent.mkdir(parents=True, exist_ok=True)
-        self.db = TinyDB(str(dbpath))
+
+        serialization = SerializationMiddleware(JSONStorage)
+        serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
+
+        self.db = TinyDB(str(dbpath), storage=serialization)
         self.user = self.db.table('users')
         self.log = self.db.table('logs')
 
@@ -28,7 +38,8 @@ class Manager:
     #             if user:
     #                 continue
     #             self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
-
+    
+    
     def update_data(self, data):
         logger.debug('update data')
         user_groups = data['user_groups']
@@ -38,6 +49,8 @@ class Manager:
 
         for group in user_groups:
             for member in group['members']:
+                member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
+                member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
                 user = self.user.get(User.id==member['id'])
                 if user:
                     user.update(member)
@@ -56,24 +69,39 @@ class Manager:
 
         for group in user_groups:
             for member in group['members']:
+                member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
+                member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
                 self.user.insert(
                         member
                         )
 
+    def __filter_rfid(self, ids, rfid_number):
+        for id in ids:
+            if id['identifier'].upper() == rfid_number.upper():
+                return True
+        return False
 
 
     async def get_user_by_rfid(self, rfid_number):
         User = Query()
-
-        def filter(ids, rfid_number):
-            for id in ids:
-                if id['identifier'].upper() == rfid_number.upper():
-                    return True
-            return False
-
-        user = self.user.get(User.identifiers.test(filter, rfid_number))
+        user = self.user.get(User.identifiers.test(self.__filter_rfid, rfid_number))
 
         return user
+
+    async def get_user_by_rfid_with_current_date(self, rfid_number):
+        current_date = datetime.datetime.now()
+        User = Query()
+        user = self.user.get(
+                User.identifiers.test(self.__filter_rfid, rfid_number) &
+                (User.started_date < current_date) &
+                (User.expired_date >= current_date)
+                )
+
+        return user
+
+
+        
+
 
     async def put_log(self, log):
         self.log.insert(log)
