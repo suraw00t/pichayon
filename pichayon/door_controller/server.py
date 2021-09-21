@@ -171,6 +171,33 @@ class DoorControllerServer:
                 await asyncio.sleep(0.3)
             await asyncio.sleep(0.1)
 
+    async def listen_door_closed(self):
+        is_door_opened = False
+        while self.running:
+            # print('--->', is_door_opened)
+            is_opened = await self.device.is_door_opened()
+            if is_opened != is_door_opened:
+                is_door_opened = is_opened
+                print('state is', is_opened)
+                data = dict(
+                        device_id=self.device.device_id,
+                        state='closed',
+                        )
+                if is_opened:
+                    data['state'] = 'opened'
+
+                await self.nc.publish(
+                        'pichayon.controller.door.status',
+                        json.dumps(data).encode(),
+                        )
+
+                if is_opened:
+                    logger.debug('door state is opened')
+                else:
+                    logger.debug('door state is closed')
+
+            await asyncio.sleep(0.5)
+
     async def register_node(self):
         data = dict(action='register',
                 device_id=self.device_id,
@@ -210,7 +237,7 @@ class DoorControllerServer:
     async def set_up(self, loop):
         self.nc = NATS()
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
-        
+
         logging.basicConfig(
                 format='%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s',
                 datefmt='%d-%b-%y %H:%M:%S',
@@ -239,6 +266,7 @@ class DoorControllerServer:
         process_rfid_task = loop.create_task(self.process_rfid())
         # process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
+        listen_door_closed_task = loop.create_task(self.listen_door_closed())
 
         try:
             loop.run_forever()

@@ -18,11 +18,14 @@ class Device:
 
 
         self.switch_pin = 16
-        GPIO.setup(self.switch_pin, GPIO.IN)
-        # GPIO.output(self.switch_pin, GPIO.HIGH)
+        # GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.switch_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.last_opened_date = datetime.datetime.now()
+
+        self.door_closed_pin = 15
+        GPIO.setup(self.door_closed_pin, GPIO.IN)
+
 
     def get_device_id(self):
         try:
@@ -56,3 +59,6 @@ class Device:
     
     async def is_turn_on_switch(self):
         return GPIO.input(self.switch_pin)
+
+    async def is_door_opened(self):
+        return GPIO.input(self.door_closed_pin)
