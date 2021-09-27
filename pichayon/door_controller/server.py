@@ -31,7 +31,7 @@ class DoorControllerServer:
         # self.keypad = keypad.Keypad()
         # self.passcode = ''
         rfid_number = '' 
-        self.rfid = rfid.RFIDReader()
+        self.rfid = rfid.RC522RFIDReader()
         self.db_manager = database.Manager(
                 self.settings,
                 self.device_id)

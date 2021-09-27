@@ -7,7 +7,7 @@ from pirc522 import RFID
 logger = logging.getLogger(__name__)
 
 
-class RFIDReader:
+class RC522RFIDReader:
     def __init__(self):
         # GPIO.setmode(GPIO.BCM)
         # self.reader = RFID(pin_mode=GPIO.BCM)
