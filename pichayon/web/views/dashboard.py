@@ -53,7 +53,7 @@ def open_door():
     data = json.dumps({
             'action': 'open',
             'door_id': door_id,
-            'type': door.type,
+            'type': door.device_type,
             # 'user_group_id': user_group_id,
             'user_id': str(current_user._get_current_object().id)
         })

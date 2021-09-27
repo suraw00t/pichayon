@@ -70,7 +70,7 @@ def create_or_edit(door_id):
                 )
         door_group.save()
     
-    if form.type.data == 'sparkbit':
+    if form.device_type.data == 'sparkbit':
         sparkbit_system = models.SparkbitDoorSystem()
         form.populate_obj(sparkbit_system)
         sparkbit_system.door = door

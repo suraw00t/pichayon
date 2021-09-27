@@ -64,7 +64,7 @@ class DoorManager:
     #         logger.debug('end sync sleep')
     #         await asyncio.sleep(3600)
             
-    async def open(data):
+    async def open(self, data):
         door = models.Door.objects.get(id=data['door_id'])
         user = models.User.objects.get(id=data['user_id'])
     
@@ -79,11 +79,11 @@ class DoorManager:
 
             logger.debug('open sparkbit')
             topic = 'pichayon.controller.sparkbit.command'
-            command = dict(door_id=data['door_id'], user_id=data['user_id'], action='open_door')
+            command = dict(door_id=data['door_id'], user_id=data['user_id'], action='open')
             logger.debug('set success')
         else:
             topic = f'pichayon.door_controller.{door.device_id}'
-            command = dict(device_id=door.device_id, action='open')
+            command = dict(device_id=door.device_id, user_id=data['user_id'], action='open')
 
 
         try:
