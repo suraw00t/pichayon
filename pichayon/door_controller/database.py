@@ -40,7 +40,7 @@ class Manager:
     #             self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
     
     
-    def update_data(self, data):
+    async def update_data(self, data):
         logger.debug('update data')
         user_groups = data['user_groups']
         #for user in users:
@@ -60,7 +60,7 @@ class Manager:
                             member
                             )
 
-    def initial_data(self, data):
+    async def initial_data(self, data):
         logger.debug('initial data')
 
         self.user.truncate()
@@ -74,6 +74,8 @@ class Manager:
                 self.user.insert(
                         member
                         )
+
+        logger.debug('end initial data')
 
     def __filter_rfid(self, ids, rfid_number):
         for id in ids:
@@ -93,6 +95,17 @@ class Manager:
         User = Query()
         user = self.user.get(
                 User.identifiers.test(self.__filter_rfid, rfid_number) &
+                (User.started_date < current_date) &
+                (User.expired_date >= current_date)
+                )
+
+        return user
+
+    async def get_user_by_id_with_current_date(self, user_id):
+        current_date = datetime.datetime.now()
+        User = Query()
+        user = self.user.get(
+                (User.id==user_id) &
                 (User.started_date < current_date) &
                 (User.expired_date >= current_date)
                 )

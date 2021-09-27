@@ -73,13 +73,15 @@ class DoorControllerServer:
 
             logger.debug(f'process command -> {data}')
             if data['action'] == 'open':
-                await self.device.open_door()
-                await asyncio.sleep(.5)
-                continue
+                user = await self.db_manager.get_user_by_id_with_current_date(data['user_id'])
+                if user:
+                    await self.device.open_door()
+                    await self.log_manager.put_log(user, type='web', action='open-door')
+                else:
+                    logger.debug(f'user not allow')
             elif data['action'] == 'initial':
-                self.db_manager.initial_data(data)
-                await asyncio.sleep(.5)
-                continue
+                await self.db_manager.initial_data(data)
+
             await asyncio.sleep(.5)
 
         logger.debug('end process controller command')
