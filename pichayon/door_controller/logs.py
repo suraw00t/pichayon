@@ -16,41 +16,44 @@ class LogManager:
     async def set_message_client(self, client):
         self.message_client = client
 
-    async def put_log(self, user, action='open-door', type='rfid'):
+    async def put_log(self, user, action='open-door', type='rfid', **kw_args):
+        current_date = datetime.datetime.now()
         log = {
-            'username':user['username'] if user else 'system',
+            'id': current_date.timestamp(),
+            'actor': 'user' if user else 'system',
+            'user_id':user['id'] if user else 'system',
             'action': action,
             'type': type,
-            'datetime': datetime.datetime.now().isoformat(),
+            'log_date': datetime.datetime.now().isoformat(),
             'status': 'wait',
             }
+        log.update(kw_args)
         await self.db_manager.put_log(log)
 
 
     async def send_log_to_server(self):
-        is_send = False
-        query = Query()
-        while not is_send:
-            logs = await self.db_manager.get_waiting_logs()
-            if not logs:
-                return
-            logger.debug(f'log {logs}')
+        logs = await self.db_manager.get_waiting_logs()
+        # logger.debug(f'-> {logs}')
+        for log in logs:
             data = dict(
                 device_id=self.device_id,
-                data=logs
+                log=log
             )
+            # logger.debug(f'send {data}')
             try:
                 response = await self.message_client.request(
-                                'pichayon.node_controller.send_log',
+                                'pichayon.door_controller.log',
                                 json.dumps(data).encode(),
                                 timeout=5
                             )
-                is_send = True
-                self.db.update({'status': 'send'}, self.query.status=='wait')
-                logger.debug('data was send')
-            except Exception as e:
-                logger.debug(e)
 
-            if not is_send:
-                await asyncio.sleep(1)
+                await self.db_manager.delete_log(log['id'])
+                
+                # logger.debug('data was send')
+            except Exception as e:
+                logger.exception(e)
+                break
+
+
+
         

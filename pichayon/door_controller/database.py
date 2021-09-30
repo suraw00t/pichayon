@@ -39,6 +39,11 @@ class Manager:
     #                 continue
     #             self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
     
+    async def add_user(self, data):
+        logger.debug(f'add user -> {data}')
+
+    async def delete_user(self, data):
+        logger.debug(f'delete user -> {data}')
     
     async def update_data(self, data):
         logger.debug('update data')
@@ -119,8 +124,13 @@ class Manager:
     async def put_log(self, log):
         self.log.insert(log)
 
+
+    async def delete_log(self, log_id):
+        Log = Query()
+        self.log.remove(Log.id==log_id)
+
+
     async def get_waiting_logs(self):
-        query = Query()
-        logs = self.db.search(query.status=='wait')
-      
+        Log = Query()
+        logs = self.log.search(Log.status=='wait')
         return logs

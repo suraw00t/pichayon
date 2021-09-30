@@ -75,14 +75,18 @@ class DoorControllerServer:
             if data['action'] == 'open':
                 user = await self.db_manager.get_user_by_id_with_current_date(data['user_id'])
                 if user:
-                    await self.device.open_door()
                     await self.log_manager.put_log(user, type='web', action='open-door')
+                    await self.device.open_door()
                 else:
                     logger.debug(f'user not allow')
             elif data['action'] == 'initial':
                 await self.db_manager.initial_data(data)
+            elif data['action'] == 'add-user':
+                await self.db_manager.add_user(data)
+            elif data['action'] == 'delete-user':
+                await self.db_manager.delete_user(data)
 
-            await asyncio.sleep(.5)
+            await asyncio.sleep(0.01)
 
         logger.debug('end process controller command')
 
@@ -107,13 +111,13 @@ class DoorControllerServer:
                 user_passcode = self.db.search(self.query.passcode == passcode)
                 if user_passcode:
                     await self.device.open_door()
-                    self.db.insert({
-                        'username': user_passcode[0]['username'],
-                        'action': 'open_door',
-                        'type': 'passcode',
-                        'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
-                        'status': 'wait'
-                        })
+                    # self.db.insert({
+                    #     'username': user_passcode[0]['username'],
+                    #     'action': 'open_door',
+                    #     'type': 'passcode',
+                    #     'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
+                    #     'status': 'wait'
+                    #     })
                 passcode = ''
                 await asyncio.sleep(2)
             await asyncio.sleep(.2)
@@ -150,17 +154,15 @@ class DoorControllerServer:
                     logger.debug('There are no user rfid {rfid_number}')
                     continue
 
-                await self.device.open_door()
                 await self.log_manager.put_log(user, type='rfid', action='open-door')
+                await self.device.open_door()
             except Exception as e:
                 logger.exception(e)
 
     async def process_log(self):
         while self.running:
-            logger.debug('Start to send log to server')
+            # logger.debug('Start to send log to server')
             await self.log_manager.send_log_to_server()
-
-            logger.debug('Send success')
             await asyncio.sleep(5)
 
     async def listen_open_switch(self):
@@ -168,8 +170,8 @@ class DoorControllerServer:
             is_open = await self.device.is_turn_on_switch()
             if is_open:
                 logger.debug(f'Listen switch {is_open}')
-                await self.device.open_door()
                 await self.log_manager.put_log(None, type='switch', action='open-door')
+                await self.device.open_door()
                 await asyncio.sleep(0.3)
             await asyncio.sleep(0.1)
 
@@ -181,16 +183,16 @@ class DoorControllerServer:
             if is_opened != is_door_opened:
                 is_door_opened = is_opened
                 print('state is', is_opened)
-                data = dict(
-                        device_id=self.device.device_id,
-                        state='closed',
-                        )
-                if is_opened:
-                    data['state'] = 'opened'
 
-                await self.nc.publish(
-                        'pichayon.controller.door.status',
-                        json.dumps(data).encode(),
+                state = 'closed'
+                if is_opened:
+                    state = 'opened'
+
+                await self.log_manager.put_log(
+                        None,
+                        type='switch',
+                        action='door-status',
+                        state=state,
                         )
 
                 if is_opened:
@@ -266,7 +268,7 @@ class DoorControllerServer:
         
         # process_keypad_task = loop.create_task(self.process_keypad())
         process_rfid_task = loop.create_task(self.process_rfid())
-        # process_logging_task = loop.create_task(self.process_log())
+        process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
 
