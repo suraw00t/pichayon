@@ -47,7 +47,7 @@ class DoorController:
                 self.add_user(command)
             elif action == 'delete_user':
                 self.delete_user(command)
-            elif action == 'open_door':
+            elif action == 'open':
                 self.open_door(command)
             print('finish cloudant process')
 

@@ -46,9 +46,9 @@ class ControllerServer:
         data = msg.data.decode()
 
         data = json.loads(data)
-        logger.debug(f'===> {data}')
         if data['action'] != 'register':
             return
+
         # logger.debug('before res')
         logger.debug(f'client {data["device_id"]} is registering')
         # response = await self.data_resource.get_authorization_data(data['device_id'])
@@ -72,9 +72,20 @@ class ControllerServer:
         logger.debug('client {} is registed'.format(data['device_id']))
     
     async def update_data_to_door_controller(self):
+        
+        weak_up = datetime.datetime.combine(
+                datetime.date.today(),
+                datetime.time(4, 00),
+                )
+        
+        current_date = datetime.datetime.now()
+        if current_date > weak_up:
+            weak_up = weak_up + datetime.timedelta(days=1)
+
         while self.running:
+
             logger.debug('start update data')
-            doors = models.Door.objects(status='active', door_type='pichayon')
+            doors = models.Door.objects(status='active', device_type='pichayon')
             for door in doors:
                 logger.debug(f'start send data to {door.device_id}')
                 if len(door.device_id) == 0:
@@ -84,7 +95,13 @@ class ControllerServer:
                 await self.nc.publish(
                         topic,
                         json.dumps(response).encode())
-            await asyncio.sleep(3600)
+
+            #update sleep time
+            current_date = datetime.datetime.now()
+            logger.debug(f'see you next day {weak_up}')
+            await asyncio.sleep((weak_up-current_date).seconds)
+            weak_up = weak_up + datetime.timedelta(days=1)
+
             
 
     async def process_command(self):
@@ -115,7 +132,10 @@ class ControllerServer:
                         json.dumps(response).encode(),
                         )
             elif data['action'] == 'open':
-                self.door_manager.open(data)
+                try:
+                    await self.door_manager.open(data)
+                except Exception as e:
+                    logger.exception(e)
 
         logger.debug('end process command')
 
@@ -165,7 +185,6 @@ class ControllerServer:
         self.nc = NATS()
         logger.debug('Connecting....')
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
-
         await self.door_manager.set_message_client(self.nc)
 
         logging.basicConfig(
@@ -200,11 +219,9 @@ class ControllerServer:
 
 
     def run(self):
-        logger.debug('start run')
         self.running = True
 
         loop = asyncio.get_event_loop()
-        logger.debug('start run')
         loop.set_debug(True)
         loop.run_until_complete(self.set_up(loop))
         command_task = loop.create_task(self.process_command())

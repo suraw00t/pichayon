@@ -6,9 +6,10 @@ from flask import (Blueprint,
 
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
-from pichayon.web import acl, forms
+from pichayon.web import acl, forms, nats
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
 import datetime
+
 
 module = Blueprint('user_groups',
                    __name__,
@@ -117,15 +118,37 @@ def add_member(user_group_id):
         
         member.save()
 
+
+    # add data in group
+    data = json.dumps({
+            'action': 'add-member-to-group',
+            'user_group_id': str(group.id),
+            'user_ids': form.users.data,
+        })
+    nats.nats_client.publish(
+        'pichayon.controller.command',
+        data
+        )
     return redirect(url_for('administration.user_groups.view', user_group_id=user_group_id))
 
 @module.route('/<user_group_id>/delete_user/<member_id>')
 def delete_member(user_group_id, member_id):
     member = models.UserGroupMember.objects(
             id=member_id).first()
+    user = member.user
 
     if member:
         member.delete()
- 
+
+    data = json.dumps({
+            'action': 'delete-member-from-group',
+            'user_group_id': str(user_group_id),
+            'user_id': str(user.id),
+        })
+    nats.nats_client.publish(
+        'pichayon.controller.command',
+        data
+        )
+
     return redirect(url_for('administration.user_groups.view', user_group_id=user_group_id))
 
