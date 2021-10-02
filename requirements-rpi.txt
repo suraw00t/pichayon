@@ -4,4 +4,4 @@ RPi.GPIO
 pi-rc522
 tinydb
 tinydb-serialization
-
+pyserial
