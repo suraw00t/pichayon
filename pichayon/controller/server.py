@@ -17,7 +17,7 @@ class ControllerServer:
         self.running = False
         self.command_queue = asyncio.Queue()
         self.data_resource = data_resources.DataResourceManager()
-        self.door_manager = doors.DoorManager()
+        self.door_manager = doors.DoorManager(self.data_resource)
 
         self.sparkbit_enable = self.settings.get('SPARKBIT_ENABLE', False)
         if self.sparkbit_enable:
@@ -70,7 +70,11 @@ class ControllerServer:
                 json.dumps(response).encode(),
                 )
         logger.debug('client {} is registed'.format(data['device_id']))
-    
+
+
+    async def handle_door_controller_log(self, msg):
+        await self.door_manager.process_door_controller_log(msg)
+
     async def update_data_to_door_controller(self):
         
         weak_up = datetime.datetime.combine(
@@ -96,7 +100,7 @@ class ControllerServer:
                         topic,
                         json.dumps(response).encode())
 
-            #update sleep time
+            # update sleep time
             current_date = datetime.datetime.now()
             logger.debug(f'see you next day {weak_up}')
             await asyncio.sleep((weak_up-current_date).seconds)
@@ -136,50 +140,20 @@ class ControllerServer:
                     await self.door_manager.open(data)
                 except Exception as e:
                     logger.exception(e)
+            elif data['action'] == 'add-member-to-group':
+                try:
+                    await self.door_manager.add_member_to_group(data)
+                except Exception as e:
+                    logger.exception(e)
+            elif data['action'] == 'delete-member-from-group':
+                try:
+                    await self.door_manager.delete_member_from_group(data)
+                except Exception as e:
+                    logger.exception(e)
+            else:
+                logger.debug(f'unprocess command {data}')
 
         logger.debug('end process command')
-
-    async def handle_door_controller_log(self, msg):
-        subject = msg.subject
-        reply = msg.reply
-        data = msg.data.decode()
-        logger.debug('start save log')
-        data = json.loads(data)
-        # logger.debug(f'{type(data)}')
-        logger.debug(f"recieve log >>>{data['device_id']}")
-        device_id = data['device_id']
-        door = models.Door.objects(device_id=device_id).first()
-        logs = data['data']
-        # logger.debug(f'{door.id}')
-        # logger.debug('before loop')
-
-        for log in logs:
-            # logger.debug('1 loop')
-            y, m, d, h, min, sec = log['datetime'].split(', ')
-            # logger.debug('2 loop')
-            history_log = models.HistoryLog(
-                action = 'open',
-                details = {
-                    'door': str(door.id),
-                    'user': log['username']
-                    },
-                recorded_date = datetime.datetime(int(y), int(m), int(d), int(h), int(min), int(sec))
-            )
-            # logger.debug('3 loop')
-            if 'passcode' in log['type']:
-                history_log.message = f"{log['username']} opened Door: {door.name} via Passcode"
-            elif 'rfid' in log['type']:
-                history_log.message = f"{log['username']} opened Door: {door.name} via RFID"
-            history_log.save()
-            # logger.debug('4 loop')
-
-        
-
-        response = dict(
-            status='OK'
-        )
-        await self.nc.publish(reply,
-                            json.dumps(response).encode())
 
     async def set_up(self, loop):
         self.nc = NATS()
@@ -195,7 +169,7 @@ class ControllerServer:
         greeting_topic = 'pichayon.door_controller.greeting'
         command_topic = 'pichayon.controller.command'
         sparkbit_topic = 'pichayon.controller.sparkbit.command'
-        logging_topic = 'pichayon.door_controller.send_log'
+        logging_topic = 'pichayon.door_controller.log'
         logger.debug('OK')
 
         nc_id = await self.nc.subscribe(

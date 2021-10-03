@@ -3,11 +3,13 @@ import datetime
 
 
 class HistoryLog(me.Document):
-    # actor = me.ReferenceField('User', dbref=True)
-    # user = me.ReferenceField('User', dbref=True)
-    action = me.StringField()
+    actor = me.StringField(required=True)
+    user = me.ReferenceField('User', dbref=True)
+    action = me.StringField(required=True)
     message = me.StringField()
     details = me.DictField()
+    log_date = me.DateTimeField(required=True,
+                                     default=datetime.datetime.now)
     recorded_date = me.DateTimeField(required=True,
                                      default=datetime.datetime.now)
 
