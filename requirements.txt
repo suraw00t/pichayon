@@ -1,9 +1,8 @@
+
+wheel
+
 # CONTROLLER
 asyncio-nats-client
-# RPi.GPIO
-# pi-rc522
-# tinydb
-
 
 # WEB
 flask

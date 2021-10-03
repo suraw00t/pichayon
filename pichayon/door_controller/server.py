@@ -72,6 +72,9 @@ class DoorControllerServer:
             data = await self.controller_command_queue.get()
 
             logger.debug(f'process command -> {data}')
+            if 'action' not in data:
+                logger.debug('action not found')
+
             if data['action'] == 'open':
                 user = await self.db_manager.get_user_by_id_with_current_date(data['user_id'])
                 if user:

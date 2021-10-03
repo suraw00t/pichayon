@@ -42,8 +42,30 @@ class Manager:
     async def add_user(self, data):
         logger.debug(f'add user -> {data}')
 
+        member = data['user']
+        member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
+        member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
+        
+        User = Query()
+        user = self.user.get(
+                User.id==member['id']
+                )
+        if not user:
+            self.user.insert(
+                    member
+                    )
+        else:
+            self.user.update(
+                    member
+                    )
+
+
     async def delete_user(self, data):
         logger.debug(f'delete user -> {data}')
+        member = data['user']
+
+        User = Query()
+        self.user.remove(User.id==member['id'])
     
     async def update_data(self, data):
         logger.debug('update data')

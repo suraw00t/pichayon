@@ -5,3 +5,5 @@ pi-rc522
 tinydb
 tinydb-serialization
 pyserial
+
+setuptools_rust
