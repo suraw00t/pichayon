@@ -53,8 +53,7 @@ def open_door():
     data = json.dumps({
             'action': 'open',
             'door_id': door_id,
-            'type': door.device_type,
-            # 'user_group_id': user_group_id,
+            'device_type': door.device_type,
             'user_id': str(current_user._get_current_object().id)
         })
     nats.nats_client.publish(
@@ -63,15 +62,5 @@ def open_door():
         )
     response = Response()
     response.status_code = 200
-    history_log = models.HistoryLog(
-            action = 'open',
-            message = f'{current_user._get_current_object().username} opened Door: {door.name} via Web Application',
-            details = {
-                'door': str(door.id),
-                'user': str(current_user._get_current_object().username)
-                },
-            recorded_date = datetime.datetime.now()
-            )
-    history_log.save()
     return response
 

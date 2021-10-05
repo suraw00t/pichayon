@@ -48,8 +48,23 @@ class Door(me.Document):
             return True
 
         return False
+
+
+    def get_authorization_by_user_group(self, user_group):
+        from . import groups
+        from . import authorizations
+
+        door_groups = groups.DoorGroup.objects(doors=self)
+       
+        group_auth = authorizations.GroupAuthorization.objects(
+                    door_group__in=door_groups,
+                    user_group=user_group,
+                ).first()
+
+        return group_auth
+
     
-    def get_authorization(self):
+    def get_authorizations(self):
         from . import authorizations
         door_groups = self.get_door_groups()
         door_auths = authorizations.GroupAuthorization.objects(
@@ -59,7 +74,7 @@ class Door(me.Document):
         return door_auths
 
     def get_allowed_user_groups(self):
-        door_auths = self.get_authorization()
+        door_auths = self.get_authorizations()
 
         return [door_auth.user_group for door_auth in door_auths]
 

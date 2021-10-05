@@ -10,8 +10,9 @@ from . import data_resources
 from . import sparkbit
 
 class DoorManager:
-    def __init__(self):
+    def __init__(self, data_resource):
         self.nc = None
+        self.data_resource = data_resource
 
     async def set_message_client(self, nc):
         self.nc = nc
@@ -72,7 +73,7 @@ class DoorManager:
             logger.debug('No Authority')
             return
 
-        if 'sparkbit' in data['type']:
+        if 'sparkbit' in data['device_type']:
             if not self.sparkbit_enable:
                 logger.debug('Sparkbit Disable')
                 return
@@ -93,47 +94,124 @@ class DoorManager:
         except Exception as e:
             logger.exception(e)
         logger.debug('Send Success')
-    '''
-    async def handle_door_controller_log(self, msg):
+    
+    async def process_door_controller_log(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()
-        logger.debug('start save log')
         data = json.loads(data)
-        # logger.debug(f'{type(data)}')
-        logger.debug(f"recieve log >>>{data['device_id']}")
+
         device_id = data['device_id']
         door = models.Door.objects(device_id=device_id).first()
-        logs = data['data']
-        # logger.debug(f'{door.id}')
-        # logger.debug('before loop')
+        log = data['log']
+        log['status'] = 'completed'
+        log['log_date'] = datetime.datetime.fromisoformat(log['log_date'])
 
-        for log in logs:
-            # logger.debug('1 loop')
-            y, m, d, h, min, sec = log['datetime'].split(', ')
-            # logger.debug('2 loop')
-            history_log = models.HistoryLog(
-                action = 'open',
-                details = {
-                    'door': str(door.id),
-                    'user': log['username']
-                    },
-                recorded_date = datetime.datetime(int(y), int(m), int(d), int(h), int(min), int(sec))
-            )
-            # logger.debug('3 loop')
-            if 'passcode' in log['type']:
-                history_log.message = f"{log['username']} opened Door: {door.name} via Passcode"
-            elif 'rfid' in log['type']:
-                history_log.message = f"{log['username']} opened Door: {door.name} via RFID"
-            history_log.save()
-            # logger.debug('4 loop')
+        history_log = models.HistoryLog(
+            actor = log['actor'],
+            action = log['action'],
+            details = log,
+            log_date = log['log_date'],
+        )
+
+        if log['actor'] != 'system':
+            history_log.user = models.User.objects(id=log['user_id']).first()
+
+        # logger.debug('3 loop')
+        if 'passcode' in log['type']:
+            history_log.message = f"{log['username']} opened Door: {door.name} via Passcode"
+        elif 'rfid' in log['type']:
+            history_log.message = f"{log['username']} opened Door: {door.name} via RFID"
+        history_log.save()
+
+        # logger.debug('4 loop')
 
         
 
         response = dict(
             status='OK'
         )
-        await self.nc.publish(reply,
-                            json.dumps(response).encode())
+        await self.nc.publish(
+                reply,
+                json.dumps(response).encode(),
+                )
 
-    '''
+    async def add_member_to_group(self, data):
+        logger.debug('try to add member')
+        
+        user_group = models.UserGroup.objects(id=data['user_group_id']).first()
+        if not user_group:
+            logger.debug(f'user group: {data["user_group_id"]} not found')
+            return
+
+        auth_groups = models.GroupAuthorization.objects(
+                user_group=user_group,
+                )
+
+        
+        users = models.User.objects(id__in=data['user_ids'])
+        for user in users:
+            if not user_group.is_user_member(user):
+                logger.debug(f'{user.username} is not member of {user_group.name}')
+                return
+
+        for auth_group in auth_groups:
+            for door in auth_group.door_group.doors:
+                for user in users:
+                    data = await self.data_resource.get_authorization_user_data(user, user_group, door)
+                    if not data:
+                        logger.debug(f'user {user.username} is not allow')
+                        return
+
+                    topic = f'pichayon.door_controller.{door.device_id}'
+                    if door.device_type == 'sparkbit':
+                        topic = f'pichayon.controller.sparkbit'
+        
+                    command = dict(
+                            action='add-user',
+                            user=data,
+                            )
+
+                    await self.nc.publish(
+                            topic,
+                            json.dumps(command).encode(),
+                            )
+
+
+    async def delete_member_from_group(self, data):
+        logger.debug('try to delete member')
+
+        user_group = models.UserGroup.objects(id=data['user_group_id']).first()
+        if not user_group:
+            logger.debug(f'user group: {data["user_group_id"]} not found')
+            return
+
+        auth_groups = models.GroupAuthorization.objects(
+                user_group=user_group,
+                )
+
+        
+        user = models.User.objects(id=data['user_id'])
+        if not user:
+            logger.debug(f'user id: {data["user_id"]} not found')
+            return
+
+        data = dict(id=data['user_id'])
+        for auth_group in auth_groups:
+            for door in auth_group.door_group.doors:
+
+                topic = f'pichayon.door_controller.{door.device_id}'
+                if door.device_type == 'sparkbit':
+                    topic = f'pichayon.controller.sparkbit'
+    
+                command = dict(
+                        action='delete-user',
+                        user=data,
+                        )
+
+                await self.nc.publish(
+                        topic,
+                        json.dumps(command).encode(),
+                        )
+
+

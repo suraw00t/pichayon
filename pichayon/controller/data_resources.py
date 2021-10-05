@@ -18,7 +18,7 @@ class DataResourceManager:
 
         door_groups = door.get_door_groups()
         user_groups = door.get_allowed_user_groups()
-        door_auths = door.get_authorization()
+        door_auths = door.get_authorizations()
 
         response['user_groups'] = list()
         for door_auth in door_auths:
@@ -51,3 +51,37 @@ class DataResourceManager:
         print('xxx', response)
         response['action'] = 'initial'
         return response
+
+    async def get_authorization_user_data(self, user, user_group, door):
+        # user = models.User.objects(id=user_id).first()
+        # user_group = models.UserGroup.objects(id=user_group_id).first()
+        # door = models.Door.objects(id=door_id).first()
+
+        # if not user or not user_group or not door:
+        #     return None
+        if not user_group.is_user_member(user):
+            logger.debug(f'{user.username} is not member of group {user_group.name}')
+            return None
+
+        door_auth = door.get_authorization_by_user_group(user_group)
+        if not door_auth:
+            logger.debug(f'door {door.name} is not authorized by {user_group.name}')
+            return None
+
+        data = {
+            'id': str(user.id),
+            'username': user.username,
+            'identifiers': [
+                dict(
+                    identifier=identity.identifier,
+                    status=identity.status,
+                    ) 
+                for identity in user.identities \
+                        if identity.status == 'active'
+                ],
+            'started_date': door_auth.started_date.isoformat(),
+            'expired_date': door_auth.expired_date.isoformat(),
+        }
+
+        return data
+
