@@ -118,10 +118,6 @@ class DoorManager:
             history_log.user = models.User.objects(id=log['user_id']).first()
 
         # logger.debug('3 loop')
-        if 'passcode' in log['type']:
-            history_log.message = f"{log['username']} opened Door: {door.name} via Passcode"
-        elif 'rfid' in log['type']:
-            history_log.message = f"{log['username']} opened Door: {door.name} via RFID"
         history_log.save()
 
         # logger.debug('4 loop')
