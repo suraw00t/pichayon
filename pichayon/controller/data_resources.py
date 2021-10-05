@@ -29,7 +29,7 @@ class DataResourceManager:
                     )
 
             for member in user_group.get_user_group_members():
-                print('member', user_group)
+                # print('member', user_group)
                 user_group_info['members'].append(
                         await self.render_json(member.user, door_auth)
                     )
@@ -58,6 +58,17 @@ class DataResourceManager:
 
 
     async def render_json(self, user, door_auth):
+
+        user_group_member = door_auth.user_group.get_user_group_member(user)
+        started_date = user_group_member.started_date
+        expired_date = user_group_member.expired_date
+        
+        if not started_date or  started_date > door_auth.started_date:
+            started_date = door_auth.started_date
+
+        if not expired_date or expired_date > door_auth.expired_date:
+            expired_date = door_auth.expired_date
+
         data = {
             'id': str(user.id),
             'identifiers': [
@@ -68,8 +79,8 @@ class DataResourceManager:
                 for identity in user.identities \
                         if identity.status == 'active'
                 ],
-            'started_date': door_auth.started_date.isoformat(),
-            'expired_date': door_auth.expired_date.isoformat(),
+            'started_date': started_date.isoformat(),
+            'expired_date': expired_date.isoformat(),
         }
 
         return data

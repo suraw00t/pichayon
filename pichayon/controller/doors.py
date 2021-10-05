@@ -108,10 +108,11 @@ class DoorManager:
         log['log_date'] = datetime.datetime.fromisoformat(log['log_date'])
 
         history_log = models.HistoryLog(
-            actor = log['actor'],
-            action = log['action'],
-            details = log,
-            log_date = log['log_date'],
+            actor=log['actor'],
+            door=door,
+            action=log['action'],
+            details=log,
+            log_date=log['log_date'],
         )
 
         if log['actor'] != 'system':
