@@ -4,6 +4,8 @@ import logging
 import datetime
 import RPi.GPIO as GPIO
 
+from .rfid import asr1200e
+
 logger = logging.getLogger(__name__)
 
 
@@ -11,20 +13,20 @@ class Device:
     def __init__(self):
         self.device_id = '0000000000000000'
 
+        self.door_closed_pin = 15
+        self.switch_pin = 16
+        self.relay_pin = 18
+
         GPIO.setmode(GPIO.BOARD)
-        self.relay_pin = 26 
         GPIO.setup(self.relay_pin, GPIO.OUT)
         GPIO.output(self.relay_pin, GPIO.HIGH)
-
-
-        self.switch_pin = 16
         # GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.switch_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.door_closed_pin, GPIO.IN)
 
         self.last_opened_date = datetime.datetime.now()
 
-        self.door_closed_pin = 15
-        GPIO.setup(self.door_closed_pin, GPIO.IN)
+        self.rfid = asr1200e.WiegandReader()
 
 
     def get_device_id(self):
@@ -51,10 +53,16 @@ class Device:
             return
 
         logger.debug('Open door')
+        beeb_task = asyncio.create_task(
+            self.rfid.play_beep(1)
+            )
+
         self.last_opened_date = current_date
         GPIO.output(self.relay_pin, GPIO.LOW)
         await asyncio.sleep(5)
         GPIO.output(self.relay_pin, GPIO.HIGH)
+
+        await beeb_task
 
     
     async def is_turn_on_switch(self):

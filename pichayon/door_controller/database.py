@@ -104,10 +104,13 @@ class Manager:
 
         logger.debug('end initial data')
 
-    def __filter_rfid(self, ids, rfid_number):
+    def __filter_rfid(self, ids, rfid_number, relex=True):
         for id in ids:
             if id['identifier'].upper() == rfid_number.upper():
                 return True
+            if id['identifier'][:-2].upper() == rfid_number.upper():
+                return True
+
         return False
 
 
@@ -117,11 +120,11 @@ class Manager:
 
         return user
 
-    async def get_user_by_rfid_with_current_date(self, rfid_number):
+    async def get_user_by_rfid_with_current_date(self, rfid_number, relex=True):
         current_date = datetime.datetime.now()
         User = Query()
         user = self.user.get(
-                User.identifiers.test(self.__filter_rfid, rfid_number) &
+                User.identifiers.test(self.__filter_rfid, rfid_number, relex) &
                 (User.started_date < current_date) &
                 (User.expired_date >= current_date)
                 )
@@ -138,9 +141,6 @@ class Manager:
                 )
 
         return user
-
-
-        
 
 
     async def put_log(self, log):

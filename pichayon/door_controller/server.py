@@ -11,8 +11,7 @@ from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
 
 from . import devices
-from . import keypad
-from . import rfid
+#from .rfid import rc522
 from . import database
 from . import logs
 
@@ -31,7 +30,6 @@ class DoorControllerServer:
         # self.keypad = keypad.Keypad()
         # self.passcode = ''
         rfid_number = '' 
-        self.rfid = rfid.RC522RFIDReader()
         self.db_manager = database.Manager(
                 self.settings,
                 self.device_id)
@@ -127,8 +125,11 @@ class DoorControllerServer:
 
     def read_rfid(self):
         loop = asyncio.new_event_loop()
+
         while self.running:
-            rfid_number = self.rfid.get_id()
+            rfid_number = loop.run_until_complete(
+                self.device.rfid.get_id()
+                )
             if len(rfid_number) > 0:
                 loop.run_until_complete(
                     self.rfid_queue.put(rfid_number)
@@ -152,13 +153,16 @@ class DoorControllerServer:
                 # user = await self.db_manager.get_user_by_rfid(rfid_number)
                 user = await self.db_manager.get_user_by_rfid_with_current_date(rfid_number)
 
-                print(f'---> {user}')
                 if not user:
-                    logger.debug('There are no user rfid {rfid_number}')
+                    logger.debug(f'There are no user rfid {rfid_number}')
                     continue
 
-                await self.log_manager.put_log(user, type='rfid', action='open-door')
                 await self.device.open_door()
+
+                while not self.rfid_queue.empty():
+                    await self.rfid_queue.get()
+
+                await self.log_manager.put_log(user, type='rfid', action='open-door')
             except Exception as e:
                 logger.exception(e)
 

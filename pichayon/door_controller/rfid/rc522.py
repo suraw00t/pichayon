@@ -33,20 +33,20 @@ class RC522RFIDReader:
         #GPIO.setup(self.buzzer, GPIO.OUT)
         #GPIO.output(self.buzzer, GPIO.LOW)
     
-    def uid_to_num(self, uid):
+    async def uid_to_num(self, uid):
       n = 0
       for i in range(0, 5):
           n = n * 256 + uid[i]
       return n
 
-    def uid_to_hex(self, uid):
+    async def uid_to_hex(self, uid):
         hexs = []
         for num in uid:
             hexs.append(f'{num:02X}')
 
         return ''.join(hexs)
 
-    def get_id(self):
+    async def get_id(self):
         #while True:
             #logger.debug('okayy')
         self.reader.wait_for_tag()
@@ -61,7 +61,7 @@ class RC522RFIDReader:
                     # print(f'---> {uid}')
                     # return str(self.uid_to_num(uid))
                     # print(f'-->{self.uid_to_hex(uid)}')
-                    return self.uid_to_hex(uid)
+                    return await self.uid_to_hex(uid)
         except Exception as e:
             logger.exception(e)
         return ''
