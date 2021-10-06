@@ -8,8 +8,12 @@ from flask import (Blueprint,
 import datetime
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
-from pichayon.web import acl
-from pichayon.web import forms
+from pichayon.web import (
+        acl,
+        forms,
+        nats,
+        )
+        
 from pichayon.web.forms.admin import (UserForm,
                                       AddingUserForm,
                                       AddRoleUserForm,
@@ -17,6 +21,8 @@ from pichayon.web.forms.admin import (UserForm,
                                       AddingRoomForm)
 import string
 import random
+import json
+
 module = Blueprint('users',
                    __name__,
                    url_prefix='/users')
@@ -159,14 +165,14 @@ def identity(user_id):
             user=user,
             )
 
-@module.route('/<user_id>/identities/add', methods=["GET", "POST"], defaults={'index': None})
-@module.route('/<user_id>/identities/{index}/add', methods=["GET", "POST"])
+@module.route('/<user_id>/identities/add', methods=["GET", "POST"], defaults={'index': -1})
+@module.route('/<user_id>/identities/<int:index>/edit', methods=["GET", "POST"])
 @login_required
 def add_or_edit_identity(user_id, index):
     user = models.User.objects.get(id=user_id)
 
     form = forms.admin.users.IdentityForm()
-    if request.method == 'GET' and index:
+    if request.method == 'GET' and index >= 0:
         form = forms.admin.users.IdentityForm(obj=user.identities[index])
 
     if not form.validate_on_submit():
@@ -176,17 +182,34 @@ def add_or_edit_identity(user_id, index):
                 )
 
     identity = models.Identity()
-    if index:
+    if index >= 0:
         identity = user.identities[index]
 
     form.populate_obj(identity)
     
-    if not index:
-        user.identities.append(identity)
+    if index < 0:
+        is_found = False
+        for idr in user.identities:
+            if idr.identifier == form.identifier.data:
+                is_found = True
+                break
+        if not is_found:
+            user.identities.append(identity)
     
     user.save()
 
-    return render_template(
-            'administration/users/identity.html',
-            user=user,
+    data = json.dumps({
+            'action': 'update-member',
+            'user_id': str(user.id),
+        })
+    nats.nats_client.publish(
+        'pichayon.controller.command',
+        data
+        )
+
+    return redirect(
+            url_for(
+                'administration.users.identity',
+                user_id=user_id,
+                )
             )

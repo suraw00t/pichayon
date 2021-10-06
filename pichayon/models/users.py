@@ -30,9 +30,7 @@ class User(me.Document, UserMixin):
             default='',
             max_length=13)
 
-    identities = me.ListField(
-            me.EmbeddedDocumentField(Identity)
-            )
+    identities = me.EmbeddedDocumentListField(Identity)
 
     gave_informations = me.BooleanField(
             required=True,
@@ -73,3 +71,11 @@ class User(me.Document, UserMixin):
         if 'google' in self.resources:
             return self.resources['google'].get('picture', None)
         return None
+
+    def get_user_groups(self):
+        from .groups import UserGroupMember
+
+        user_group_members = UserGroupMember.objects(user=self)
+        user_groups = [ugm.group for ugm in user_group_members]
+        return user_groups
+

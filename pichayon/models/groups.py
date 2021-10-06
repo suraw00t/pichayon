@@ -61,6 +61,10 @@ class UserGroup(me.Document):
 
         return False
 
+    def get_group_authorizations(self):
+        from .authorizations import GroupAuthorization
+        return GroupAuthorization.objects(user_group=self)
+
 
 class DoorGroup(me.Document):
     name = me.StringField(required=True, unique=True)

@@ -19,7 +19,6 @@ class DoorController:
                 url=settings.get('SPARKBIT_API_DATABASE_URL'),
                 connect=True,
                 auto_renew=True)
-        self.session = self.client.session()
         self.command_queue = asyncio.Queue()
         self.running = False
 
@@ -34,6 +33,7 @@ class DoorController:
         self.running = True
         while self.running:
             command = await self.command_queue.get()
+            logger.debug(f'sparkbit process {command}')
             action = command.get('action', None)
             if not action:
                 return
@@ -43,13 +43,14 @@ class DoorController:
                 logger.debug('all document')
                 for document in db:
                     logger.debug(document)
-            if action == 'add_user':
-                self.add_user(command)
-            elif action == 'delete_user':
-                self.delete_user(command)
+            if action == 'add-user':
+                await self.add_user(command)
+            elif action == 'delete-user':
+                await self.delete_user(command)
+            elif action == 'update-user':
+                await self.update_user(command)
             elif action == 'open':
-                self.open_door(command)
-            print('finish cloudant process')
+                await self.open_door(command)
 
     def stop(self):
         self.running = False
@@ -57,23 +58,28 @@ class DoorController:
 
         self.client.disconnect()
 
-    def delete_user(self, command):
-        logger.debug('delete user')
+    async def delete_user(self, command):
         try:
-            door = models.Door.objects.get(id=command.get('door_id'))
-            user = models.User.objects.get(id=command.get('user_id'))
+            door = models.Door.objects.get(id=command['door'].get('id'))
+            user = models.User.objects.get(id=command['user'].get('id'))
             sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
         except Exception as e:
             logger.exception(e)
             return
 
         db = self.client[sparkbit_door.device_id]
-        doc = db.get_design_document('user-{}'.format(user.system_id))
+        # doc = db.get_document(f'user-{user.system_id}')
+        key = f'user-{user.system_id}'
+        if key not in db or not db[key].exists():
+            logger.debug(f'there are no user {user.system_id} in database {sparkbit_door.device_id}')
+            return
+        doc = db[key]
+        doc.fetch()
         doc.delete()
+        logger.debug(f'sparkbit delete {user.system_id} success')
 
     
-    def open_door(self, command):
-        logger.debug('open door')
+    async def open_door(self, command):
         door = models.Door.objects.get(id=command.get('door_id'))
         user = models.User.objects.get(id=command.get('user_id'))
         sparkbit_door = models.SparkbitDoorSystem.objects(door=door).first()
@@ -115,54 +121,70 @@ class DoorController:
             logger.debug(e)
 
 
-    def add_user(self, command):
-        logger.debug('add user')
+    async def add_user(self, command):
         door = None
+        data = command['user']
         try: 
-            door_group = models.DoorGroup.objects.get(id=command.get('door_group_id'))
-            user = models.User.objects.get(id=command.get('user_id'))
-            
-            door_auth = models.DoorAuthorization.objects.get(
-                    door_group=door_group)
+            user = models.User.objects.get(id=data.get('id'))
+            door = models.Door.objects.get(id=command.get('door_id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
             
         except Exception as e:
             logger.exception(e)
 
-        has_auth = False
-        user_group = None
+        db = self.client[sparkbit_door.device_id]
+        key = f'user-{user.system_id}'
+        if key in db and db[key].exists():
+            logger.debug(f'this user {user.system_id} available in sparkbit')
+            return
 
-        for auth_group in door_auth.authorization_groups:
-            if auth_group.user_group.is_user_member(user):
-                has_auth = True
-                user_group = models.UserGroupMember.objects.get(
-                        user=user,
-                        group=auth_group.user_group)
-                break
-
-        sparkbit_doors = []
-        if has_auth:
-            for door in door_group.members:
-                sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
-                sparkbit_doors.append(sparkbit_door)
-
-        for sb_door in sparkbit_doors:
-            db = self.client[sb_door.device_id]
-            logger.debug(f'db: {db} {sb_door.device_id}')
-            logger.debug('user-{}'.format(user.system_id))
-            if 'user-{}'.format(user.system_id) in db:
-                continue
-
-            data = self.get_document(user, user_group)
-            doc = db.create_document(data)
+        user_data = self.get_document(user, data)
+        doc = db.create_document(user_data)
+        logger.debug(f'sparkbit add {user.system_id} success')
 
 
-    def get_document(self, user, member_group):
+    async def update_user(self, command):
+        door = None
+        user_data = command['user']
+        door_data = command['door']
+        try: 
+            user = models.User.objects.get(id=user_data.get('id'))
+            door = models.Door.objects.get(id=door_data.get('id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects.get(door=door)
+            
+        except Exception as e:
+            logger.exception(e)
+            return
 
-        started_date = int(datetime.datetime.timestamp(
-                member_group.started_date) * 1000)
-        ended_date = int(datetime.datetime.timestamp(
-                member_group.expired_date) * 1000)
-        data = dict(
+        db = self.client[sparkbit_door.device_id]
+        key = f'user-{user.system_id}'
+        if key in db and not db[key].exists():
+            logger.debug(f'this user {user.system_id} is not available in sparkbit')
+            return
+
+        doc = db[key]
+        doc.fetch()
+        # need to decision
+        user_data = self.get_document(user, user_data)
+        
+        doc.update(user_data)
+        doc.save()
+        logger.debug(f'sparkbit update {user.system_id} success')
+
+    def get_document(self, user, data):
+
+        started_date = int(
+                datetime.datetime.fromisoformat(
+                    data['started_date']
+                ).timestamp() * 1000
+                )
+        ended_date = int(
+                datetime.datetime.fromisoformat(
+                    data['expired_date']
+                ).timestamp() * 1000
+                )
+
+        response_data = dict(
                 _id='user-{}'.format(user.system_id),
                 thFirstName=user.first_name_th,
                 thLastName=user.last_name_th,
@@ -185,4 +207,13 @@ class DoorController:
                 nfcDevices=dict(),
                 pin=""
             )
-        return data
+        for id in user.identities:
+            id_data = {
+                    f'{id.identifier}': {
+                        }
+                    }
+            response_data['mifareCards'][f'{id.identifier}'] = dict(
+                        enabled=True if id.status == 'active' else False,
+                        deactivated=False,
+                    )
+        return response_data

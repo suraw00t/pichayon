@@ -54,7 +54,7 @@ class DataResourceManager:
             logger.debug(f'door {door.name} is not authorized by {user_group.name}')
             return None
 
-        return await render_json(user, door_auth)
+        return await self.render_json(user, door_auth)
 
 
     async def render_json(self, user, door_auth):
