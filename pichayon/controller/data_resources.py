@@ -29,26 +29,12 @@ class DataResourceManager:
                     )
 
             for member in user_group.get_user_group_members():
-                print('member', user_group)
+                # print('member', user_group)
                 user_group_info['members'].append(
-                        {
-                            'id': str(member.user.id),
-                            'username': member.user.username,
-                            'identifiers': [
-                                dict(
-                                    identifier=identity.identifier,
-                                    status=identity.status,
-                                    ) 
-                                for identity in member.user.identities \
-                                        if identity.status == 'active'
-                                ],
-                            'started_date': door_auth.started_date.isoformat(),
-                            'expired_date': door_auth.expired_date.isoformat(),
-                        }
+                        await self.render_json(member.user, door_auth)
                     )
             
             response['user_groups'].append(user_group_info)
-        print('xxx', response)
         response['action'] = 'initial'
         return response
 
@@ -68,9 +54,23 @@ class DataResourceManager:
             logger.debug(f'door {door.name} is not authorized by {user_group.name}')
             return None
 
+        return await render_json(user, door_auth)
+
+
+    async def render_json(self, user, door_auth):
+
+        user_group_member = door_auth.user_group.get_user_group_member(user)
+        started_date = user_group_member.started_date
+        expired_date = user_group_member.expired_date
+        
+        if not started_date or  started_date > door_auth.started_date:
+            started_date = door_auth.started_date
+
+        if not expired_date or expired_date > door_auth.expired_date:
+            expired_date = door_auth.expired_date
+
         data = {
             'id': str(user.id),
-            'username': user.username,
             'identifiers': [
                 dict(
                     identifier=identity.identifier,
@@ -79,9 +79,10 @@ class DataResourceManager:
                 for identity in user.identities \
                         if identity.status == 'active'
                 ],
-            'started_date': door_auth.started_date.isoformat(),
-            'expired_date': door_auth.expired_date.isoformat(),
+            'started_date': started_date.isoformat(),
+            'expired_date': expired_date.isoformat(),
         }
 
         return data
+
 

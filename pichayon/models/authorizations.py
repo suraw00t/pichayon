@@ -7,7 +7,7 @@ class Rrule(me.EmbeddedDocument):
     start_time = me.ListField(me.IntField())
     end_time = me.ListField(me.IntField())
 
-
+'''
 class UserGroupAuthorization(me.EmbeddedDocument):
     user_group = me.ReferenceField('UserGroup',
                                    dbref=True)
@@ -45,7 +45,7 @@ class UserGroupAuthorization(me.EmbeddedDocument):
                     and datetime.datetime.now() < exp_datetime:
                 return True
         return False
-
+'''
 
 class GroupAuthorization(me.Document):
     meta = {'collection': 'group_authorizations'}

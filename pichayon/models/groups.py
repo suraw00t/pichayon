@@ -42,6 +42,9 @@ class UserGroup(me.Document):
     def get_user_group_members(self):
         return UserGroupMember.objects(group=self)
 
+    def get_user_group_member(self, user):
+        return UserGroupMember.objects(group=self, user=user).first()
+
     def is_user_member(self, user):
         user_group_member = UserGroupMember.objects(
                 user=user, group=self).first()

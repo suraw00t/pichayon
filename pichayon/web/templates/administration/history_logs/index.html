@@ -10,7 +10,7 @@
 {% if url_for('administration.history_logs.index') == request.path %}
   <div class="active section">History Logs</div>
 {% else %}
-  History Logs Door Group: {{ door_group.name }}
+  History Logs Door: {{ door.name }}
 {% endif %}
 {%- endblock %}
 
@@ -20,7 +20,9 @@
   <table class="ui selectable celled table">
     <thead>
       <tr>
-        <th class="four wide">Date</th>
+        <th>Date</th>
+        <th>Action</th>
+        <th>User</th>
         <th>Message</th>
       </tr>
     </thead>
@@ -28,20 +30,25 @@
     <tbody>
       {% for log in logs %}
       <tr>
-        <td>{{ log.recorded_date.ctime() }}</td>
+        <td>{{ log.log_date.ctime() }}</td>
+        <td>{{ log.action }}</td>
+        <td>{{ log.user.username if log.user else '' }}</td>
         <td>
-          {% if 'delete' in log.action %}
+          {% if 'delete' == log.action %}
             <i class="window close red icon"></i>
-          {% elif 'update' in log.action %}
+          {% elif 'update' == log.action %}
             <i class="pen blue icon"></i>
-          {% elif 'create' in log.action %}
+          {% elif 'create' == log.action %}
             <i class="add green icon"></i>
-          {% elif 'Web' in log.message %}
-            <i class="laptop code blue icon"></i>
-          {% elif 'RFID' in log.message %}
-            <i class="credit card outline blue icon"></i>
-          {% elif 'Passcode' in log.message %}
-            <i class="th blue icon"></i>
+          {% elif log.action == 'open-door' %}
+            <i class="door open green icon"></i>
+            {% if log.details['type'] == 'rfid' %}
+              <i class="id badge blue icon"></i>
+            {% elif log.details['type'] == 'web' %}
+              <i class="globe blue icon"></i>
+            {% elif log.details['type'] == 'switch' %}
+              <i class="hand point up blue icon"></i>
+            {% endif %}
           {% endif %}
           {{ log.message }}
         </td>
