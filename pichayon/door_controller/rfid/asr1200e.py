@@ -101,7 +101,7 @@ class WiegandReader:
             nbit = bit ^ 1
             out = (out << 1) | nbit
 
-        return f'{out:X}'
+        return f'{out:08X}'
 
     async def get_id(self):
         #while True:
@@ -110,7 +110,7 @@ class WiegandReader:
         try:
             if not await self.verify_data(self.raw_data):
                 return ''
-
+        
             tag = await self.decrypt(self.raw_data)
 
             return tag

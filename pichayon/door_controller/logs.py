@@ -21,7 +21,7 @@ class LogManager:
         log = {
             'id': current_date.timestamp(),
             'actor': 'user' if user else 'system',
-            'user_id':user['id'] if user else 'system',
+            'user_id': user['id'] if user else 'system',
             'action': action,
             'type': type,
             'log_date': datetime.datetime.now().isoformat(),
