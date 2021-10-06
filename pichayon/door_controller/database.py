@@ -59,6 +59,25 @@ class Manager:
                     member
                     )
 
+    async def update_user(self, data):
+        logger.debug(f'update user -> {data}')
+
+        member = data['user']
+        member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
+        member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
+        
+        User = Query()
+        user = self.user.get(
+                User.id==member['id']
+                )
+        if not user:
+            return
+
+        self.user.update(
+                member
+                )
+
+
 
     async def delete_user(self, data):
         logger.debug(f'delete user -> {data}')
@@ -150,7 +169,6 @@ class Manager:
     async def delete_log(self, log_id):
         Log = Query()
         self.log.remove(Log.id==log_id)
-
 
     async def get_waiting_logs(self):
         Log = Query()

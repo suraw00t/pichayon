@@ -86,6 +86,9 @@ class DoorControllerServer:
                 await self.db_manager.add_user(data)
             elif data['action'] == 'delete-user':
                 await self.db_manager.delete_user(data)
+            elif data['action'] == 'update-user':
+                await self.db_manager.update_user(data)
+
 
             await asyncio.sleep(0.01)
 
