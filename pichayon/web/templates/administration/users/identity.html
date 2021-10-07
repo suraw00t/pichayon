@@ -21,6 +21,7 @@
         <th>Status</th>
         <th>Created Date</th>
         <th>Updated Date</th>
+        <th>Operation</th>
       </tr>
     </thead>
     <tbody>
@@ -31,6 +32,9 @@
         <td>{{ identity.status }}</td>
         <td>{{ identity.created_date }}</td>
         <td>{{ identity.updated_date }}</td>
+        <td>
+          <a class="ui button primary" href="{{ url_for('administration.users.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">edit</a>
+        </td>
       </tr>
     {% endfor %}
     </tbody>

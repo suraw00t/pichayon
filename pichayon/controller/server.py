@@ -150,6 +150,12 @@ class ControllerServer:
                     await self.door_manager.delete_member_from_group(data)
                 except Exception as e:
                     logger.exception(e)
+            elif data['action'] == 'update-member':
+                try:
+                    await self.door_manager.update_member(data)
+                except Exception as e:
+                    logger.exception(e)
+
             else:
                 logger.debug(f'unprocess command {data}')
 

@@ -23,7 +23,7 @@ class DoorManager:
         data = msg.data.decode()
 
         data = json.loads(data)
-        logger.debug(f'===> {data}')
+        logger.debug(f'door manager process -> {data}')
         if data['action'] == 'register':
             # logger.debug('before res')
             logger.debug(f'client {data["device_id"]} is registering')
@@ -43,7 +43,7 @@ class DoorManager:
                     reply,
                     json.dumps(response).encode())
             logger.debug('client {} is registed'.format(data['device_id']))
-        return
+        
     
     # async def update_data_to_door_controller(self):
     #     while self.running:
@@ -160,15 +160,16 @@ class DoorManager:
                         logger.debug(f'user {user.username} is not allow')
                         return
 
-                    topic = f'pichayon.door_controller.{door.device_id}'
-                    if door.device_type == 'sparkbit':
-                        topic = f'pichayon.controller.sparkbit'
-        
                     command = dict(
                             action='add-user',
                             user=data,
                             )
 
+                    topic = f'pichayon.door_controller.{door.device_id}'
+                    if door.device_type == 'sparkbit':
+                        command['door_id'] = str(door.id)
+                        topic = f'pichayon.controller.sparkbit.command'
+        
                     await self.nc.publish(
                             topic,
                             json.dumps(command).encode(),
@@ -197,18 +198,56 @@ class DoorManager:
         for auth_group in auth_groups:
             for door in auth_group.door_group.doors:
 
-                topic = f'pichayon.door_controller.{door.device_id}'
-                if door.device_type == 'sparkbit':
-                    topic = f'pichayon.controller.sparkbit'
-    
                 command = dict(
                         action='delete-user',
                         user=data,
                         )
 
+                topic = f'pichayon.door_controller.{door.device_id}'
+                if door.device_type == 'sparkbit':
+                    topic = f'pichayon.controller.sparkbit.command'
+                    command['door'] = dict(
+                            id=str(door.id)
+                            )
+    
                 await self.nc.publish(
                         topic,
                         json.dumps(command).encode(),
                         )
+
+
+    async def update_member(self, data):
+        logger.debug('try to update member')
+        user = models.User.objects(id=data.get('user_id')).first()
+    
+        if not user:
+            logger.debug('user not found')
+            return
+
+        user_groups = user.get_user_groups()
+
+        for user_group in user_groups:
+            for auth_group in user_group.get_group_authorizations():
+                for door in auth_group.door_group.doors:
+
+                    data = await self.data_resource.get_authorization_user_data(user, user_group, door)
+                    command = dict(
+                            action='update-user',
+                            user=data,
+                            )
+
+                    topic = f'pichayon.door_controller.{door.device_id}'
+                    if door.device_type == 'sparkbit':
+                        topic = f'pichayon.controller.sparkbit.command'
+                        command['door'] = dict(
+                                id=str(door.id)
+                                )
+        
+                    await self.nc.publish(
+                            topic,
+                            json.dumps(command).encode(),
+                            )
+
+
 
 
