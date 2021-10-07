@@ -192,7 +192,7 @@ class DoorControllerServer:
             is_opened = await self.device.is_door_opened()
             if is_opened != is_door_opened:
                 is_door_opened = is_opened
-                print('state is', is_opened)
+                # print('state is', is_opened)
 
                 state = 'closed'
                 if is_opened:
@@ -249,6 +249,11 @@ class DoorControllerServer:
             logger.debug('Register success')
        
     async def set_up(self, loop):
+        self.read_rfid_thread = threading.Thread(
+                target=self.read_rfid
+                )
+        self.read_rfid_thread.start()
+
         self.nc = NATS()
         await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
 
@@ -257,11 +262,6 @@ class DoorControllerServer:
                 datefmt='%d-%b-%y %H:%M:%S',
                 level=logging.DEBUG,
                 )
-
-        self.read_rfid_thread = threading.Thread(
-                target=self.read_rfid
-                )
-        self.read_rfid_thread.start()
 
         await self.log_manager.set_message_client(self.nc)
         logger.debug('setup success')
@@ -272,16 +272,16 @@ class DoorControllerServer:
         # loop.set_debug(True)
         self.running = True
     
-        loop.run_until_complete(self.set_up(loop))
-        loop.run_until_complete(self.register_node())
-        controller_command_task = loop.create_task(self.process_controller_command())
-        
-        # process_keypad_task = loop.create_task(self.process_keypad())
         process_rfid_task = loop.create_task(self.process_rfid())
         process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
 
+        loop.run_until_complete(self.set_up(loop))
+        loop.run_until_complete(self.register_node())
+        controller_command_task = loop.create_task(self.process_controller_command())
+        
+        # process_keypad_task = loop.create_task(self.process_keypad())
         try:
             loop.run_forever()
         except Exception as e:

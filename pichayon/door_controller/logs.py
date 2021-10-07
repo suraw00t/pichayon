@@ -12,6 +12,7 @@ class LogManager:
     def __init__(self, db_manager, device_id):
         self.db_manager = db_manager
         self.device_id = device_id
+        self.message_client = None
 
     async def set_message_client(self, client):
         self.message_client = client
@@ -32,6 +33,9 @@ class LogManager:
 
 
     async def send_log_to_server(self):
+        if not self.message_client:
+            return
+
         logs = await self.db_manager.get_waiting_logs()
         # logger.debug(f'-> {logs}')
         for log in logs:
