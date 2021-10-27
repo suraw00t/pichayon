@@ -12,7 +12,11 @@ from . import sparkbit
 class DoorManager:
     def __init__(self, data_resource):
         self.nc = None
+        self.sparkbit_enable = False
         self.data_resource = data_resource
+
+    async def set_spartbit_status(self, status: bool):
+        self.sparkbit_enable = status
 
     async def set_message_client(self, nc):
         self.nc = nc

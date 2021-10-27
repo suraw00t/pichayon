@@ -22,6 +22,7 @@ class ControllerServer:
         self.sparkbit_enable = self.settings.get('SPARKBIT_ENABLE', False)
         if self.sparkbit_enable:
             self.sparkbit_controller = sparkbit.DoorController(self.settings)
+            self.door_manager.set_sparkbit_status(True)
 
     async def handle_sparkbit_command(self, msg):
         subject = msg.subject
