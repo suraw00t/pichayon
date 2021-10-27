@@ -15,7 +15,7 @@ class DoorManager:
         self.sparkbit_enable = False
         self.data_resource = data_resource
 
-    async def set_spartbit_status(self, status: bool):
+    async def set_sparkbit_status(self, status: bool):
         self.sparkbit_enable = status
 
     async def set_message_client(self, nc):

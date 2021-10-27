@@ -22,7 +22,6 @@ class ControllerServer:
         self.sparkbit_enable = self.settings.get('SPARKBIT_ENABLE', False)
         if self.sparkbit_enable:
             self.sparkbit_controller = sparkbit.DoorController(self.settings)
-            self.door_manager.set_sparkbit_status(True)
 
     async def handle_sparkbit_command(self, msg):
         subject = msg.subject
@@ -191,10 +190,13 @@ class ControllerServer:
                 command_topic,
                 cb=self.handle_command
                 )
-        spb_id = await self.nc.subscribe(
-                sparkbit_topic,
-                cb=self.handle_sparkbit_command
-                )
+        if self.sparkbit_enable:
+            spb_id = await self.nc.subscribe(
+                    sparkbit_topic,
+                    cb=self.handle_sparkbit_command
+                    )
+
+            await self.door_manager.set_sparkbit_status(True)
 
         logger.debug('pichayon setup finish, start door controller')
 
