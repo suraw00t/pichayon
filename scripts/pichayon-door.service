@@ -1,0 +1,18 @@
+[Unit]
+Description=Pichayon Door Controller
+After=multi-user.target
+
+[Service]
+ExecStart=/home/pcy/pichayon/venv/bin/pichayon-door-controller
+WorkingDirectory=/home/pcy/pichayon
+StandardOutput=append:/var/log/pichayon/pichayon-door.log
+StandardError=append:/var/log/pichayon/pichayon-door-error.log
+SyslogIdentifier='pichayon-door'
+User=pcy
+Group=pcy
+Restart=always
+Environment="PICHAYON_SETTINGS=$(pwd)/pichayon.cfg"
+
+
+[Install]
+WantedBy=multi-user.target
