@@ -21,7 +21,7 @@ class Device:
         GPIO.setup(self.relay_pin, GPIO.OUT)
         GPIO.output(self.relay_pin, GPIO.HIGH)
         # GPIO.setup(self.switch_pin, GPIO.IN)
-        GPIO.setup(self.switch_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.door_closed_pin, GPIO.IN)
 
         self.last_opened_date = datetime.datetime.now()
