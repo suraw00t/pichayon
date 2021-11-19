@@ -14,7 +14,7 @@
             <i class="door closed icon green"></i>
 
             {% elif door.get_status() == 'opened' %}
-              <i class="door opened icon red"></i>
+              <i class="door open icon red"></i>
             {% else %}  
               <i class="door closed icon"></i>
             {% endif %}
@@ -22,7 +22,7 @@
           </div>
 
           <div class="meta">
-            {{ door.description }}
+            {{ door.device_type | title }}
           </div>
           <div style="position: absolute; right: 0;">
           {#
