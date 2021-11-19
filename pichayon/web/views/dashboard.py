@@ -39,7 +39,7 @@ def index():
             '/dashboard/index.html',
             door_groups=door_groups,
             user_groups=user_groups,
-            doors=doors,
+            doors=set(doors),
             )
 
 

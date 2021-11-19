@@ -9,15 +9,22 @@
     <div class="ui centered cards">
       <div class="card">
         <div class="content">
-           <!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">-->
-        <div class="header">
-           <i class="door closed icon"></i>{{ door.name |upper}}
-        </div>
+          <div class="header">
+            {% if door.get_status() == 'closed' %}
+            <i class="door closed icon green"></i>
 
-        <div class="meta">
-          {{ door.description }}
-        </div>
-        <div style="position: absolute; right: 0;">
+            {% elif door.get_status() == 'opened' %}
+              <i class="door opened icon red"></i>
+            {% else %}  
+              <i class="door closed icon"></i>
+            {% endif %}
+            {{ door.name | upper }}
+          </div>
+
+          <div class="meta">
+            {{ door.description }}
+          </div>
+          <div style="position: absolute; right: 0;">
           {#
           <a href="{{url_for('administration.door_authorizations.index', group_id=door_group.id)}}"><i class="circular inverted green eye icon"></i></a>
           #}
