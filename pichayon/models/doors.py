@@ -89,3 +89,14 @@ class Door(me.Document):
         from . import groups
         return groups.DoorGroup.objects(doors=self)
 
+    def get_status(self):
+        from . import history_logs
+        history_log = history_logs.HistoryLog.objects(
+                door=self,
+                action='door-status',
+                ).order_by('-id').first()
+        if history_log:
+            print(history_log.to_json())
+            return history_log.details.get('state', 'unknow')
+
+        return 'unknow'
