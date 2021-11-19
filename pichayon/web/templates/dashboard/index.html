@@ -9,11 +9,12 @@
     <div class="ui centered cards">
       <div class="card">
         <div class="content">
+          {% set door_state = door_states[door.id] %}
           <div class="header">
-            {% if door.get_status() == 'closed' %}
+            {% if 'closed' in door_state %}
             <i class="door closed icon green"></i>
 
-            {% elif door.get_status() == 'opened' %}
+            {% elif 'opened' in door_state %}
               <i class="door opened icon red"></i>
             {% else %}  
               <i class="door closed icon"></i>
@@ -22,7 +23,7 @@
           </div>
 
           <div class="meta">
-            {{ door.description }}
+            {{ door.device_type | title }} | {{ door_states[door.id] }}
           </div>
           <div style="position: absolute; right: 0;">
           {#
