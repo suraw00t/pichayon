@@ -26,8 +26,18 @@ class ControllerServer:
     async def handle_sparkbit_command(self, msg):
         subject = msg.subject
         reply = msg.reply
-        data = msg.data.decode()
-        data = json.loads(data)
+        raw_data = msg.data.decode()
+        data = json.loads(raw_data)
+        if type(data) is str:
+            data = json.loads(data)
+
+        if data['action'] == 'state':
+            response = await self.sparkbit_controller.get_state(data)
+            await self.nc.publish(
+                reply,
+                json.dumps(response).encode(),
+                )
+
         await self.sparkbit_controller.put_command(data)
 
     async def handle_command(self, msg):

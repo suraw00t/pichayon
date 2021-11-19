@@ -138,7 +138,7 @@ class DoorController:
             logger.debug(f'this user {user.system_id} available in sparkbit')
             return
 
-        user_data = self.get_document(user, data)
+        user_data = await self.get_document(user, data)
         doc = db.create_document(user_data)
         logger.debug(f'sparkbit add {user.system_id} success')
 
@@ -165,13 +165,13 @@ class DoorController:
         doc = db[key]
         doc.fetch()
         # need to decision
-        user_data = self.get_document(user, user_data)
+        user_data = await self.get_document(user, user_data)
         
         doc.update(user_data)
         doc.save()
         logger.debug(f'sparkbit update {user.system_id} success')
 
-    def get_document(self, user, data):
+    async def get_document(self, user, data):
 
         started_date = int(
                 datetime.datetime.fromisoformat(
@@ -217,3 +217,26 @@ class DoorController:
                         deactivated=False,
                     )
         return response_data
+
+    async def get_state(self, command):
+        door_data = command['door']
+
+        try: 
+            door = models.Door.objects.get(id=door_data.get('id'))
+            sparkbit_door = models.SparkbitDoorSystem.objects(door=door).first()
+            
+        except Exception as e:
+            logger.exception(e)
+            return
+
+        if not sparkbit_door:
+            return command
+
+        db = self.client[sparkbit_door.device_id]
+
+        doc = db['status']
+        doc.fetch()
+        door_data['state'] = doc['doorState']
+
+        return command
+
