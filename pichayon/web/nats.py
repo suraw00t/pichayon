@@ -9,6 +9,8 @@ import threading
 import asyncio
 import atexit
 import json
+import time
+import queue
 
 
 class MessageThread(threading.Thread):
@@ -22,6 +24,7 @@ class MessageThread(threading.Thread):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.queue = asyncio.Queue()
+        self.output_queue = queue.Queue()
 
     def stop(self):
         self.running = False
@@ -37,6 +40,22 @@ class MessageThread(threading.Thread):
             print(e)
             # check for queue empty
             pass
+
+    # def request(self, topic, data):
+    #     try:
+    #         print('++++++++++++')
+            
+    #         raw_data = asyncio.run(
+    #                 self.nc.request(
+    #                     topic,
+    #                     json.dumps(data).encode()
+    #                     ))
+    #         print('-------------')
+    #         data = json.load(raw_data.decode())
+    #     except Exception as e:
+    #         print(e)
+    #     print('-----<>', data)
+    #     return data
 
     async def put_to_queue(self, data):
         await self.queue.put(data)
@@ -60,8 +79,15 @@ class MessageThread(threading.Thread):
             if not data:
                 continue
 
-            msg = data.get('message', {})
-            await self.nc.publish(data.get('topic'), json.dumps(msg).encode())
+            message = data.get('message', {})
+            msg_type = data.get('type', 'publish')
+
+            if msg_type == 'publish':
+                await self.nc.publish(data.get('topic'), json.dumps(message).encode())
+            elif msg_type == 'request':
+                msg = await self.nc.request(data.get('topic'), json.dumps(message).encode())
+                raw_data = msg.data.decode()
+                self.output_queue.put(json.loads(raw_data))
 
     def run(self):
         self.running = True
@@ -109,7 +135,33 @@ class NatsClient:
         
     def publish(self, topic: str, message: str):
         t = self.app.extensions["nokkhum_nats"][self]['thread']
-        t.put_data(dict(topic=topic, message=message))
+        t.put_data(dict(topic=topic, message=message, type='publish'))
+
+    def request(self, topic: str, message: str):
+        t = self.app.extensions["nokkhum_nats"][self]['thread']
+        message_id = time.time()
+        message['message_id'] = message_id
+        t.put_data(dict(topic=topic, message=message, type='request'))
+        try:
+            counter = 0
+            while counter < 30:
+                if t.output_queue.empty():
+                    time.sleep(0.01)
+                    counter += 1
+                    continue
+
+                data = t.output_queue.get()
+                if data['message_id'] == message_id:
+                    message = data
+                    break
+                elif data['message_id'] != message_id:
+                    if data['message_id'] - message_id < 10:
+                        t.output_queue.put(data)
+
+        except Exception as e:
+            print(e)
+
+        return message
 
 nats_client = NatsClient()
 

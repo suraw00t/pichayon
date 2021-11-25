@@ -35,11 +35,30 @@ def index():
     for door_group in door_groups:
         doors.extend(door_group.doors)
 
+    door_states = dict()
+    doors = set(doors)
+    
+    for door in doors:
+        if door.device_type == 'pichayon':
+            door_states[door.id] = door.get_state()
+        elif door.device_type == 'sparkbit':
+            data = {
+                    'action': 'state',
+                    'door': {'id': str(door.id)},
+                    }
+            response = nats.nats_client.request(
+                'pichayon.controller.sparkbit.command',
+                data
+                )
+            door_states[door.id] = response['door']['state']
+
+
     return render_template(
             '/dashboard/index.html',
             door_groups=door_groups,
             user_groups=user_groups,
             doors=doors,
+            door_states=door_states,
             )
 
 
@@ -50,12 +69,12 @@ def open_door():
     # user_group_id = request.form.get('user_group_id')
     door = models.Door.objects.get(id=door_id)
     # print(door_id)
-    data = json.dumps({
+    data = {
             'action': 'open',
             'door_id': door_id,
             'device_type': door.device_type,
             'user_id': str(current_user._get_current_object().id)
-        })
+        }
     nats.nats_client.publish(
         'pichayon.controller.command',
         data
