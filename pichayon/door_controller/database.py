@@ -110,15 +110,14 @@ class Manager:
 
         self.user.truncate()
 
-        user_groups = data['user_groups']
+        users = data['users']
 
-        for group in user_groups:
-            for member in group['members']:
-                member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
-                member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
-                self.user.insert(
-                        member
-                        )
+        for user in users:
+            user['started_date'] = datetime.datetime.fromisoformat(user['started_date'])
+            user['expired_date'] = datetime.datetime.fromisoformat(user['expired_date'])
+            self.user.insert(
+                    user
+                    )
 
         logger.debug('end initial data')
 
