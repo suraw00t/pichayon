@@ -66,7 +66,7 @@ class Device:
 
     
     async def is_turn_on_switch(self):
-        return GPIO.input(self.switch_pin)
+        return not GPIO.input(self.switch_pin)
 
     async def is_door_opened(self):
         return GPIO.input(self.door_closed_pin)
