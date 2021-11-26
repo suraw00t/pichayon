@@ -104,6 +104,7 @@ class ControllerServer:
                 logger.debug(f'start send data to {door.device_id}')
                 if len(door.device_id) == 0:
                     continue
+
                 topic = f'pichayon.door_controller.{door.device_id}'
                 response = await self.data_resource.get_authorization_data(door.device_id)
                 await self.nc.publish(
