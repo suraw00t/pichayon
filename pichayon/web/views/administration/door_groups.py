@@ -57,7 +57,7 @@ def create_or_edit(door_group_id):
 
     form.populate_obj(door_group)
     door_group.save()
-    return redirect(url_for('door_groups.index'))
+    return redirect(url_for('administration.door_groups.index'))
 
 
 @module.route('/<door_group_id>/delete')

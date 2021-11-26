@@ -44,14 +44,17 @@ def index():
         elif door.device_type == 'sparkbit':
             data = {
                     'action': 'state',
-                    'door': {'id': str(door.id)},
+                    'door': {
+                        'id': str(door.id),
+                        'state': 'unknow'
+                        },
                     }
             response = nats.nats_client.request(
                 'pichayon.controller.sparkbit.command',
                 data
                 )
+            print(response)
             door_states[door.id] = response['door']['state']
-
 
     return render_template(
             '/dashboard/index.html',
