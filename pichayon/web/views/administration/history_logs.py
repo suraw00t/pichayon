@@ -21,7 +21,7 @@ def index():
     logs = models.HistoryLog.objects(
             action__in=actions,
             user__ne=None,
-            ).order_by('-id').limit(100)
+            ).limit(100).order_by('-id')
     # logs = models.HistoryLog.objects().order_by('-id').limit(100)
     return render_template('/administration/history_logs/index.html',
                            logs=logs)
@@ -31,8 +31,12 @@ def index():
 # @acl.admin_permission.require(http_exception=403)
 @acl.role_required('admin')
 def door_logs(door_id):
+    remove_actions = ['door-status']
     door = models.Door.objects(id=door_id).first()
-    logs = models.HistoryLog.objects(door=door).order_by('-id').limit(100)
+    logs = models.HistoryLog.objects(
+            door=door,
+            action__nin=remove_actions,
+            ).limit(100).order_by('-id')
     
 
     return render_template('/administration/history_logs/index.html',
