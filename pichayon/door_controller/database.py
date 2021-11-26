@@ -42,7 +42,10 @@ class Manager:
     async def add_user(self, data):
         logger.debug(f'add user -> {data}')
 
-        member = data['user']
+        member = data.get('user')
+        if not member:
+            return
+
         member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
         member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
         
@@ -62,7 +65,10 @@ class Manager:
     async def update_user(self, data):
         logger.debug(f'update user -> {data}')
 
-        member = data['user']
+        member = data.get('user')
+        if not member:
+            return
+
         member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
         member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
         
@@ -81,7 +87,9 @@ class Manager:
 
     async def delete_user(self, data):
         logger.debug(f'delete user -> {data}')
-        member = data['user']
+        member = data.get('user')
+        if not member:
+            return
 
         User = Query()
         self.user.remove(User.id==member['id'])
