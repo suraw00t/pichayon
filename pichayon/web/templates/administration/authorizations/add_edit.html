@@ -56,29 +56,27 @@
 
 {% block content %}
 <div class="ui container">
-<form class="ui big form" method="POST">
-  {{ form.hidden_tag() }}
-  <div class="two fields">
+  <form class="ui big form" method="POST">
+    {{ form.hidden_tag() }}
+    <div class="two fields">
       {{ renderer.render_select(form.door_group) }}
       {{ renderer.render_select(form.user_group) }}
-  </div>
-	<div class="three fields" >
-        {{ renderer.render_multiple_select(form.days) }}
-        {{ renderer.render_timepicker(form.start_time, timepicker_id='start_time') }}
-        {{ renderer.render_timepicker(form.end_time, timepicker_id='end_time') }}
-  </div>
-	<div class="two fields" >
+    </div>
+    <div class="three fields" >
+      {{ renderer.render_multiple_select(form.days) }}
+      {{ renderer.render_timepicker(form.start_time, timepicker_id='start_time') }}
+      {{ renderer.render_timepicker(form.end_time, timepicker_id='end_time') }}
+    </div>
+    <div class="two fields" >
       {{ renderer.render_calendar(form.started_date, calendar_id='started_date_calendar') }}
       {{ renderer.render_calendar(form.expired_date, calendar_id='ended_date_calendar') }}
-	</div>
-<button class="ui submit primary button" type="submit">Confirm</button>
+    </div>
+    <button class="ui submit primary button" type="submit">Confirm</button>
+  </form>
 </div>
-</form>
 
 <script>
-$('#user_group')
-  .dropdown();
-$('#days')
+$('.dropdown')
   .dropdown();
 </script>
 {% endblock %}
