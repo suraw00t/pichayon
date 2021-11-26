@@ -88,23 +88,22 @@ class Manager:
     
     async def update_data(self, data):
         logger.debug('update data')
-        user_groups = data['user_groups']
+        users = data['users']
         #for user in users:
 
         User = Query()
 
-        for group in user_groups:
-            for member in group['members']:
-                member['started_date'] = datetime.datetime.fromisoformat(member['started_date'])
-                member['expired_date'] = datetime.datetime.fromisoformat(member['expired_date'])
-                user = self.user.get(User.id==member['id'])
-                if user:
-                    user.update(member)
-                    self.user.update(user)
-                else:
-                    self.user.insert(
-                            member
-                            )
+        for user in users:
+            user['started_date'] = datetime.datetime.fromisoformat(user['started_date'])
+            user['expired_date'] = datetime.datetime.fromisoformat(user['expired_date'])
+            user = self.user.get(User.id==user['id'])
+            if user:
+                user.update(user)
+                self.user.update(user)
+            else:
+                self.user.insert(
+                        user
+                        )
 
     async def initial_data(self, data):
         logger.debug('initial data')

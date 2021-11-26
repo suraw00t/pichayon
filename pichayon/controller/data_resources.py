@@ -20,22 +20,21 @@ class DataResourceManager:
         user_groups = door.get_allowed_user_groups()
         door_auths = door.get_authorizations()
 
-        response['user_groups'] = list()
+        users = dict()
+
         for door_auth in door_auths:
             user_group = door_auth.user_group
-            user_group_info = dict(
-                    name=user_group.name,
-                    members=list(),
-                    )
 
             for member in user_group.get_user_group_members():
                 # print('member', user_group)
-                user_group_info['members'].append(
-                        await self.render_json(member.user, door_auth)
-                    )
+                if member.user.id not in users:
+                    users[member.user.id] = await self.render_json(
+                            member.user, door_auth)
+                    users[member.user.id]['groups'] = []
+                users[member.user.id]['groups'].append(str(member.user.id))
             
-            response['user_groups'].append(user_group_info)
         response['action'] = 'initial'
+        response['users'] = list(users.values())
         return response
 
     async def get_authorization_user_data(self, user, user_group, door):
@@ -45,6 +44,7 @@ class DataResourceManager:
 
         # if not user or not user_group or not door:
         #     return None
+
         if not user_group.is_user_member(user):
             logger.debug(f'{user.username} is not member of group {user_group.name}')
             return None
