@@ -33,14 +33,14 @@ def create_or_edit(user_group_id=None):
 
     group = None
     if user_group_id:
-        group = models.UserGroup.objects(id=user_group_id).first()
-        form = UserGroupForm(obj=group)
+        user_group = models.UserGroup.objects(id=user_group_id).first()
+        form = UserGroupForm(obj=user_group)
     
     if not form.validate_on_submit():
         return render_template('/administration/user_groups/create-edit.html',
                                form=form)
 
-    if not group:
+    if not user_group:
         user_group = models.UserGroup()
 
     form.populate_obj(user_group)
