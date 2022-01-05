@@ -4,3 +4,5 @@ sudo mkdir /var/log/pichayon
 sudo chown -R $USER: /var/log/pichayon
 sudo systemctl daemon-reload
 sudo systemctl enable pichayon-door.service
+
+export CFLAGS="-fcommon"
