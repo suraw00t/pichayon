@@ -1,4 +1,4 @@
-'''
+"""
 ## Connecting
 Connecting ASR1200E device as wiegand via logic converter.
 LED = brown
@@ -8,7 +8,7 @@ Ground = black
 VCC = Red -> 5, 9-15 V in specification
 
 timeout = 108 * (34 + 1) = 3780 us ~ 0.004 s
-'''
+"""
 
 import asyncio
 import logging
@@ -16,6 +16,8 @@ import RPi.GPIO as GPIO
 import time
 
 logger = logging.getLogger(__name__)
+
+
 class WiegandReader:
     def __init__(self, d0_pin=11, d1_pin=12, beep_pin=37, timeout=0.05):
 
@@ -31,16 +33,16 @@ class WiegandReader:
         GPIO.setup(self.beep_pin, GPIO.OUT)
         GPIO.output(self.beep_pin, GPIO.HIGH)
 
-
         GPIO.add_event_detect(
-                d0_pin, GPIO.FALLING,
-                callback=self.callback,
-                )
+            d0_pin,
+            GPIO.FALLING,
+            callback=self.callback,
+        )
         GPIO.add_event_detect(
-                d1_pin, 
-                GPIO.FALLING, 
-                callback=self.callback,
-                )
+            d1_pin,
+            GPIO.FALLING,
+            callback=self.callback,
+        )
 
         self.data = []
         self.raw_data = []
@@ -57,7 +59,7 @@ class WiegandReader:
             self.data.append(0)
         else:
             self.data.append(1)
-  
+
     async def play_beep(self, seconds=1, times=1):
         for i in range(times):
             GPIO.output(self.beep_pin, GPIO.LOW)
@@ -68,13 +70,12 @@ class WiegandReader:
         while not self.is_bit_reading:
             await asyncio.sleep(0.0001)
 
-        while (time.monotonic() - self.start_time <= self.timeout):
+        while time.monotonic() - self.start_time <= self.timeout:
             await asyncio.sleep(0.0001)
 
         self.is_bit_reading = False
         self.raw_data = self.data.copy()
         self.data.clear()
-
 
     async def verify_data(self, data):
         if len(data) <= 24:
@@ -82,35 +83,34 @@ class WiegandReader:
 
         even_parity_bit = data[0]
         odd_parity_bit = data[-1]
-        if data[1: 17].count(1) % 2 == 0:
+        if data[1:17].count(1) % 2 == 0:
             if not even_parity_bit:
                 return False
 
-        if data[17: -1].count(1) % 2 == 1:
+        if data[17:-1].count(1) % 2 == 1:
             if not odd_parity_bit:
                 return False
 
         return True
 
-    
     async def decrypt(self, raw_data):
-        data = raw_data[1: -1]
+        data = raw_data[1:-1]
 
         out = 0
         for bit in data:
             nbit = bit ^ 1
             out = (out << 1) | nbit
 
-        return f'{out:08X}'
+        return f"{out:08X}"
 
     async def get_id(self):
-        #while True:
-            #logger.debug('okayy')
+        # while True:
+        # logger.debug('okayy')
         await self.wait_for_tag()
         try:
             if not await self.verify_data(self.raw_data):
-                return ''
-        
+                return ""
+
             tag = await self.decrypt(self.raw_data)
 
             return tag
@@ -118,4 +118,4 @@ class WiegandReader:
         except Exception as e:
             logger.exception(e)
 
-        return ''
+        return ""

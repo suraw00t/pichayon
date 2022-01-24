@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Device:
     def __init__(self):
-        self.device_id = '0000000000000000'
+        self.device_id = "0000000000000000"
 
         self.door_closed_pin = 15
         self.switch_pin = 16
@@ -28,34 +28,31 @@ class Device:
 
         self.rfid = asr1200e.WiegandReader()
 
-
     def get_device_id(self):
         try:
-            f = open('/proc/cpuinfo', 'r')
+            f = open("/proc/cpuinfo", "r")
             for line in f:
-                if line[0:6] == 'Serial':
+                if line[0:6] == "Serial":
                     self.device_id = line[10:26]
             f.close()
         except Exception as e:
             logger.exception(e)
             # self.device_id = "ERROR000000000"
-        if self.device_id == '0000000000000000':
+        if self.device_id == "0000000000000000":
             self.device_id = uuid.getnode()
 
         return self.device_id
-    
+
     async def open_door(self):
         current_date = datetime.datetime.now()
         diff = current_date - self.last_opened_date
         # print(f'--> {diff}')
         if diff.seconds < 5:
-            logger.debug('Last opened date less than 5 seconds')
+            logger.debug("Last opened date less than 5 seconds")
             return
 
-        logger.debug('Open door')
-        beeb_task = asyncio.create_task(
-            self.rfid.play_beep(1)
-            )
+        logger.debug("Open door")
+        beeb_task = asyncio.create_task(self.rfid.play_beep(0.5))
 
         self.last_opened_date = current_date
         GPIO.output(self.relay_pin, GPIO.LOW)
@@ -64,7 +61,6 @@ class Device:
 
         await beeb_task
 
-    
     async def is_turn_on_switch(self):
         return not GPIO.input(self.switch_pin)
 
