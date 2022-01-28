@@ -1,0 +1,35 @@
+{% extends '/administration/door_groups/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block dashboard_title %}
+    Add Door to Group
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+  <i class="right angle icon divider"></i>
+  <div class="active section">Add Door to Group</div>
+{% endblock %}
+
+{% block content %}
+  <div class="">
+    <form method="POST" class="ui form">
+      {{ form.csrf_token }}
+      {{ renderer.render_multiple_select(form.doors) }}
+
+      <button type="submit" class="ui button primary">
+        add
+      </button>
+    </form>
+  </div>
+{% endblock %}
+
+
+{% block additional_js %}
+    <script type="text/javascript">
+      $('.ui.dropdown')
+  .dropdown()
+;
+
+    </script>
+{% endblock %}

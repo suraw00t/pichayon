@@ -44,7 +44,7 @@ class MessageThread(threading.Thread):
     # def request(self, topic, data):
     #     try:
     #         print('++++++++++++')
-            
+
     #         raw_data = asyncio.run(
     #                 self.nc.request(
     #                     topic,
@@ -62,7 +62,9 @@ class MessageThread(threading.Thread):
 
     async def initial_nats_client(self):
         self.nc = NATS()
-        await self.nc.connect(current_app.config.get('PICHAYON_MESSAGE_NATS_HOST'), self.loop)
+        await self.nc.connect(
+            current_app.config.get("PICHAYON_MESSAGE_NATS_HOST"), self.loop
+        )
 
     async def run_async_loop(self):
         await self.initial_nats_client()
@@ -74,18 +76,20 @@ class MessageThread(threading.Thread):
                 data = self.queue.get_nowait()
             except Exception as e:
                 await asyncio.sleep(0.1)
-                continue 
+                continue
 
             if not data:
                 continue
 
-            message = data.get('message', {})
-            msg_type = data.get('type', 'publish')
+            message = data.get("message", {})
+            msg_type = data.get("type", "publish")
 
-            if msg_type == 'publish':
-                await self.nc.publish(data.get('topic'), json.dumps(message).encode())
-            elif msg_type == 'request':
-                msg = await self.nc.request(data.get('topic'), json.dumps(message).encode())
+            if msg_type == "publish":
+                await self.nc.publish(data.get("topic"), json.dumps(message).encode())
+            elif msg_type == "request":
+                msg = await self.nc.request(
+                    data.get("topic"), json.dumps(message).encode()
+                )
                 raw_data = msg.data.decode()
                 self.output_queue.put(json.loads(raw_data))
 
@@ -96,6 +100,7 @@ class MessageThread(threading.Thread):
             # self.loop.run_forever()
 
             self.loop.run_until_complete(self.run_async_loop())
+
 
 class NatsClient:
     def __init__(self, app=None):
@@ -108,7 +113,6 @@ class NatsClient:
         app.extensions["nokkhum_nats"][self] = s
         message_thread.start()
 
-
     def init_app(self, app):
         self.app = app
 
@@ -120,28 +124,26 @@ class NatsClient:
         @app.before_first_request
         def start_thread():
 
-
             if self in app.extensions["nokkhum_nats"]:
                 self.stop()
-            
+
             self.init_nats(app)
 
         atexit.register(self.stop)
 
-
     def stop(self):
         if self in self.app.extensions["nokkhum_nats"]:
-            self.app.extensions["nokkhum_nats"][self]['thread'].stop()
-        
+            self.app.extensions["nokkhum_nats"][self]["thread"].stop()
+
     def publish(self, topic: str, message: str):
-        t = self.app.extensions["nokkhum_nats"][self]['thread']
-        t.put_data(dict(topic=topic, message=message, type='publish'))
+        t = self.app.extensions["nokkhum_nats"][self]["thread"]
+        t.put_data(dict(topic=topic, message=message, type="publish"))
 
     def request(self, topic: str, message: str):
-        t = self.app.extensions["nokkhum_nats"][self]['thread']
+        t = self.app.extensions["nokkhum_nats"][self]["thread"]
         message_id = time.time()
-        message['message_id'] = message_id
-        t.put_data(dict(topic=topic, message=message, type='request'))
+        message["message_id"] = message_id
+        t.put_data(dict(topic=topic, message=message, type="request"))
         try:
             counter = 0
             while counter < 30:
@@ -151,11 +153,11 @@ class NatsClient:
                     continue
 
                 data = t.output_queue.get()
-                if data['message_id'] == message_id:
+                if data["message_id"] == message_id:
                     message = data
                     break
-                elif data['message_id'] != message_id:
-                    if data['message_id'] - message_id < 10:
+                elif data["message_id"] != message_id:
+                    if data["message_id"] - message_id < 10:
                         t.output_queue.put(data)
 
         except Exception as e:
@@ -163,9 +165,11 @@ class NatsClient:
 
         return message
 
+
 nats_client = NatsClient()
 
-def init_nats(app): 
+
+def init_nats(app):
     nats_client.init_app(app)
 
     # @app.before_first_request
@@ -174,4 +178,3 @@ def init_nats(app):
     #         app.loop = None
     #         app.get_loop = get_loop
     #         app.get_nats_client = get_nats_client
-   

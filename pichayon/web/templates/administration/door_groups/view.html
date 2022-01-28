@@ -21,9 +21,18 @@
     </div>
   </div>
   #}
+  <div class="">
+    <h3>Door Group {{ door_group.name }}</h3>
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.door_groups.add_door', door_group_id=door_group.id) }}">
+        <i class="add icon"></i>
+        Add Door
+      </a>
+    </div>
+  </div>
 
-  <div class="ui container" style="margin-top: 1em;">
-  <h3>Door Group {{ door_group.name }}</h3>
+
+  <div class="" style="margin-top: 1em;">
   {% set members = door_group.doors %}
   <table class="ui selectable celled table">
     <thead>
@@ -39,7 +48,7 @@
       {% for member in members %}
       <tr>
         <td>{{ member.name }}</td>
-        <td>{{ member.type }}</td>
+        <td>{{ member.device_type.title() }}</td>
         <td>{{ member.status }}</td>
       </tr>
       {% endfor %}

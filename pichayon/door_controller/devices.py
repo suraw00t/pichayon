@@ -52,7 +52,7 @@ class Device:
             return
 
         logger.debug("Open door")
-        beeb_task = asyncio.create_task(self.rfid.play_beep(0.2))
+        beeb_task = asyncio.create_task(self.rfid.play_beep(0.1))
 
         self.last_opened_date = current_date
         GPIO.output(self.relay_pin, GPIO.LOW)

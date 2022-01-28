@@ -7,30 +7,29 @@ from flask_mongoengine.wtf import model_form
 from pichayon import models
 
 BaseDoorForm = model_form(
-        models.Door,
-        FlaskForm,
-        exclude=[
-            "created_date",
-            "updated_date",
-            "creator",
-            "camera_url",
-            "is_passcode",
-            "is_web_open",
-            'status',
-            ],
-        field_args={
-            "name": {"label": "Name"},
-            "description": {"label": "Description"},
-            "device_id": {"label": "Device ID"},
-            "device_type": {"label": "Type"},
-        },
+    models.Door,
+    FlaskForm,
+    exclude=[
+        "created_date",
+        "updated_date",
+        "creator",
+        "camera_url",
+        "is_passcode",
+        "is_web_open",
+        "status",
+    ],
+    field_args={
+        "name": {"label": "Name"},
+        "description": {"label": "Description"},
+        "device_id": {"label": "Device ID"},
+        "device_type": {"label": "Device Type"},
+    },
+)
 
-        )
 
 class DoorForm(BaseDoorForm):
-    device_type = fields.SelectField('device_type')
-    is_web_open = fields.BooleanField('Web Open', default=False)
-
+    device_type = fields.SelectField("Device Type")
+    is_web_open = fields.BooleanField("Web Open", default=False)
 
 
 # class DoorForm(FlaskForm):
@@ -43,7 +42,7 @@ class DoorForm(BaseDoorForm):
 #     device_id = fields.StringField('Device ID')
 #     type = fields.SelectField()
 
-    
+
 #     camera_url = fields.StringField('Camera URL')
 #     have_passcode = fields.BooleanField('Passcode')
 #     have_web_open = fields.BooleanField('Open via web')

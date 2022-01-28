@@ -49,8 +49,9 @@
         <td>{{ group.updated_date.ctime() }}</td>
         <td>
           
-	        <a href="{{ url_for('administration.door_groups.create_or_edit', door_group_id=group.id) }}"><i class="circular inverted edit icon"></i></a>
-          <a href="{{ url_for('administration.door_groups.delete', door_group_id=group.id) }}"><i class="circular inverted red delete icon"></i></a>
+          <a href="{{url_for('administration.door_groups.view', door_group_id=group.id)}}" class="ui button primary circular icon"><i class="eye icon"></i></a>
+	        <a href="{{ url_for('administration.door_groups.create_or_edit', door_group_id=group.id) }}" class="ui button circular icon yellow"><i class="edit icon"></i></a>
+          <a href="{{ url_for('administration.door_groups.delete', door_group_id=group.id) }}" class="ui button circular icon negative"><i class="delete icon"></i></a>
           
         </td>
       </tr>
