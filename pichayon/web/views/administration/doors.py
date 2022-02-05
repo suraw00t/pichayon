@@ -63,7 +63,7 @@ def create_or_edit(door_id):
         door_group.save()
 
     if form.device_type.data == "sparkbit":
-        sparkbit_system = models.SparkbitDoorSystem(door=door)
+        sparkbit_system = models.SparkbitDoorSystem.objects(door=door).first()
         if not sparkbit_system:
             sparkbit_system = models.SparkbitDoorSystem()
             sparkbit_system.creator = current_user._get_current_object()
@@ -74,7 +74,7 @@ def create_or_edit(door_id):
         sparkbit_system.status = "active"
         sparkbit_system.save()
     else:
-        sparkbit_system = models.SparkbitDoorSystem(door=door)
+        sparkbit_system = models.SparkbitDoorSystem.objects(door=door).first()
         if sparkbit_system:
             sparkbit_system.delete()
 
