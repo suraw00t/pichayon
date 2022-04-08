@@ -33,6 +33,33 @@ class PichayonClient:
         topic = self.get_topic(type)
         return self.message_client.request(topic, data)
 
+    def change_door_group(self, door_group):
+        data = {
+            "action": "change_door_group",
+            "door_group_id": str(door_group.id),
+        }
+
+        topic = self.get_topic()
+        return self.message_client.request(topic, data)
+
+    def change_user_group(self, user_group):
+        data = {
+            "action": "change_user_group",
+            "user_group_id": str(user_group.id),
+        }
+
+        topic = self.get_topic()
+        return self.message_client.request(topic, data)
+
+    def change_authorization(self, authorization):
+        data = {
+            "action": "change_authorization",
+            "authorization_id": str(authorization.id),
+        }
+
+        topic = self.get_topic()
+        return self.message_client.request(topic, data)
+
 
 pichayon_client = PichayonClient()
 
