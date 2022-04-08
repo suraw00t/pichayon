@@ -40,6 +40,7 @@
         <th>Name</th>
         <th>Type</th>
         <th>Status</th>
+        <th>Tool</th>
 
       </tr>
     </thead>
@@ -50,6 +51,10 @@
         <td>{{ member.name }}</td>
         <td>{{ member.device_type.title() }}</td>
         <td>{{ member.status }}</td>
+        <td>
+          <a href="{{ url_for('administration.door_groups.delete_door', door_group_id=door_group.id, door_id=member.id) }}" class="ui button circular icon negative"><i class="delete icon"></i></a>
+
+        </td>
       </tr>
       {% endfor %}
     </tbody>

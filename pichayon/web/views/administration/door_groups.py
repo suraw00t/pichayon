@@ -94,6 +94,9 @@ def add_door(door_group_id):
 @acl.role_required("admin")
 def delete_door(door_group_id, door_id):
     door_group = models.DoorGroup.objects.get(id=door_group_id)
+    door = models.Door.objects.get(id=door_id)
+    door_group.doors.remove(door)
+    door_group.save()
 
     return redirect(
         url_for("administration.door_groups.view", door_group_id=door_group_id)
