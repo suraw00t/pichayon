@@ -11,7 +11,8 @@ from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
 
 from . import devices
-#from .rfid import rc522
+
+# from .rfid import rc522
 from . import database
 from . import logs
 
@@ -29,18 +30,15 @@ class DoorControllerServer:
         self.device_id = self.device.get_device_id()
         # self.keypad = keypad.Keypad()
         # self.passcode = ''
-        rfid_number = '' 
-        self.db_manager = database.Manager(
-                self.settings,
-                self.device_id)
+        rfid_number = ""
+        self.db_manager = database.Manager(self.settings, self.device_id)
 
         self.log_manager = logs.LogManager(
-                self.db_manager,
-                self.device_id,
-                )
+            self.db_manager,
+            self.device_id,
+        )
 
         self.running = False
-
 
     async def handle_controller_command(self, msg):
         subject = msg.subject
@@ -52,64 +50,64 @@ class DoorControllerServer:
 
     async def request_initial_authorization(self):
         data = dict(
-                action='request_initial_data',
-                device_id=self.device_id,
-                )
+            action="request_initial_data",
+            device_id=self.device_id,
+        )
         await self.nc.publish(
-                'pichayon.controller.command',
-                json.dumps(data).encode(),
-                )
+            "pichayon.controller.command",
+            json.dumps(data).encode(),
+        )
 
     async def process_controller_command(self):
-       
-        logger.debug('initial authorization')
+
+        logger.debug("initial authorization")
         await self.request_initial_authorization()
 
-        logger.debug('start process controller command')
+        logger.debug("start process controller command")
         while self.running:
             data = await self.controller_command_queue.get()
 
-            logger.debug(f'process command -> {data}')
-            if 'action' not in data:
-                logger.debug('action not found')
+            logger.debug(f"process command -> {data}")
+            if "action" not in data:
+                logger.debug("action not found")
 
-            if data['action'] == 'open':
-                user = await self.db_manager.get_user_by_id_with_current_date(data['user_id'])
+            if data["action"] == "open":
+                user = await self.db_manager.get_user_by_id_with_current_date(
+                    data["user_id"]
+                )
                 if user:
-                    await self.log_manager.put_log(user, type='web', action='open-door')
+                    await self.log_manager.put_log(user, type="web", action="open-door")
                     await self.device.open_door()
                 else:
-                    logger.debug(f'user not allow')
-            elif data['action'] == 'initial':
+                    logger.debug(f"user not allow")
+            elif data["action"] == "initial":
                 await self.db_manager.initial_data(data)
-            elif data['action'] == 'add-user':
+            elif data["action"] == "add-user":
                 await self.db_manager.add_user(data)
-            elif data['action'] == 'delete-user':
+            elif data["action"] == "delete-user":
                 await self.db_manager.delete_user(data)
-            elif data['action'] == 'update-user':
+            elif data["action"] == "update-user":
                 await self.db_manager.update_user(data)
-
 
             await asyncio.sleep(0.01)
 
-        logger.debug('end process controller command')
-
+        logger.debug("end process controller command")
 
     async def process_keypad(self):
         time_stamp = datetime.datetime.now()
-        passcode = ''
+        passcode = ""
         while self.running:
             # passcode will expire in 3 sec
-            if datetime.datetime.now() > time_stamp+datetime.timedelta(seconds=3):
-                passcode = ''
+            if datetime.datetime.now() > time_stamp + datetime.timedelta(seconds=3):
+                passcode = ""
 
             key = self.keypad.get_key()
             if key is None:
-                await asyncio.sleep(.25)
+                await asyncio.sleep(0.25)
                 continue
             time_stamp = datetime.datetime.now()
             passcode += key
-            logger.debug(f'passcode >>> {passcode}')
+            logger.debug(f"passcode >>> {passcode}")
             if len(passcode) == 6:
                 # device_passcode = self.db.search(self.query.passcode == passcode)
                 user_passcode = self.db.search(self.query.passcode == passcode)
@@ -122,42 +120,40 @@ class DoorControllerServer:
                     #     'datetime': datetime.datetime.now().strftime("%Y, %m, %d, %H, %M, %S"),
                     #     'status': 'wait'
                     #     })
-                passcode = ''
+                passcode = ""
                 await asyncio.sleep(2)
-            await asyncio.sleep(.2)
+            await asyncio.sleep(0.2)
 
     def read_rfid(self):
         loop = asyncio.new_event_loop()
 
         while self.running:
-            rfid_number = loop.run_until_complete(
-                self.device.rfid.get_id()
-                )
+            rfid_number = loop.run_until_complete(self.device.rfid.get_id())
             if len(rfid_number) > 0:
-                loop.run_until_complete(
-                    self.rfid_queue.put(rfid_number)
-                )
+                loop.run_until_complete(self.rfid_queue.put(rfid_number))
                 time.sleep(1)
-            time.sleep(.1)
+            time.sleep(0.1)
             # logger.debug(f'rfid in read rfid>>>{rfid_number}')
-         
+
     async def process_rfid(self):
         while self.running:
 
-            #logger.debug(f'while in process{type(rfid_number)}')
-            #rfid_number = self.rfid.get_id()
+            # logger.debug(f'while in process{type(rfid_number)}')
+            # rfid_number = self.rfid.get_id()
             if self.rfid_queue.empty():
                 await asyncio.sleep(0.1)
                 continue
 
             rfid_number = await self.rfid_queue.get()
             try:
-                logger.debug(f'rfid >>> {rfid_number}')
+                logger.debug(f"rfid >>> {rfid_number}")
                 # user = await self.db_manager.get_user_by_rfid(rfid_number)
-                user = await self.db_manager.get_user_by_rfid_with_current_date(rfid_number)
+                user = await self.db_manager.get_user_by_rfid_with_current_date(
+                    rfid_number
+                )
 
                 if not user:
-                    logger.debug(f'There are no user rfid {rfid_number}')
+                    logger.debug(f"There are no user rfid {rfid_number}")
                     continue
 
                 await self.device.open_door()
@@ -165,7 +161,7 @@ class DoorControllerServer:
                 while not self.rfid_queue.empty():
                     await self.rfid_queue.get()
 
-                await self.log_manager.put_log(user, type='rfid', action='open-door')
+                await self.log_manager.put_log(user, type="rfid", action="open-door")
             except Exception as e:
                 logger.exception(e)
 
@@ -179,8 +175,8 @@ class DoorControllerServer:
         while self.running:
             is_open = await self.device.is_turn_on_switch()
             if is_open:
-                logger.debug(f'Listen switch {is_open}')
-                await self.log_manager.put_log(None, type='switch', action='open-door')
+                logger.debug(f"Listen switch {is_open}")
+                await self.log_manager.put_log(None, type="switch", action="open-door")
                 await self.device.open_door()
                 await asyncio.sleep(0.3)
             await asyncio.sleep(0.1)
@@ -194,50 +190,53 @@ class DoorControllerServer:
                 is_door_opened = is_opened
                 # print('state is', is_opened)
 
-                state = 'closed'
+                state = "closed"
                 if is_opened:
-                    state = 'opened'
+                    state = "opened"
 
                 await self.log_manager.put_log(
-                        None,
-                        type='switch',
-                        action='door-status',
-                        state=state,
-                        )
+                    None,
+                    type="switch",
+                    action="door-status",
+                    state=state,
+                )
 
                 if is_opened:
-                    logger.debug('door state is opened')
+                    logger.debug("door state is opened")
                 else:
-                    logger.debug('door state is closed')
+                    logger.debug("door state is closed")
 
             await asyncio.sleep(0.5)
 
     async def register_node(self):
-        data = dict(action='register',
-                device_id=self.device_id,
-                date=datetime.datetime.now().isoformat(),
-                result='wating',
-                )
-        while not self.is_register:        
+        data = dict(
+            action="register",
+            device_id=self.device_id,
+            date=datetime.datetime.now().isoformat(),
+            result="wating",
+        )
+        while not self.is_register:
             try:
-                logger.debug('Try to register node controller')
+                logger.debug("Try to register node controller")
                 response = await self.nc.request(
-                        'pichayon.door_controller.greeting',
-                        json.dumps(data).encode(),
-                        timeout=5
-                        )
+                    "pichayon.door_controller.greeting",
+                    json.dumps(data).encode(),
+                    timeout=5,
+                )
                 data = json.loads(response.data.decode())
-                logger.debug(f'-> {data}')
-                if data['action'] == 'register' \
-                        and data['device_id'] == self.device_id \
-                        and data['status'] == 'registed':
+                logger.debug(f"-> {data}")
+                if (
+                    data["action"] == "register"
+                    and data["device_id"] == self.device_id
+                    and data["status"] == "registed"
+                ):
                     self.is_register = True
-                    self.door_id = data['door_id']
+                    self.door_id = data["door_id"]
 
                     self.cc_id = await self.nc.subscribe(
-                            f'pichayon.door_controller.{self.device_id}',
-                            cb=self.handle_controller_command,
-                            )
+                        f"pichayon.door_controller.{self.device_id}",
+                        cb=self.handle_controller_command,
+                    )
 
                 # self.db_manager.initial_data_after_restart(data)
                 # logger.debug('Data was saved')
@@ -246,32 +245,29 @@ class DoorControllerServer:
 
             if not self.is_register:
                 await asyncio.sleep(1)
-            logger.debug('Register success')
-       
+            logger.debug("Register success")
+
     async def set_up(self, loop):
-        self.read_rfid_thread = threading.Thread(
-                target=self.read_rfid
-                )
+        self.read_rfid_thread = threading.Thread(target=self.read_rfid)
         self.read_rfid_thread.start()
 
         self.nc = NATS()
-        await self.nc.connect(self.settings['PICHAYON_MESSAGE_NATS_HOST'], loop=loop)
+        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"], loop=loop)
 
         logging.basicConfig(
-                format='%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s',
-                datefmt='%d-%b-%y %H:%M:%S',
-                level=logging.DEBUG,
-                )
+            format="%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s",
+            datefmt="%d-%b-%y %H:%M:%S",
+            level=logging.DEBUG,
+        )
 
         await self.log_manager.set_message_client(self.nc)
-        logger.debug('setup success')
-
+        logger.debug("setup success")
 
     def run(self):
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
         self.running = True
-    
+
         process_rfid_task = loop.create_task(self.process_rfid())
         process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
@@ -280,7 +276,7 @@ class DoorControllerServer:
         loop.run_until_complete(self.set_up(loop))
         loop.run_until_complete(self.register_node())
         controller_command_task = loop.create_task(self.process_controller_command())
-        
+
         # process_keypad_task = loop.create_task(self.process_keypad())
         try:
             loop.run_forever()
@@ -292,4 +288,3 @@ class DoorControllerServer:
             self.read_rfid_thread.join(timeout=1)
             loop.close()
             GPIO.cleanup()
-
