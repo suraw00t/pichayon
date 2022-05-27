@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class RS235Reader:
-    def __init__(self, device="/dev/ttyACM0", baudrate=112500):
+    def __init__(self, device="/dev/ttyACM0", baudrate=115200):
 
         # Pin Definitons:
         self.device = device
@@ -44,11 +44,6 @@ class RS235Reader:
 
         self.read_task = asyncio.create_task(self.wait_for_tag())
         self.tag_verify_task = asyncio.create_task(self.verify_tag())
-
-        command = [0x55, 0xAA, 0x24, 0x01, 0x00, 0x00, 0xDA]
-        x = b"".join([chr(d).encode() for d in command])
-        self.writer.write(x)
-        await self.writer.drain()
 
     async def play_beep(self, seconds=1, times=1):
         command = [0x55, 0xAA, 0x04, 0x01, 0x00]
