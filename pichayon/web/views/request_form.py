@@ -16,11 +16,22 @@ from pichayon import models
 from .. import oauth2
 from .. import forms
 
-module = Blueprint("request_form", __name__, url_prefix="/request")
+module = Blueprint("request", __name__, url_prefix="/request")
 
 
 @module.route("/")
 @login_required
 def index():
-    requests = models.RequestForm.objects
+    requests = models.RoomRequest.objects
     return render_template("/request/index.html", requests=requests)
+
+@module.route("/requests", methods=["GET", "POST"])
+@login_required
+def request():
+    form = forms.request_forms.objects()
+    if not form.validate_on_submit():
+        return render_template(
+            "/request/request.html", form = form,
+        )
+
+    request.save()
