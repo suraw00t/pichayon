@@ -4,9 +4,10 @@ import datetime
 
 from . import users
 
+class RoomResquest(me.Document):
+    meta = {"collection": "request_forms"}
 
-class RequestForm(me.Document):
-    users = me.ReferenceField(users.User)
+    users = me.ReferenceField(users.User, dbref=True)
     started_date = me.DateTimeField(required=True)
     ended_date = me.DateTimeField(required=True)
     room = me.StringField()

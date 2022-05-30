@@ -5,7 +5,7 @@ from .oauth2 import OAuth2Token
 from .groups import UserGroup, UserGroupMember, DoorGroup
 from .authorizations import GroupAuthorization, Rrule
 from .history_logs import HistoryLog
-from .request_form import RequestForm
+from .request_forms import RoomResquest
 
 __all__ = [
     User,
