@@ -4,7 +4,7 @@ import datetime
 
 from . import users
 
-class RoomResquest(me.Document):
+class RoomRequest(me.Document):
     meta = {"collection": "request_forms"}
 
     users = me.ReferenceField(users.User, dbref=True)
