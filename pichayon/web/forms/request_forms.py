@@ -7,8 +7,9 @@ import datetime
 from flask_wtf import FlaskForm
 
 
-class StudentForm(FlaskForm):
-    semester = fields.SelectField("Semester", choices=[("1", "2", "3")])
+class RequestForm(FlaskForm):
+    started_date = fields.DateTimeField()
+    ended_date = fields.DateTimeField()
     room = fields.StringField("Room")
     purpose = fields.StringField("Purpose")
-    request_date = fields.DateTimeField(required=True, default=datetime.datetime.now)
+    
