@@ -1,4 +1,4 @@
-{% extends 'base/default-dashboard.html'%}
+{% extends 'request/index.html'%}
 
 {% block dashboard_title%}
 Request Card
@@ -14,9 +14,3 @@ Request Card
 
 
 </div>
-
-<a class="ui primary button" href="{{ url_for('request.request')}}">
-        Create Request
-</a>
-
-{% endblock %}
