@@ -24,7 +24,7 @@ def index():
 def create_or_edit(user_group_id=None):
     form = UserGroupForm()
 
-    group = None
+    user_group = None
     if user_group_id:
         user_group = models.UserGroup.objects(id=user_group_id).first()
         form = UserGroupForm(obj=user_group)

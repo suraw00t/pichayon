@@ -85,7 +85,6 @@ class ControllerServer:
         await self.door_manager.process_door_controller_log(msg)
 
     async def update_data_to_door_controller(self):
-
         weak_up = datetime.datetime.combine(
             datetime.date.today(),
             datetime.time(4, 00),
@@ -96,7 +95,6 @@ class ControllerServer:
             weak_up = weak_up + datetime.timedelta(days=1)
 
         while self.running:
-
             logger.debug("start update data")
             doors = models.Door.objects(status="active", device_type="pichayon")
             for door in doors:
