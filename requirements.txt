@@ -2,7 +2,8 @@
 wheel
 
 # CONTROLLER
-asyncio-nats-client
+# asyncio-nats-client
+nats-py
 
 # WEB
 flask
@@ -12,9 +13,7 @@ authlib
 python-dateutil
 # marshmallow-jsonapi
 # marshmallow
-python-dateutil
 flask-mongoengine
-loginpass
 requests
 
 

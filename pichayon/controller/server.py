@@ -173,10 +173,10 @@ class ControllerServer:
 
         logger.debug("end process command")
 
-    async def set_up(self, loop):
+    async def set_up(self):
         self.nc = NATS()
         logger.debug("Connecting....")
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"], loop=loop)
+        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
         await self.door_manager.set_message_client(self.nc)
 
         logging.basicConfig(
@@ -211,7 +211,7 @@ class ControllerServer:
 
         loop = asyncio.get_event_loop()
         loop.set_debug(True)
-        loop.run_until_complete(self.set_up(loop))
+        loop.run_until_complete(self.set_up())
         command_task = loop.create_task(self.process_command())
         update_data_task = loop.create_task(self.update_data_to_door_controller())
 
