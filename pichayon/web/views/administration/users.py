@@ -6,8 +6,8 @@ from pichayon import models
 from pichayon.web import (
     acl,
     forms,
-    nats,
 )
+from pichayon.web.client.pichayon_client import pichayon_client
 
 from pichayon.web.forms.admin import (
     UserForm,
@@ -196,14 +196,7 @@ def add_or_edit_identity(user_id, index):
 
     user.save()
 
-    data = json.dumps(
-        {
-            "action": "update-member",
-            "user_id": str(user.id),
-        }
-    )
-
-    nats.nats_client.publish("pichayon.controller.command", data)
+    pichayon_client.update_member(user)
 
     return redirect(
         url_for(
