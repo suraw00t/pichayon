@@ -5,7 +5,7 @@ import time
 from pirc522 import RFID
 
 logger = logging.getLogger(__name__)
-'''
+"""
 ## Connecting
 Connecting RC522 module to SPI is pretty easy. You can use [this neat website](http://pi.gadgetoid.com/pinout) for reference.
 
@@ -20,7 +20,8 @@ Connecting RC522 module to SPI is pretty easy. You can use [this neat website](h
 | RST            | 7         | 22               | GPIO25       | P9\_23, GPIO\_49          |
 | 3.3V           | 8         | 1,17             | 3V3          | VDD\_3V3                  |
 
-'''
+"""
+
 
 class RC522RFIDReader:
     def __init__(self):
@@ -29,28 +30,28 @@ class RC522RFIDReader:
         # GPIO.setmode(GPIO.BOARD)
         # print(GPIO.getmode())
         self.reader = RFID()
-        #self.buzzer = 4
-        #GPIO.setup(self.buzzer, GPIO.OUT)
-        #GPIO.output(self.buzzer, GPIO.LOW)
-    
+        # self.buzzer = 4
+        # GPIO.setup(self.buzzer, GPIO.OUT)
+        # GPIO.output(self.buzzer, GPIO.LOW)
+
     async def uid_to_num(self, uid):
-      n = 0
-      for i in range(0, 5):
-          n = n * 256 + uid[i]
-      return n
+        n = 0
+        for i in range(0, 5):
+            n = n * 256 + uid[i]
+        return n
 
     async def uid_to_hex(self, uid):
         hexs = []
         for num in uid:
-            hexs.append(f'{num:02X}')
+            hexs.append(f"{num:02X}")
 
-        return ''.join(hexs)
+        return "".join(hexs)
 
     async def get_id(self):
-        #while True:
-            #logger.debug('okayy')
+        # while True:
+        # logger.debug('okayy')
         self.reader.wait_for_tag()
-        try:   
+        try:
             (error, tag_type) = self.reader.request()
             if not error:
 
@@ -64,4 +65,4 @@ class RC522RFIDReader:
                     return await self.uid_to_hex(uid)
         except Exception as e:
             logger.exception(e)
-        return ''
+        return ""
