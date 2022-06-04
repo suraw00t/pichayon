@@ -6,6 +6,7 @@ from .groups import UserGroup, UserGroupMember, DoorGroup
 from .authorizations import GroupAuthorization, Rrule
 from .history_logs import HistoryLog
 from .request_forms import RoomRequest
+from .rooms import Room
 
 __all__ = [
     User,
