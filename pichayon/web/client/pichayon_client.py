@@ -59,7 +59,7 @@ class PichayonClient:
         }
 
         topic = self.get_topic()
-        return self.message_client.request(topic, data)
+        return self.message_client.publish(topic, data)
 
     def change_authorization(self, authorization):
         data = {
