@@ -7,8 +7,8 @@ from . import users
 class RoomRequest(me.Document):
     meta = {"collection": "request_forms"}
 
-    users = me.ReferenceField(users.User, dbref=True)
-    started_date = me.DateTimeField(required=True)
+    user = me.ReferenceField("User", dbref=True)
+    started_date = me.DateTimeField(required=True, default=datetime.datetime.now())
     ended_date = me.DateTimeField(required=True)
-    room = me.StringField()
+    room = me.ReferenceField("Room", dbref=True)
     purpose = me.StringField(required=True)
