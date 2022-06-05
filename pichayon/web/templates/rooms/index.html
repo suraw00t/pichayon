@@ -7,3 +7,10 @@ Room List
 {% block breadcrumbs %}
 <a href="{{ url_for('rooms.index')}}" class="section">Room</a>
 {% endblock %}
+
+{% block content %}
+    <a class="ui primary button" href="{{ url_for('rooms.add')}}">
+        Create Room
+    </a>
+{% endblock %}
+
