@@ -4,13 +4,13 @@ import logging
 import datetime
 import RPi.GPIO as GPIO
 
-from .rfid import asr1200e
+from .rfid import asr1200e, vguang_sk330, vguang_m300
 
 logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self):
+    def __init__(self, reader_name='ASR1200E'):
         self.device_id = "0000000000000000"
 
         self.door_closed_pin = 15
@@ -26,7 +26,18 @@ class Device:
 
         self.last_opened_date = datetime.datetime.now()
 
-        self.rfid = asr1200e.WiegandReader()
+        self.reader_name = reader_name
+        self.rfid = self.get_reader_device(reader_name)
+
+    def get_reader_device(self, name):
+        if name == "ASR1200E":
+            return asr1200e.WiegandReader()
+        elif name == "VGUANG-M300":
+            return vguang_m300.RS235Reader()
+        elif name == "VGUANG-SK330":
+            return vguang_sk330.RS235Reader()
+
+        return None
 
     def get_device_id(self):
         try:

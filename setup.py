@@ -9,7 +9,7 @@ with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
 
 all_requires = []
-with open('requirements.txt', 'r') as fp:
+with open('requirements-rpi.txt', 'r') as fp:
     for t in fp.read().split('\n'):
         if '#' in t:
             t = t[:t.index('#')]

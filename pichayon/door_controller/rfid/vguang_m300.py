@@ -13,7 +13,7 @@ import time
 
 import serial_asyncio
 
-import vguang_sk330
+from . import vguang_sk330
 
 logger = logging.getLogger(__name__)
 

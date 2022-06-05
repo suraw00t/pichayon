@@ -3,6 +3,7 @@ import asyncio
 import logging
 import RPi.GPIO as GPIO
 import time
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,11 +11,11 @@ class Keypad:
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
         self.keypad = [
-                ['1', '2', '3', "A"],
-                ['4', '5', '6', "B"],
-                ['7', '8', '9', "C"],
-                ["*", '0', "#", "D"]
-            ]
+            ["1", "2", "3", "A"],
+            ["4", "5", "6", "B"],
+            ["7", "8", "9", "C"],
+            ["*", "0", "#", "D"],
+        ]
         self.col_pins = [19, 13, 6, 5]
         self.row_pins = [21, 20, 16, 12]
         self.buzzer = 17
@@ -55,7 +56,7 @@ class Keypad:
 
         self.exit()
         GPIO.output(self.buzzer, GPIO.HIGH)
-        time.sleep(.025)
+        time.sleep(0.025)
         GPIO.output(self.buzzer, GPIO.LOW)
         return self.keypad[row_val][col_val]
 
