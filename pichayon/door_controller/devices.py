@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self):
+    def __init__(self, reader_name='ASR1200E'):
         self.device_id = "0000000000000000"
 
         self.door_closed_pin = 15
@@ -26,7 +26,8 @@ class Device:
 
         self.last_opened_date = datetime.datetime.now()
 
-        self.rfid = self.get_reader_device()
+        self.reader_name = reader_name
+        self.rfid = self.get_reader_device(reader_name)
 
     def get_reader_device(self, name):
         if name == "ASR1200E":
