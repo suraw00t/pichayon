@@ -1,6 +1,8 @@
 # CONTROLLER
 wheel
-asyncio-nats-client
+# asyncio-nats-client
+nats-py
+
 RPi.GPIO
 pi-rc522
 tinydb

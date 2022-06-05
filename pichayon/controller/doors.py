@@ -247,9 +247,15 @@ class DoorManager:
 
         user_groups = user.get_user_groups()
 
+        doors = []
         for user_group in user_groups:
             for auth_group in user_group.get_group_authorizations():
                 for door in auth_group.door_group.doors:
+
+                    if door not in doors:
+                        doors.append(door)
+                    else:
+                        continue
 
                     data = await self.data_resource.get_authorization_user_data(
                         user, user_group, door

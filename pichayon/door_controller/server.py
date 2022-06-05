@@ -247,12 +247,12 @@ class DoorControllerServer:
                 await asyncio.sleep(1)
             logger.debug("Register success")
 
-    async def set_up(self, loop):
+    async def set_up(self):
         self.read_rfid_thread = threading.Thread(target=self.read_rfid)
         self.read_rfid_thread.start()
 
         self.nc = NATS()
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"], loop=loop)
+        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
 
         logging.basicConfig(
             format="%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s",
@@ -273,7 +273,7 @@ class DoorControllerServer:
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
 
-        loop.run_until_complete(self.set_up(loop))
+        loop.run_until_complete(self.set_up())
         loop.run_until_complete(self.register_node())
         controller_command_task = loop.create_task(self.process_controller_command())
 

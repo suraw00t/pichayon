@@ -1,11 +1,12 @@
 from flask import redirect, url_for, request
 from flask_login import LoginManager, current_user, login_url
-from flask_principal import (Principal,
-                             Permission,
-                             RoleNeed,
-                             UserNeed,
-							 identity_loaded,
-                             )
+from flask_principal import (
+    Principal,
+    Permission,
+    RoleNeed,
+    UserNeed,
+    identity_loaded,
+)
 from werkzeug.exceptions import Forbidden
 from functools import wraps
 
@@ -17,14 +18,19 @@ login_manager = LoginManager()
 principals = Principal()
 
 
-admin_permission = Permission(RoleNeed('admin'))
-supervisor_permission = Permission(RoleNeed('supervisor'))
-admin_or_supervisor_permission = Permission(
-        RoleNeed('admin'), RoleNeed('supervisor'))
+admin_permission = Permission(RoleNeed("admin"))
+supervisor_permission = Permission(RoleNeed("supervisor"))
+admin_or_supervisor_permission = Permission(RoleNeed("admin"), RoleNeed("supervisor"))
+
 
 def init_acl(app):
     # initial login manager
     login_manager.init_app(app)
+
+    @app.errorhandler(403)
+    def page_not_found(e):
+        return unauthorized_callback()
+
     principals.init_app(app)
 
 
@@ -50,12 +56,12 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
-    if request.method == 'GET':
-        response = redirect(login_url('accounts.login',
-                                      request.url))
+    if request.method == "GET":
+        response = redirect(login_url("accounts.login", request.url))
         return response
 
-    return redirect(url_for('accounts.login'))
+    return redirect(url_for("accounts.login"))
+
 
 @identity_loaded.connect
 def on_identity_loaded(sender, identity):
@@ -63,12 +69,11 @@ def on_identity_loaded(sender, identity):
     identity.user = current_user
 
     # Add the UserNeed to the identity
-    if hasattr(current_user, 'id'):
+    if hasattr(current_user, "id"):
         identity.provides.add(UserNeed(current_user.id))
 
     # Assuming the User model has a list of roles, update the
     # identity with the roles that the user provides
-    if hasattr(current_user, 'roles'):
+    if hasattr(current_user, "roles"):
         for role in current_user.roles:
             identity.provides.add(RoleNeed(role))
-
