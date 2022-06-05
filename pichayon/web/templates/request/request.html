@@ -1,7 +1,8 @@
 {% extends 'request/index.html'%}
+{% import '/base/html-renderer.html' as renderer%}
 
 {% block dashboard_title%}
-Request Card
+Create Request
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -9,8 +10,25 @@ Request Card
 {% endblock %}
 
 {% block content %}
-<div style="padding-bottom: 1em ;">
+    <div class="'ui content">
+        <div class='ui segment'>
+            <form class="'ui form" method="POST">
+
+                {{ form.hidden_tag() }}
+
+                {{ renderer.render_field(form.room) }}
+
+                {{ renderer.render_field(form.purpose) }}
+
+                {{ renderer.render_field(form.started_date) }}
+
+                {{ renderer.render_field(form.ended_date) }}
+
+                <button class="ui primary button" type="submit">Create</button>
+
+            </form>
+        </div>
+    </div>
 
 
-
-</div>
+{% endblock %}

@@ -9,11 +9,18 @@ Request Card
 {% endblock %}
 
 {% block content %}
-<div style="padding-bottom: 1em ;">
+        <div class="'ui content">
+                <div class='ui segment'>
+
+                        {{ request.user.first_name}}
+
+                        {{ request.room }}
+
+                        {{ request.purpose }}
 
 
-
-</div>
+                </div>
+        </div>
 
 <a class="ui primary button" href="{{ url_for('request.request')}}">
         Create Request
