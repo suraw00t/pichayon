@@ -1,0 +1,57 @@
+{% extends 'base/default-dashboard.html'%}
+
+{% block dashboard_title%}
+Request Card
+{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{{ url_for('applications.index')}}" class="section">Request</a>
+{% endblock %}
+
+{% block content %}
+
+        <div class="'ui content">
+                <div class='ui segment'>
+
+                        
+                {% for application in applications %}
+                <div class="ui grid two column">
+
+                        <div class="field">
+                                <label>Name : </label>
+                                {{ application.user.first_name }}
+                                {{ application.user.last_name }}
+                        </div>
+
+                        <div class="field">
+                                <label>Room : </label>        
+                                {{ application.room.name }}
+                        </div>
+
+                        <div class="field">
+                                <label>Purpose : </label>
+                                {{ application.purpose }}
+                        </div>
+
+                        <div class="field">
+                                <label>Start Date : </label>
+                                {{ application.started_date }}
+                        </div>
+                        <div class="field">
+                                <label>End Date : </label>
+                                {{ application.ended_date }}
+                        </div>
+                </div>
+
+                {% endfor %}
+                </div>
+        </div>
+        
+        <div>
+        <a class="ui primary button" href="{{ url_for('applications.apply')}}">
+                Create Request
+        </a>
+        </div>
+
+{% endblock %}
+
