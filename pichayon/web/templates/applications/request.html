@@ -1,0 +1,73 @@
+{% extends 'applications/index.html'%}
+{% import '/base/html-renderer.html' as renderer%}
+
+{% block dashboard_title%}
+Create Request
+{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{{ url_for('applications.index')}}" class="section">Request</a>
+{% endblock %}
+
+{% block content %}
+    <div class="ui content">
+        <div class="ui segment">
+            <form class="ui form" method="POST">
+
+                {{ form.hidden_tag() }}
+                
+                {{ renderer.render_field(form.room) }}
+
+                {{ renderer.render_field(form.purpose) }}
+
+                <div class="two fields">
+
+                    {{ renderer.render_calendar(form.started_date, calendar_id = "started_date_calendar") }}
+
+                    {{ renderer.render_calendar(form.ended_date, calendar_id = "ended_date_calendar") }}
+
+                </div>
+
+                <button class="ui primary button" type="submit">Create</button>
+
+            </form>
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block additional_js %}
+<script type="text/javascript">
+  datetime_formatter = {
+    datetime: function (datetime, settings) {
+        if (!datetime) return '';
+        var day = datetime.getDate();
+        var month = datetime.getMonth() + 1;
+        var year = datetime.getFullYear();
+        var hour = datetime.getHours();
+        var minute = datetime.getMinutes();
+        return year + '-' + ("0" + month).slice(-2) + '-' + ("0" + day).slice(-2) + " " + ("0" + hour).slice(-2) + ":" + ("0" + minute).slice(-2)  ;
+    }
+};
+var calendar_setting = {
+type: 'datetime',
+monthFirst: false,
+formatter: datetime_formatter,
+today: true,
+ampm: false,
+text: {
+    days: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
+    months: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤษจิกายน', 'ธันวาคม'],
+    monthsShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+    today: 'วันนี้',
+    now: 'ปัจจุบัน',
+    am: 'AM',
+    pm: 'PM'
+},
+};
+$('#started_date_calendar').calendar(calendar_setting);
+$('#ended_date_calendar').calendar(calendar_setting);
+</script>
+{% endblock %}
