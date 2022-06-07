@@ -27,13 +27,15 @@ def index():
     users = models.User.objects()
     return render_template("/request/index.html", requests=requests)
 
+
 @module.route("/requests", methods=["GET", "POST"])
 @login_required
 def request():
     form = forms.request_forms.RequestForm()
     if not form.validate_on_submit():
         return render_template(
-            "/request/request.html", form = form,
+            "/request/request.html",
+            form=form,
         )
 
     request = models.RoomRequest.objects()
@@ -43,4 +45,4 @@ def request():
 
     request.save()
 
-    return redirect(url_for('request.index'))
+    return redirect(url_for("request.index"))

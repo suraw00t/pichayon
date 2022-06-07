@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self, reader_name='ASR1200E'):
+    def __init__(self, settings):
+        self.settings = settings
         self.device_id = "0000000000000000"
 
         self.door_closed_pin = 15
@@ -26,7 +27,7 @@ class Device:
 
         self.last_opened_date = datetime.datetime.now()
 
-        self.reader_name = reader_name
+        self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
         self.rfid = self.get_reader_device(reader_name)
 
     def get_reader_device(self, name):

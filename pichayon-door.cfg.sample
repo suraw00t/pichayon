@@ -1,0 +1,9 @@
+SECRET_KEY = 'pichayon-secretkey-web' # change it when deploy web
+PICHAYON_MESSAGE_NATS_HOST = 'localhost:4222'
+
+
+PICHAYON_DOOR_READER = "ASR1200E"
+# ASR1200E
+# VGUANG-M300
+# VGUANG-SK330
+

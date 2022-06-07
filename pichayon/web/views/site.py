@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template
 
-module = Blueprint('site', __name__)
+module = Blueprint("site", __name__)
 
 
-@module.route('/')
+@module.route("/")
 def index():
-    return render_template('/site/index.html')
+    return render_template("/site/index.html")

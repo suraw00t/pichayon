@@ -9,4 +9,3 @@ class Room(me.Document):
     meta = {"collection": "rooms"}
 
     name = me.StringField(required=True)
-    

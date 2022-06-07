@@ -25,13 +25,15 @@ def index():
     room = models.Room.objects()
     return render_template("/rooms/index.html", room=room)
 
+
 @module.route("/add", methods=["GET", "POST"])
 @login_required
 def add():
     form = forms.rooms.Room()
     if not form.validate_on_submit():
         return render_template(
-            "/rooms/room.html", form = form,
+            "/rooms/room.html",
+            form=form,
         )
 
     room = models.Room.objects()
@@ -40,5 +42,4 @@ def add():
 
     room.save()
 
-    return redirect(url_for('rooms.index'))
-    
+    return redirect(url_for("rooms.index"))
