@@ -17,13 +17,19 @@ class Device:
         self.door_closed_pin = 15
         self.switch_pin = 16
         self.relay_pin = 18
+        self.is_relay_active_high = settings.get(
+            "PICHAYON_DOOR_RELAY_ACTIVE_HIGH", True
+        )
 
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.relay_pin, GPIO.OUT)
-        GPIO.output(self.relay_pin, GPIO.HIGH)
-        # GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.door_closed_pin, GPIO.IN)
+
+        if self.is_relay_active_high:
+            GPIO.output(self.relay_pin, GPIO.HIGH)
+        else:
+            GPIO.output(self.relay_pin, GPIO.LOW)
 
         self.last_opened_date = datetime.datetime.now()
 
@@ -70,9 +76,18 @@ class Device:
         beeb_task = asyncio.create_task(self.rfid.play_beep(0.1))
 
         self.last_opened_date = current_date
-        GPIO.output(self.relay_pin, GPIO.LOW)
+
+        if self.is_relay_active_high:
+            GPIO.output(self.relay_pin, GPIO.LOW)
+        else:
+            GPIO.output(self.relay_pin, GPIO.HIGH)
+
         await asyncio.sleep(5)
-        GPIO.output(self.relay_pin, GPIO.HIGH)
+
+        if self.is_relay_active_high:
+            GPIO.output(self.relay_pin, GPIO.HIGH)
+        else:
+            GPIO.output(self.relay_pin, GPIO.LOW)
 
         await beeb_task
 
