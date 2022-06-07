@@ -13,6 +13,8 @@ from flask import (
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import identity_changed, Identity, AnonymousIdentity
 from pichayon import models
+from pichayon.web.client.pichayon_client import pichayon_client
+
 from .. import oauth2
 from .. import forms
 
@@ -200,5 +202,45 @@ def edit_profile():
     if not user.gave_informations:
         user.gave_informations = True
     user.save()
+
+    return redirect(url_for("accounts.index"))
+
+
+@module.route(
+    "/accounts/identities/add", methods=["GET", "POST"], defaults={"index": -1}
+)
+@module.route("/accounts/identities/<int:index>/edit", methods=["GET", "POST"])
+@login_required
+def add_or_edit_identity(index):
+    user = current_user
+
+    form = forms.admin.users.IdentityForm()
+    if request.method == "GET" and index >= 0:
+        form = forms.admin.users.IdentityForm(obj=user.identities[index])
+
+    if not form.validate_on_submit():
+        return render_template(
+            "administration/users/add-edit-identity.html",
+            form=form,
+        )
+
+    identity = models.Identity()
+    if index >= 0:
+        identity = user.identities[index]
+
+    form.populate_obj(identity)
+
+    if index < 0:
+        is_found = False
+        for idr in user.identities:
+            if idr.identifier == form.identifier.data:
+                is_found = True
+                break
+        if not is_found:
+            user.identities.append(identity)
+
+    user.save()
+
+    pichayon_client.update_member(user)
 
     return redirect(url_for("accounts.index"))

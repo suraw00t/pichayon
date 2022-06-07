@@ -1,6 +1,12 @@
 SECRET_KEY = 'pichayon-secretkey-web' # change it when deploy web
 PICHAYON_MESSAGE_NATS_HOST = 'localhost:4222'
 
+# PICHAYON_READER_DEVICE = 'VGUANG-M300'
+# ASR1200E
+# VGUANG-M300
+# VGUANG-SK330
+
+
 OAUTH_CLIENT_CACHE_TYPE = 'simple'
 AUTHLIB_CACHE_THRESHOLD = 500
 AUTHLIB_CACHE_TYPE = 'simple'

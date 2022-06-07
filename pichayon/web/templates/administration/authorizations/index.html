@@ -15,17 +15,15 @@ Door Authorizations
 
 {%- endblock %}
 {% block content %}
-<div class="ui container">
   <div class="ui labeled icon menu">
     <a class="item" href="{{ url_for('administration.authorizations.add_or_edit') }}">
       <i class="add icon"></i>
       Add Authority
     </a>
   </div>
-</div>
 
   
-  <div class="ui container" style="margin-top: 1em;">
+  <div style="margin-top: 1em;">
   {% if group_auth | count > 0 %}
   <table class="ui selectable celled table">
     <thead>
