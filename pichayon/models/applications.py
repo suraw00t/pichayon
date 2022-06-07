@@ -4,11 +4,14 @@ import datetime
 
 from . import users
 
-class RoomRequest(me.Document):
-    meta = {"collection": "request_forms"}
+
+class Application(me.Document):
+    meta = {"collection": "applications"}
 
     user = me.ReferenceField("User", dbref=True)
+
     started_date = me.DateTimeField(required=True, default=datetime.datetime.now())
     ended_date = me.DateTimeField(required=True)
-    room = me.ReferenceField("Room", dbref=True)
+
+    room = me.ReferenceField("Door", dbref=True)
     purpose = me.StringField(required=True)

@@ -6,23 +6,20 @@ import datetime
 from flask_wtf import FlaskForm
 from flask_mongoengine.wtf import model_form
 
-RequestForm = model_form(
-    models.RoomRequest,
+BaseApplicationForm = model_form(
+    models.Application,
     FlaskForm,
-    exclude=[
-        "users"
-    ],
-
-    field_args = {
-        "users": {"label": "Users"},
-        "started_date": {"label": "Started"},
-        "ended_date": {"label": "Ended"},
-        "room": {"label": "Room"},
+    exclude=["users"],
+    field_args={
+        "started_date": {"label": "Start Date", "format": "%Y-%m-%d %H:%M"},
+        "ended_date": {"label": "End Date", "format": "%Y-%m-%d %H:%M"},
+        "room": {"label": "Room", "label_modifier": lambda r: r.name},
         "purpose": {"label": "Purpose"},
     },
 )
 
-class RequestForm(RequestForm):
+
+class ApplicationForm(BaseApplicationForm):
     pass
 
 
@@ -31,4 +28,3 @@ class RequestForm(RequestForm):
 #     ended_date = fields.DateTimeField()
 #     room = fields.StringField("Room", validators=[validators.InputRequired()])
 #     purpose = fields.StringField("Purpose", validators=[validators.InputRequired()])
-    
