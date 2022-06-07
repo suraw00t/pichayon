@@ -123,15 +123,15 @@ class DoorControllerServer:
                 await asyncio.sleep(2)
             await asyncio.sleep(0.2)
 
-    def read_rfid(self):
-        loop = asyncio.new_event_loop()
-
+    async def read_rfid(self):
+        await self.device.initial()
         while self.running:
-            rfid_number = loop.run_until_complete(self.device.rfid.get_id())
+            rfid_number = await self.device.rfid.get_id()
+
             if len(rfid_number) > 0:
-                loop.run_until_complete(self.rfid_queue.put(rfid_number))
-                time.sleep(1)
-            time.sleep(0.1)
+                await self.rfid_queue.put(rfid_number)
+                await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
             # logger.debug(f'rfid in read rfid>>>{rfid_number}')
 
     async def process_rfid(self):
@@ -247,8 +247,8 @@ class DoorControllerServer:
             logger.debug("Register success")
 
     async def set_up(self):
-        self.read_rfid_thread = threading.Thread(target=self.read_rfid)
-        self.read_rfid_thread.start()
+        # self.read_rfid_thread = threading.Thread(target=self.read_rfid)
+        # self.read_rfid_thread.start()
 
         self.nc = NATS()
         await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
@@ -267,6 +267,7 @@ class DoorControllerServer:
         # loop.set_debug(True)
         self.running = True
 
+        read_rfid_task = loop.create_task(self.read_rfid())
         process_rfid_task = loop.create_task(self.process_rfid())
         process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
@@ -284,6 +285,6 @@ class DoorControllerServer:
             self.processor_controller.stop_all()
             self.nc.close()
         finally:
-            self.read_rfid_thread.join(timeout=1)
+            # self.read_rfid_thread.join(timeout=1)
             loop.close()
             GPIO.cleanup()

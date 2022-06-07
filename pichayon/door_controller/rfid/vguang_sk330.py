@@ -67,7 +67,6 @@ class RS235Reader:
         await self.writer.drain()
 
     async def wait_for_tag(self):
-        # print("wait_for_tag")
         while self.running:
             data = await self.reader.read(1)
             await self.read_queue.put(ord(data))
@@ -81,24 +80,25 @@ class RS235Reader:
 
     async def verify_tag(self):
         # print("verify_tag")
-        buffer = []
+        data_buffer = []
         while self.running:
             data = await self.read_queue.get()
             # print("got->", f"{data:02X}")
-            buffer.append(data)
+            data_buffer.append(data)
 
-            while buffer and buffer[0] != 0x55:
-                buffer.pop(0)
+            while data_buffer and data_buffer[0] != 0x55:
+                data_buffer.pop(0)
 
-            if len(buffer) < 7:
+            if len(data_buffer) < 7:
                 continue
-            # print("->", buffer)
-            if len(buffer[6:]) >= buffer[4] + 1:
-                data_arr = buffer.copy()
-                buffer.clear()
+
+            if len(data_buffer[6:]) >= data_buffer[4] + 1:
+                data_arr = data_buffer.copy()
+                data_buffer.clear()
                 if await self.verify_data(data_arr):
                     await self.tag_queue.put(
-                        "".join([f"{d:02X}" for d in data_arr[6:-1]])
+                        # "".join([f"{d:02X}" for d in data_arr[6:-1]])
+                        "".join([f"{d:02X}" for d in data_arr[8:-1]])
                     )
 
     async def verify_data(self, data):
@@ -129,7 +129,7 @@ class RS235Reader:
 
 
 async def run():
-    readerx = RS235Reader("/dev/ttyACM0")
+    readerx = RS235Reader("/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")
