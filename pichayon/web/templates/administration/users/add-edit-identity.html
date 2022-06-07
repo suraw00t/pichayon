@@ -1,7 +1,12 @@
+{% if request.endpoint == 'accounts.add_or_edit_identity' %}
+{% extends '/accounts/index.html' %}
+{% else %}
 {% extends '/administration/users/index.html' %}
+{% endif %}
+
 {% import '/base/html-renderer.html' as renderer %}
 {% block dashboard_title %}
-	Edit Role
+  Edit Identity
 {% endblock %}
 
 {%- block breadcrumbs %}
@@ -12,11 +17,9 @@
 {% block content %}
 <form class="ui big form" method="POST">
   {{ form.csrf_token }}
-  <div class="field">
+  <div class="two fields">
     {{ renderer.render_field(form.identifier) }}
-  </div>
-	<div class="field">
-      {{ renderer.render_select(form.type) }}
+    {{ renderer.render_select(form.type) }}
   </div>
 	<div class="field">
       {{ renderer.render_select(form.status) }}

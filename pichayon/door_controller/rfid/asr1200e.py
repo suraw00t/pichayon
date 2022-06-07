@@ -50,6 +50,9 @@ class WiegandReader:
         self.start_time = time.monotonic()
         self.is_bit_reading = False
 
+    async def connect(self):
+        pass
+
     def callback(self, pin):
         if not self.is_bit_reading:
             self.is_bit_reading = True

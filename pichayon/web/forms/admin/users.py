@@ -13,46 +13,39 @@ class MultiCheckboxField(fields.SelectMultipleField):
 
 
 class AddingUserForm(FlaskForm):
-    username = fields.SelectMultipleField('Username')
+    username = fields.SelectMultipleField("Username")
 
 
 class AddRoleUserForm(FlaskForm):
-    role = fields.SelectMultipleField('Role')
+    role = fields.SelectMultipleField("Role")
 
 
 class UserForm(FlaskForm):
     username = fields.StringField(
-            'Username',
-            validators=[validators.InputRequired(),
-                        validators.Length(min=3)])
+        "Username", validators=[validators.InputRequired(), validators.Length(min=3)]
+    )
     # rooms = MultiCheckboxField('Rooms')
 
 
 class AddingRoomForm(FlaskForm):
-    room = fields.SelectField('Rooms')
-    started_date = fields.DateField('Started Date',
-                                   format='%Y-%m-%d')
-    expired_date = fields.DateField('Expired Date',
-                                   format='%Y-%m-%d')
+    room = fields.SelectField("Rooms")
+    started_date = fields.DateField("Started Date", format="%Y-%m-%d")
+    expired_date = fields.DateField("Expired Date", format="%Y-%m-%d")
+
 
 class IdentityForm(FlaskForm):
     identifier = fields.StringField(
-            'ID',
-            validators=[validators.InputRequired()],
-            )
-    type = fields.SelectField(
-            'Type',
-            choices=[('rfid', 'RFID')],
-            default='rfid'
-            )
+        "ID",
+        validators=[validators.InputRequired()],
+    )
+    type = fields.SelectField("Type", choices=[("rfid", "RFID")], default="rfid")
     status = fields.SelectField(
-            'Status',
-            choices=[('active', 'Active'), ('disactive', 'Disactive')],
-            default='active',
-            )
+        "Status",
+        choices=[("active", "Active"), ("disactive", "Disactive")],
+        default="active",
+    )
+
 
 class EditForm(FlaskForm):
-    roles = fields.SelectMultipleField('Role')
-    system_id = fields.StringField('System ID')
-
-
+    roles = fields.SelectMultipleField("Role")
+    system_id = fields.StringField("System ID")

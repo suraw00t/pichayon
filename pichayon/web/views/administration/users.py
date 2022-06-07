@@ -128,6 +128,7 @@ def edit(user_id):
         ("admin", "Admin"),
         ("supervisor", "Supervisor"),
         ("student", "Student"),
+        ("user", "User"),
     ]
     if not form.validate_on_submit():
         return render_template("administration/users/edit.html", form=form, user=user)

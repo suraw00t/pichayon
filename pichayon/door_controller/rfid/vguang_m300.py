@@ -13,7 +13,9 @@ import time
 
 import serial_asyncio
 
-import vguang_sk330
+from . import vguang_sk330
+
+# import vguang_sk330
 
 logger = logging.getLogger(__name__)
 
@@ -69,27 +71,31 @@ class RS235Reader(vguang_sk330.RS235Reader):
 
     async def verify_tag(self):
         # print("verify_tag")
-        buffer = []
+        data_buffer = []
         while self.running:
             data = await self.read_queue.get()
-            # print("got->", f"{data:02X}")
-            buffer.append(data)
+            data_buffer.append(data)
 
-            while buffer and buffer[0] != 0x55:
-                buffer.pop(0)
+            while data_buffer and data_buffer[0] != 0x55:
+                data_buffer.pop(0)
 
-            if len(buffer) < 7:
+            if len(data_buffer) < 7:
                 continue
-            # print("->", [f"{d:02X}" for d in buffer])
-            if len(buffer[6:]) >= buffer[4] + 1:
-                data_arr = buffer.copy()
-                buffer.clear()
 
-                # print("->", [f"{d:02X}" for d in data_arr])
+            print("x>", [f"{d:02X}" for d in data_buffer])
+            print(len(data_buffer[6:]), data_buffer[4])
+
+            if len(data_buffer[6:]) == data_buffer[4] + 1:
+                data_arr = data_buffer.copy()
+                data_buffer.clear()
+
+                print("->", [f"{d:02X}" for d in data_arr])
                 if await self.verify_data(data_arr):
                     await self.tag_queue.put(
                         "".join([f"{d:02X}" for d in data_arr[6:-1]])
                     )
+            elif len(data_buffer[6:]) > data_buffer[4] + 1:
+                data_buffer.clear()
 
     async def verify_data(self, data):
         # check header
@@ -119,7 +125,9 @@ class RS235Reader(vguang_sk330.RS235Reader):
 
 
 async def run():
-    readerx = RS235Reader("/dev/ttyACM0")
+    # readerx = RS235Reader("/dev/ttyACM0")
+    # readerx = RS235Reader("/dev/ttyS0")
+    readerx = RS235Reader("/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")

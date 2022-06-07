@@ -7,7 +7,8 @@ class Rrule(me.EmbeddedDocument):
     start_time = me.ListField(me.IntField())
     end_time = me.ListField(me.IntField())
 
-'''
+
+"""
 class UserGroupAuthorization(me.EmbeddedDocument):
     user_group = me.ReferenceField('UserGroup',
                                    dbref=True)
@@ -45,31 +46,22 @@ class UserGroupAuthorization(me.EmbeddedDocument):
                     and datetime.datetime.now() < exp_datetime:
                 return True
         return False
-'''
+"""
+
 
 class GroupAuthorization(me.Document):
-    meta = {'collection': 'group_authorizations'}
+    meta = {"collection": "group_authorizations"}
 
-    door_group = me.ReferenceField(
-            'DoorGroup',
-            dbref=True,
-            required=True)
-    user_group = me.ReferenceField(
-            'UserGroup',
-            dbref=True,
-            required=True)
+    door_group = me.ReferenceField("DoorGroup", dbref=True, required=True)
+    user_group = me.ReferenceField("UserGroup", dbref=True, required=True)
 
-    granter = me.ReferenceField('User', dbref=True)
-    rrule = me.EmbeddedDocumentField('Rrule')
+    granter = me.ReferenceField("User", dbref=True)
+    rrule = me.EmbeddedDocumentField("Rrule")
 
-    started_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.now)
-    expired_date = me.DateTimeField(required=True,
-                                    default=datetime.datetime.now)
+    started_date = me.DateTimeField(required=True, default=datetime.datetime.now)
+    expired_date = me.DateTimeField(required=True, default=datetime.datetime.now)
 
-
-    status = me.StringField(required=True, default='active')
-
+    status = me.StringField(required=True, default="active")
 
     def is_group_member(self, group):
         for ugroup in self.authorization_groups:
@@ -85,10 +77,12 @@ class GroupAuthorization(me.Document):
 
     def is_authority(self, group):
         for ugroup in self.authorization_groups:
-            if ugroup.user_group == group \
-                    and datetime.datetime.now() < ugroup.expired_date \
-                    and datetime.datetime.now() > ugroup.started_date \
-                    and ugroup.check_rrule():
+            if (
+                ugroup.user_group == group
+                and datetime.datetime.now() < ugroup.expired_date
+                and datetime.datetime.now() > ugroup.started_date
+                and ugroup.check_rrule()
+            ):
                 return True
         return False
 

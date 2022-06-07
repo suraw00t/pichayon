@@ -9,8 +9,4 @@ def main():
 
     program_options.initial_profile(app, options)
 
-    app.run(
-        debug=options.debug,
-        host=options.host,
-        port=int(options.port)
-    )
+    app.run(debug=options.debug, host=options.host, port=int(options.port))

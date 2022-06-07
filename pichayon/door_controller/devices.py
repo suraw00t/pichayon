@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self):
+    def __init__(self, settings):
+        self.settings = settings
         self.device_id = "0000000000000000"
 
         self.door_closed_pin = 15
@@ -26,17 +27,21 @@ class Device:
 
         self.last_opened_date = datetime.datetime.now()
 
-        self.rfid = self.get_reader_device()
+        self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
+        self.rfid = self.get_reader_device(self.reader_name)
 
     def get_reader_device(self, name):
         if name == "ASR1200E":
             return asr1200e.WiegandReader()
         elif name == "VGUANG-M300":
-            return vguang_m300.RS235Reader()
+            return vguang_m300.RS235Reader("/dev/ttyS0")
         elif name == "VGUANG-SK330":
-            return vguang_sk330.RS235Reader()
+            return vguang_sk330.RS235Reader("/dev/ttyS0")
 
         return None
+
+    async def initial(self):
+        await self.rfid.connect()
 
     def get_device_id(self):
         try:

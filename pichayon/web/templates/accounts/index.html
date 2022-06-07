@@ -10,39 +10,68 @@ Profile
 
 
 {% block content %}
-<div class="ui container">
-  <div class="ui segment">
-	  <h2 class="ui header">Profile
+<div class="ui segment">
+  <h2 class="ui header">Profile
 {% if current_user == user or not request.args.get('user')%}
-     <a class="btn-floating btn-large waves-effect waves-light" href="{{ url_for('accounts.edit_profile') }}" title='Edit profile.'><i class="edit icon"></i></a>
-     {% endif %}
-    </h2>
-    <div class="ui grid two column">
-      <div class="column">
-        {{ user.username }}
-      </div>
-      <div class="column">
-        {{ user.roles[-1] }}
-      </div>
-      <div class="column">
-        {{ user.id_card_number }}
-      </div>
-      <div class="column">
-        {{ user.email }}
-      </div>
-      <div class="column">
-        {{ user.first_name }}
-      </div>
-      <div class="column">
-        {{ user.last_name }}
-      </div>
-      <div class="column">
-        {{ user.first_name_th }}
-      </div>
-      <div class="column">
-        {{ user.last_name_th }}
-      </div>
+   <a class="btn-floating btn-large waves-effect waves-light" href="{{ url_for('accounts.edit_profile') }}" title='Edit profile.'><i class="edit icon"></i></a>
+   {% endif %}
+  </h2>
+  <div class="ui grid two column">
+    <div class="column">
+      {{ user.username }}
+    </div>
+    <div class="column">
+      {{ user.roles[-1] }}
+    </div>
+    <div class="column">
+      {{ user.id_card_number }}
+    </div>
+    <div class="column">
+      {{ user.email }}
+    </div>
+    <div class="column">
+      {{ user.first_name }}
+    </div>
+    <div class="column">
+      {{ user.last_name }}
+    </div>
+    <div class="column">
+      {{ user.first_name_th }}
+    </div>
+    <div class="column">
+      {{ user.last_name_th }}
     </div>
   </div>
+</div>
+
+<div class="ui segment">
+  <h2 class="ui header">Indentity</h2>
+    <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id) }}">Add</a>
+    <table class="ui selectable celled table">
+      <thead>
+        <tr>
+          <th>Identifier</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Created Date</th>
+          <th>Updated Date</th>
+          <th>Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for identity in user.identities %}
+        <tr>
+          <td>{{ identity.identifier }}</td>
+          <td>{{ identity.type }}</td>
+          <td>{{ identity.status }}</td>
+          <td>{{ identity.created_date }}</td>
+          <td>{{ identity.updated_date }}</td>
+          <td>
+            <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
 </div>
 {% endblock %}
