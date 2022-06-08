@@ -85,11 +85,14 @@ class MessageThread(threading.Thread):
             if msg_type == "publish":
                 await self.nc.publish(data.get("topic"), json.dumps(message).encode())
             elif msg_type == "request":
-                msg = await self.nc.request(
-                    data.get("topic"), json.dumps(message).encode()
-                )
-                raw_data = msg.data.decode()
-                self.output_queue.put(json.loads(raw_data))
+                try:
+                    msg = await self.nc.request(
+                        data.get("topic"), json.dumps(message).encode()
+                    )
+                    raw_data = msg.data.decode()
+                    self.output_queue.put(json.loads(raw_data))
+                except Exception as e:
+                    print("request error:", e)
 
     def run(self):
         self.running = True
@@ -159,7 +162,7 @@ class NatsClient:
                         t.output_queue.put(data)
 
         except Exception as e:
-            print(e)
+            print("->", e)
 
         return message
 

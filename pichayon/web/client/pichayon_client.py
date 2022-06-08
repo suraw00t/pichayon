@@ -14,12 +14,13 @@ class PichayonClient:
 
         return self.topic
 
-    def open_door(self, door, user, type="pichayon"):
+    def open_door(self, door, user, type="pichayon", ip="127.0.0.1"):
         data = {
             "action": "open",
             "door_id": str(door.id),
             "device_type": door.device_type,
             "user_id": str(user.id),
+            "ip": ip,
         }
         topic = self.get_topic(type)
         return self.message_client.publish(topic, data)

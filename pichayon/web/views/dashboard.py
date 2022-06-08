@@ -53,7 +53,11 @@ def open_door():
     # user_group_id = request.form.get('user_group_id')
     door = models.Door.objects.get(id=door_id)
     # print(door_id)
-    pichayon_client.pichayon_client.open_door(door, current_user)
+    pichayon_client.pichayon_client.open_door(
+        door,
+        current_user,
+        ip=request.headers.get("X-Forwarded-For", request.remote_addr),
+    )
 
     response = Response()
     response.status_code = 200
