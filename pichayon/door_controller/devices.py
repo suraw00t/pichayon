@@ -67,9 +67,10 @@ class Device:
     async def open_door(self):
         current_date = datetime.datetime.now()
         diff = current_date - self.last_opened_date
+        open_door_duration = 3
         # print(f'--> {diff}')
-        if diff.seconds < 5:
-            logger.debug("Last opened date less than 5 seconds")
+        if diff.seconds < open_door_duration:
+            logger.debug(f"Last opened date less than {open_door_duration} seconds")
             return
 
         logger.debug("Open door")
@@ -82,7 +83,7 @@ class Device:
         else:
             GPIO.output(self.relay_pin, GPIO.HIGH)
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(open_door_duration)
 
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.HIGH)

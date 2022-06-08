@@ -7,7 +7,7 @@ RPi.GPIO
 pi-rc522
 tinydb
 tinydb-serialization
-# pyserial
+pyserial
 pyserial-asyncio
 
 setuptools_rust

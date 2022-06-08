@@ -3,7 +3,8 @@ __version__ = "0.0.1"
 
 import optparse
 
-from flask import Flask
+from flask import Flask, request, abort
+import ipaddress
 
 from . import views
 from . import acl
@@ -25,6 +26,19 @@ def create_app():
     views.register_blueprint(app)
     nats.init_nats(app)
     pichayon_client.init_client(nats.nats_client)
+
+    @app.before_request
+    def limit_remote_addr():
+        allow_ips = app.config.get("PICHAYON_WEB_ALLOW_IPS")
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+        is_allow = False
+        for allow_ip in allow_ips:
+            if ipaddress.ip_address(ip) in ipaddress.ip_network(allow_ip):
+                is_allow = True
+                break
+
+        if is_allow:
+            abort(403)
 
     return app
 
