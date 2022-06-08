@@ -32,12 +32,15 @@ def create_app():
         allow_ips = app.config.get("PICHAYON_WEB_ALLOW_IPS")
         ip = request.headers.get("X-Forwarded-For", request.remote_addr)
         is_allow = False
+        if not allow_ips:
+            is_allow = True
+
         for allow_ip in allow_ips:
             if ipaddress.ip_address(ip) in ipaddress.ip_network(allow_ip):
                 is_allow = True
                 break
 
-        if is_allow:
+        if not is_allow:
             abort(403)
 
     return app
