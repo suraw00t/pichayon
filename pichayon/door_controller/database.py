@@ -24,8 +24,6 @@ class Manager:
         serialization.register_serializer(DateTimeSerializer(), "TinyDate")
 
         self.db = TinyDB(str(dbpath), storage=serialization)
-        self.user = self.db.table("users")
-        self.log = self.db.table("logs")
 
         self.device_id = device_id
 
@@ -41,6 +39,7 @@ class Manager:
     #             self.db.insert({'username': member['username'], 'rfid': member['rfid'], 'passcode': member['passcode'], 'type':'user'})
 
     async def add_user(self, data):
+        user_table = self.db.table("users")
         logger.debug(f"add user -> {data}")
 
         member = data.get("user")
@@ -51,13 +50,14 @@ class Manager:
         member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
 
         User = Query()
-        user = self.user.get(User.id == member["id"])
+        user = user_table.get(User.id == member["id"])
         if not user:
-            self.user.insert(member)
+            user_table.insert(member)
         else:
-            self.user.update(member)
+            user_table.update(member)
 
     async def update_user(self, data):
+        user_table = self.db.table("users")
         logger.debug(f"update user -> {data}")
 
         member = data.get("user")
@@ -68,22 +68,24 @@ class Manager:
         member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
 
         User = Query()
-        user = self.user.get(User.id == member["id"])
+        user = user_table.get(User.id == member["id"])
         if not user:
             return
 
-        self.user.update(member)
+        user_table.update(member)
 
     async def delete_user(self, data):
+        user_table = self.db.table("users")
         logger.debug(f"delete user -> {data}")
         member = data.get("user")
         if not member:
             return
 
         User = Query()
-        self.user.remove(User.id == member["id"])
+        user_table.remove(User.id == member["id"])
 
     async def update_data(self, data):
+        user_table = self.db.table("users")
         logger.debug("update data")
         users = data["users"]
         # for user in users:
@@ -93,24 +95,25 @@ class Manager:
         for user in users:
             user["started_date"] = datetime.datetime.fromisoformat(user["started_date"])
             user["expired_date"] = datetime.datetime.fromisoformat(user["expired_date"])
-            user = self.user.get(User.id == user["id"])
+            user = user_table.get(User.id == user["id"])
             if user:
                 user.update(user)
-                self.user.update(user)
+                user_table.update(user)
             else:
-                self.user.insert(user)
+                user_table.insert(user)
 
     async def initial_data(self, data):
         logger.debug("initial data")
 
-        self.user.truncate()
+        user_table = self.db.table("users")
+        user_table.truncate()
 
         users = data["users"]
 
         for user in users:
             user["started_date"] = datetime.datetime.fromisoformat(user["started_date"])
             user["expired_date"] = datetime.datetime.fromisoformat(user["expired_date"])
-            self.user.insert(user)
+            user_table.insert(user)
 
         logger.debug("end initial data")
 
@@ -124,15 +127,17 @@ class Manager:
         return False
 
     async def get_user_by_rfid(self, rfid_number):
+        user_table = self.db.table("users")
         User = Query()
-        user = self.user.get(User.identifiers.test(self.__filter_rfid, rfid_number))
+        user = user_table.get(User.identifiers.test(self.__filter_rfid, rfid_number))
 
         return user
 
     async def get_user_by_rfid_with_current_date(self, rfid_number, relex=True):
+        user_table = self.db.table("users")
         current_date = datetime.datetime.now()
         User = Query()
-        user = self.user.get(
+        user = user_table.get(
             User.identifiers.test(self.__filter_rfid, rfid_number, relex)
             & (User.started_date < current_date)
             & (User.expired_date >= current_date)
@@ -141,9 +146,10 @@ class Manager:
         return user
 
     async def get_user_by_id_with_current_date(self, user_id):
+        user_table = self.db.table("users")
         current_date = datetime.datetime.now()
         User = Query()
-        user = self.user.get(
+        user = user_table.get(
             (User.id == user_id)
             & (User.started_date < current_date)
             & (User.expired_date >= current_date)
@@ -152,13 +158,16 @@ class Manager:
         return user
 
     async def put_log(self, log):
-        self.log.insert(log)
+        log_table = self.db.table("logs")
+        log_table.insert(log)
 
     async def delete_log(self, log_id):
+        log_table = self.db.table("logs")
         Log = Query()
-        self.log.remove(Log.id == log_id)
+        log_table.remove(Log.id == log_id)
 
     async def get_waiting_logs(self):
+        log_table = self.db.table("logs")
         Log = Query()
-        logs = self.log.search(Log.status == "wait")
+        logs = log_table.search(Log.status == "wait")
         return logs

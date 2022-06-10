@@ -85,14 +85,6 @@ class ControllerServer:
         await self.door_manager.process_door_controller_log(msg)
 
     async def update_data_to_door_controller(self):
-        weak_up = datetime.datetime.combine(
-            datetime.date.today(),
-            datetime.time(4, 00),
-        )
-
-        current_date = datetime.datetime.now()
-        if current_date > weak_up:
-            weak_up = weak_up + datetime.timedelta(days=1)
 
         while self.running:
             logger.debug("start update data")
@@ -110,9 +102,13 @@ class ControllerServer:
 
             # update sleep time
             current_date = datetime.datetime.now()
+            weak_up = datetime.datetime.combine(
+                current_date.date() + datetime.timedelta(days=1),
+                datetime.time(4, 00),
+            )
             logger.debug(f"see you next day {weak_up}")
+
             await asyncio.sleep((weak_up - current_date).seconds)
-            weak_up = weak_up + datetime.timedelta(days=1)
 
     async def process_command(self):
         logger.debug("start process command")
