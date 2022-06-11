@@ -46,6 +46,7 @@ class ControllerServer:
         reply = msg.reply
         raw_data = msg.data.decode()
         data = json.loads(raw_data)
+        print(data)
         if type(data) is str:
             data = json.loads(data)
 

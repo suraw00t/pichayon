@@ -24,6 +24,7 @@
         <th>Door</th>
         <th>Action</th>
         <th>User</th>
+        <th>Type</th>
         <th>Message</th>
       </tr>
     </thead>
@@ -52,6 +53,10 @@
               <i class="hand point up blue icon"></i>
             {% endif %}
           {% endif %}
+        </td>
+        <td>
+          {% set number = log.details.get('rfid', '') %}
+          {{ number }}
           {{ log.message }}
         </td>
       </tr>
