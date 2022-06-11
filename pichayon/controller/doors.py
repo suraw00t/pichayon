@@ -142,6 +142,7 @@ class DoorManager:
             action=log["action"],
             details=log,
             log_date=log["log_date"],
+            message=log.get("message", ""),
         )
 
         if log["actor"] != "system":

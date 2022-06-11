@@ -75,9 +75,14 @@ class DoorControllerServer:
                     data["user_id"]
                 )
                 if user:
-                    await self.log_manager.put_log(user, type="web", action="open-door")
+                    await self.log_manager.put_log(
+                        user, type="web", action="open-door", message="success"
+                    )
                     await self.device.open_door()
                 else:
+                    await self.log_manager.put_log(
+                        user, type="web", action="open-door", message="denied"
+                    )
                     logger.debug(f"user not allow")
             elif data["action"] == "initial":
                 await self.db_manager.initial_data(data)
@@ -151,16 +156,24 @@ class DoorControllerServer:
                     rfid_number
                 )
 
-                if not user:
+                message = "success"
+                if user:
+                    await self.device.open_door()
+                else:
+                    message = "denied"
                     logger.debug(f"There are no user rfid {rfid_number}")
-                    continue
 
-                await self.device.open_door()
+                await self.log_manager.put_log(
+                    user,
+                    type="rfid",
+                    action="open-door",
+                    rfid=rfid_number,
+                    message=message,
+                )
 
                 while not self.rfid_queue.empty():
                     await self.rfid_queue.get()
 
-                await self.log_manager.put_log(user, type="rfid", action="open-door")
             except Exception as e:
                 logger.exception(e)
 
