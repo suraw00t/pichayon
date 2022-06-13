@@ -9,13 +9,14 @@ module = Blueprint("history_logs", __name__, url_prefix="/logs")
 
 @module.route("/")
 # @acl.allows.requires(acl.is_admin)
-@acl.admin_permission.require(http_exception=403)
+# @acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def index():
-    actions = ["open-door", "update"]
+    remove_actions = ["door-status"]
     logs = (
         models.HistoryLog.objects(
-            action__in=actions,
-            user__ne=None,
+            action__nin=remove_actions,
+            # user__ne=None,
         )
         .limit(100)
         .order_by("-id")
