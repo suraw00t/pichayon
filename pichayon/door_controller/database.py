@@ -54,7 +54,7 @@ class Manager:
         if not user:
             user_table.insert(member)
         else:
-            user_table.update(member)
+            user_table.update(user, User.id == member["id"])
 
     async def update_user(self, data):
         user_table = self.db.table("users")
@@ -72,7 +72,8 @@ class Manager:
         if not user:
             return
 
-        user_table.update(member)
+
+        user_table.update(member, User.id == member["id"])
 
     async def delete_user(self, data):
         user_table = self.db.table("users")
@@ -97,8 +98,7 @@ class Manager:
             user["expired_date"] = datetime.datetime.fromisoformat(user["expired_date"])
             user = user_table.get(User.id == user["id"])
             if user:
-                user.update(user)
-                user_table.update(user)
+                user_table.update(user, User.id == user["id"])
             else:
                 user_table.insert(user)
 
