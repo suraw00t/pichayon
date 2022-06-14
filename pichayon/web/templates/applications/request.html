@@ -2,11 +2,15 @@
 {% import '/base/html-renderer.html' as renderer%}
 
 {% block dashboard_title%}
-Create Request
+Create Apply
 {% endblock %}
 
 {% block breadcrumbs %}
-<a href="{{ url_for('applications.index')}}" class="section">Request</a>
+<div class="ui breadcrumb">
+    <a href="{{ url_for('applications.index')}}" class="section">Application Lists</a>
+    <i class="right angle icon divider"></i>
+    <a  class="section">Create Apply</a>
+</div>
 {% endblock %}
 
 {% block content %}
