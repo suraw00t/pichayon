@@ -45,3 +45,11 @@ def apply():
     application.save()
 
     return redirect(url_for("applications.index"))
+
+@module.route("/<application_id>/delete")
+@login_required
+def delete(application_id):
+    application = models.Application.objects().get(id=application_id)
+    application.delete()
+
+    return redirect(url_for("applications.index"))
