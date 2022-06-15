@@ -23,7 +23,8 @@ module = Blueprint("applications", __name__, url_prefix="/application")
 @module.route("/")
 @login_required
 def index():
-    applications = models.Application.objects()
+    user = current_user._get_current_object()
+    applications = models.Application.objects(user=user)
     return render_template("/applications/index.html", applications=applications)
 
 
