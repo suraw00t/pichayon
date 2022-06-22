@@ -1,20 +1,64 @@
 {% extends 'base/default-dashboard.html'%}
 
 {% block dashboard_title%}
-Request Card
+Room Application
 {% endblock %}
 
 {% block breadcrumbs %}
-<a href="{{ url_for('applications.index')}}" class="section">Request</a>
+<a href="{{ url_for('applications.index')}}" class="section">Application Lists</a>
 {% endblock %}
 
 {% block content %}
 
         <div class="'ui content">
                 <div class='ui segment'>
-
+                        <table class="ui celled padded table">
+                                <thead>
+                                  <tr>
+                                  <th>Name</th>
+                                  <th>ID Number</th>
+                                  <th>Room</th>
+                                  <th>Start Date</th>      
+                                  <th>End Date</th>
+                                  <th>Purpose</th>
+                                  <th>Delete</th>
+                                </tr></thead>
+                                <tbody>
+                                        <tr>
+                                        {% for application in applications %}
+                                        <td class="single line">
+                                                {{ application.user.first_name }} {{ application.user.last_name }}
+                                        </td>
+                                        <td class="center aligned">
+                                                {{ application.user.id_card_number }}
+                                        </td>
+                                        <td class="center aligned">
+                                                {{ application.room.name }}
+                                        </td>
+                                        <td>
+                                                {{ application.started_date }}
+                                        </td>
+                                        <td>
+                                                {{ application.ended_date }}
+                                        </td>
+                                        <td>
+                                                {{ application.purpose }}
+                                        </td>
+                                        <td>
+                                                <a class="ui red icon button" href="{{ url_for('applications.delete', application_id=application.id) }}">
+                                                        <i class="trash icon"></i>
+                                                </a>
+                                        </td>
+                                        </tr>
+                                      </tbody>
+                                      <tfoot>
+                                          </div>
+                                        </th>
+                                      </tr>
+                                      {% endfor %}
+                                    </table>
                         
-                {% for application in applications %}
+                <!-- {% for application in applications %}
                 <div class="ui grid two column">
 
                         <div class="field">
@@ -45,11 +89,11 @@ Request Card
 
                 {% endfor %}
                 </div>
-        </div>
+        </div> -->
         
         <div>
         <a class="ui primary button" href="{{ url_for('applications.apply')}}">
-                Create Request
+                Create Apply
         </a>
         </div>
 

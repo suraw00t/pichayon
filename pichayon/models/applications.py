@@ -15,3 +15,5 @@ class Application(me.Document):
 
     room = me.ReferenceField("Door", dbref=True)
     purpose = me.StringField(required=True)
+    status = me.StringField(required=True, default="pending")
+    remark = me.StringField()
