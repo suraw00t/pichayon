@@ -46,7 +46,9 @@ class ControllerServer:
         reply = msg.reply
         raw_data = msg.data.decode()
         data = json.loads(raw_data)
-        print(data)
+
+        logger.debug(f"got => {data}")
+
         if type(data) is str:
             data = json.loads(data)
 
@@ -163,6 +165,16 @@ class ControllerServer:
             elif data["action"] == "get-state":
                 try:
                     await self.door_manager.get_state(data)
+                except Exception as e:
+                    logger.exception(e)
+            elif data["action"] == "update-authorization":
+                try:
+                    await self.door_manager.update_authorization(data)
+                except Exception as e:
+                    logger.exception(e)
+            elif data["action"] == "delete-authorization":
+                try:
+                    await self.door_manager.delete_authorization(data)
                 except Exception as e:
                     logger.exception(e)
             else:

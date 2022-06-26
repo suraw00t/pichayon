@@ -3,6 +3,8 @@ from flask import Blueprint, render_template, redirect, url_for, request, g
 from pichayon import models
 from pichayon.web import acl
 from pichayon.web.forms.admin import AuthorityForm
+from pichayon.web import pichayon_client
+
 from flask_login import login_user, logout_user, login_required, current_user
 
 import datetime
@@ -90,6 +92,13 @@ def add_or_edit(auth_id):
     group_auth.expired_date = form.expired_date.data
 
     group_auth.save()
+
+    pichayon_client.pichayon_client.update_authorization(
+        group_auth,
+        current_user,
+        ip=request.headers.get("X-Forwarded-For", request.remote_addr),
+    )
+
     return redirect(url_for("administration.authorizations.index"))
 
 
@@ -99,5 +108,11 @@ def delete(auth_id):
     group_auth = models.GroupAuthorization.objects.get(id=auth_id)
     if group_auth:
         group_auth.delete()
+
+        pichayon_client.pichayon_client.delete_authorization(
+            group_auth,
+            current_user,
+            ip=request.headers.get("X-Forwarded-For", request.remote_addr),
+        )
 
     return redirect(url_for("administration.authorizations.index"))

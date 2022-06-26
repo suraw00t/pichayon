@@ -275,3 +275,9 @@ class DoorManager:
                         topic,
                         json.dumps(command).encode(),
                     )
+
+    async def update_authorization(self, data):
+        print("update authorization", data)
+
+    async def delete_authorization(self, data):
+        print("act delete authorization", data)

@@ -62,14 +62,25 @@ class PichayonClient:
         topic = self.get_topic()
         return self.message_client.publish(topic, data)
 
-    def change_authorization(self, authorization):
+    def update_authorization(self, authorization, user, ip):
         data = {
-            "action": "change_authorization",
+            "action": "update-authorization",
             "authorization_id": str(authorization.id),
+            "ip": ip,
+            "user": str(user.id),
         }
 
-        topic = self.get_topic()
-        return self.message_client.request(topic, data)
+        return self.message_client.publish(self.topic, data)
+
+    def delete_authorization(self, authorization, user, ip):
+        data = {
+            "action": "delete-authorization",
+            "authorization_id": str(authorization.id),
+            "ip": ip,
+            "user": str(user.id),
+        }
+
+        return self.message_client.publish(self.topic, data)
 
 
 pichayon_client = PichayonClient()
