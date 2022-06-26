@@ -179,6 +179,7 @@ class DoorManager:
 
         for auth_group in auth_groups:
             for door in auth_group.door_group.doors:
+                print(door.id, door.name)
                 for user in users:
                     data = await self.data_resource.get_authorization_user_data(
                         user, user_group, door
@@ -201,6 +202,8 @@ class DoorManager:
                         topic,
                         json.dumps(command).encode(),
                     )
+
+        logger.debug("end adding member")
 
     async def delete_member_from_group(self, data):
         logger.debug("try to delete member")
