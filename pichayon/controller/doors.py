@@ -75,7 +75,7 @@ class DoorManager:
             logger.debug("No Authority")
             return
 
-        if "sparkbit" in data["device_type"]:
+        if "sparkbit" in door.device_type:
             if not self.sparkbit_enable:
                 logger.debug("Sparkbit Disable")
                 return
@@ -96,6 +96,7 @@ class DoorManager:
             await self.nc.publish(topic, json.dumps(command).encode())
         except Exception as e:
             logger.exception(e)
+
         logger.debug("Send Success")
 
     async def get_state(self, data):
