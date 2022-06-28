@@ -164,11 +164,10 @@ class DoorController:
 
         db = self.client[sparkbit_door.device_id]
         key = f"user-{user.system_id}"
-        if key in db and not db[key].exists():
-            logger.debug(f"this user {user.system_id} is not available in sparkbit")
-            return
+        if key not in db or (key in db and not db[key].exists()):
+            # logger.debug(f"this user {user.system_id} is available in sparkbit")
+            # return
 
-        if key not in db:
             adding_command = dict(
                 user=command.get("user"), door_id=command["door"]["id"]
             )
