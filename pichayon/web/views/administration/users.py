@@ -216,6 +216,7 @@ def delete_identity(user_id, index):
         user.identities.pop(index)
 
     user.save()
+    pichayon_client.update_member(user)
 
     return redirect(
         url_for(
