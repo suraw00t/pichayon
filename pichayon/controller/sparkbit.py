@@ -168,6 +168,13 @@ class DoorController:
             logger.debug(f"this user {user.system_id} is not available in sparkbit")
             return
 
+        if key not in db:
+            adding_command = dict(
+                user=command.get("user"), door_id=command["door"]["id"]
+            )
+            await self.add_user(adding_command)
+            return
+
         doc = db[key]
         doc.fetch()
         # need to decision
