@@ -16,7 +16,7 @@ class PichayonClient:
 
     def open_door(self, door, user, type="pichayon", ip="127.0.0.1"):
         data = {
-            "action": "open",
+            "action": "open-door",
             "door_id": str(door.id),
             "device_type": door.device_type,
             "user_id": str(user.id),
@@ -27,7 +27,7 @@ class PichayonClient:
 
     def get_door_state(self, door, type="pichayon"):
         data = {
-            "action": "state",
+            "action": "get-door-state",
             "door": {"id": str(door.id), "state": "unknow"},
         }
 
@@ -36,7 +36,7 @@ class PichayonClient:
 
     def change_door_group(self, door_group):
         data = {
-            "action": "change_door_group",
+            "action": "change-door-group",
             "door_group_id": str(door_group.id),
         }
 
@@ -45,7 +45,7 @@ class PichayonClient:
 
     def change_user_group(self, user_group):
         data = {
-            "action": "change_user_group",
+            "action": "change-user-group",
             "user_group_id": str(user_group.id),
         }
 

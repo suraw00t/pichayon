@@ -142,7 +142,7 @@ class ControllerServer:
                     topic,
                     json.dumps(response).encode(),
                 )
-            elif data["action"] == "open":
+            elif data["action"] == "open-door":
                 try:
                     await self.door_manager.open(data)
                 except Exception as e:
@@ -162,7 +162,7 @@ class ControllerServer:
                     await self.door_manager.update_member(data)
                 except Exception as e:
                     logger.exception(e)
-            elif data["action"] == "get-state":
+            elif data["action"] == "get-door-state":
                 try:
                     await self.door_manager.get_state(data)
                 except Exception as e:

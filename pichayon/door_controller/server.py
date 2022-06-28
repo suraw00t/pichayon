@@ -70,7 +70,7 @@ class DoorControllerServer:
             if "action" not in data:
                 logger.debug("action not found")
 
-            if data["action"] == "open":
+            if data["action"] == "open-door":
                 user = await self.db_manager.get_user_by_id_with_current_date(
                     data["user_id"]
                 )

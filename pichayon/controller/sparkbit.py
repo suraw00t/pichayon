@@ -51,7 +51,7 @@ class DoorController:
                 await self.delete_user(command)
             elif action == "update-user":
                 await self.update_user(command)
-            elif action == "open":
+            elif action == "open-door":
                 await self.open_door(command)
 
     def stop(self):
