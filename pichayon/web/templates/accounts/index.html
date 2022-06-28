@@ -46,7 +46,11 @@ Profile
 
 <div class="ui segment">
   <h2 class="ui header">Indentity</h2>
-    <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id) }}">Add</a>
+    {% if "admin" in current_user.roles %}
+      <a class="ui button primary" href="{{ url_for('administration.users.add_or_edit_identity', user_id=user.id) }}">Add</a>
+    {% elif current_user.id == user.id %}
+      <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id) }}">Add</a>
+    {% endif %}
     <table class="ui selectable celled table">
       <thead>
         <tr>
