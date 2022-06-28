@@ -185,7 +185,11 @@ class ControllerServer:
     async def set_up(self):
         self.nc = NATS()
         logger.debug("Connecting....")
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
+        await self.nc.connect(
+            self.settings["PICHAYON_MESSAGE_NATS_HOST"],
+            max_reconnect_attempts=-1,
+            reconnect_time_wait=2,
+        )
         await self.door_manager.set_message_client(self.nc)
 
         logging.basicConfig(

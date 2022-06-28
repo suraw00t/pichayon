@@ -264,7 +264,11 @@ class DoorControllerServer:
         # self.read_rfid_thread.start()
 
         self.nc = NATS()
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
+        await self.nc.connect(
+            self.settings["PICHAYON_MESSAGE_NATS_HOST"],
+            max_reconnect_attempts=-1,
+            reconnect_time_wait=2,
+        )
 
         logging.basicConfig(
             format="%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s",
