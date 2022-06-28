@@ -33,7 +33,8 @@
         <td>{{ identity.created_date }}</td>
         <td>{{ identity.updated_date }}</td>
         <td>
-          <a class="ui button primary" href="{{ url_for('administration.users.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">edit</a>
+          <a class="ui button primary" href="{{ url_for('administration.users.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">Edit</a>
+          <a class="ui button negative" href="{{ url_for('administration.users.delete_identity', user_id=user.id, index=loop.index-1 ) }}">Delete</a>
         </td>
       </tr>
     {% endfor %}
