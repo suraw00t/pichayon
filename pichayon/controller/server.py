@@ -93,7 +93,7 @@ class ControllerServer:
             logger.debug("start update data")
             doors = models.Door.objects(status="active", device_type="pichayon")
             for door in doors:
-                logger.debug(f"start send data to {door.device_id}")
+                logger.debug(f"start send data to {door.device_id} - {door.name}")
                 if len(door.device_id) == 0:
                     continue
 
