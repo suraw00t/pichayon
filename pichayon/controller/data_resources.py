@@ -34,7 +34,8 @@ class DataResourceManager:
                         member.user, door_auth
                     )
                     users[member.user.id]["groups"] = []
-                if member.id not in users[member.user.id]["groups"]:
+
+                if str(member.id) not in users[member.user.id]["groups"]:
                     users[member.user.id]["groups"].append(str(member.id))
 
         response["action"] = "initial"

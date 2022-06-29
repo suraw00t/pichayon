@@ -51,7 +51,7 @@ class DoorController:
                 await self.delete_user(command)
             elif action == "update-user":
                 await self.update_user(command)
-            elif action == "open":
+            elif action == "open-door":
                 await self.open_door(command)
 
     def stop(self):
@@ -164,8 +164,14 @@ class DoorController:
 
         db = self.client[sparkbit_door.device_id]
         key = f"user-{user.system_id}"
-        if key in db and not db[key].exists():
-            logger.debug(f"this user {user.system_id} is not available in sparkbit")
+        if key not in db or (key in db and not db[key].exists()):
+            # logger.debug(f"this user {user.system_id} is available in sparkbit")
+            # return
+
+            adding_command = dict(
+                user=command.get("user"), door_id=command["door"]["id"]
+            )
+            await self.add_user(adding_command)
             return
 
         doc = db[key]
@@ -206,12 +212,14 @@ class DoorController:
             nfcDevices=dict(),
             pin="",
         )
-        for id in user.identities:
-            id_data = {f"{id.identifier}": {}}
-            response_data["mifareCards"][f"{id.identifier}"] = dict(
-                enabled=True if id.status == "active" else False,
-                deactivated=False,
-            )
+
+        if not user.username.isdigit():
+            for id in user.identities:
+                id_data = {f"{id.identifier}": {}}
+                response_data["mifareCards"][f"{id.identifier}"] = dict(
+                    enabled=True if id.status == "active" else False,
+                    deactivated=False,
+                )
         return response_data
 
     async def get_state(self, command):

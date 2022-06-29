@@ -10,4 +10,5 @@ tinydb-serialization
 pyserial
 pyserial-asyncio
 
+flask
 setuptools_rust

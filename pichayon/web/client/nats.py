@@ -62,7 +62,11 @@ class MessageThread(threading.Thread):
 
     async def initial_nats_client(self):
         self.nc = NATS()
-        await self.nc.connect(current_app.config.get("PICHAYON_MESSAGE_NATS_HOST"))
+        await self.nc.connect(
+            current_app.config.get("PICHAYON_MESSAGE_NATS_HOST"),
+            max_reconnect_attempts=-1,
+            reconnect_time_wait=2,
+        )
 
     async def run_async_loop(self):
         await self.initial_nats_client()

@@ -38,7 +38,7 @@ Door Authorizations
     </thead>
 
     <tbody>
-     {% for group in group_auth %}
+     {% for group in group_auth | sort(attribute='door_group.name')  %}
 
       <tr>
 	      <td><a href="{{ url_for('administration.door_groups.view', door_group_id=group.door_group.id) }}">{{ group.door_group.name }}</a></td>

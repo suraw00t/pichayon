@@ -205,3 +205,22 @@ def add_or_edit_identity(user_id, index):
             user_id=user_id,
         )
     )
+
+
+@module.route("/<user_id>/identities/<int:index>/delete")
+@login_required
+def delete_identity(user_id, index):
+    user = models.User.objects.get(id=user_id)
+
+    if index < len(user.identities):
+        user.identities.pop(index)
+
+    user.save()
+    pichayon_client.update_member(user)
+
+    return redirect(
+        url_for(
+            "administration.users.identity",
+            user_id=user_id,
+        )
+    )

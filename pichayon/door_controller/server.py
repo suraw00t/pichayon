@@ -70,7 +70,7 @@ class DoorControllerServer:
             if "action" not in data:
                 logger.debug("action not found")
 
-            if data["action"] == "open":
+            if data["action"] == "open-door":
                 user = await self.db_manager.get_user_by_id_with_current_date(
                     data["user_id"]
                 )
@@ -264,7 +264,11 @@ class DoorControllerServer:
         # self.read_rfid_thread.start()
 
         self.nc = NATS()
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
+        await self.nc.connect(
+            self.settings["PICHAYON_MESSAGE_NATS_HOST"],
+            max_reconnect_attempts=-1,
+            reconnect_time_wait=2,
+        )
 
         logging.basicConfig(
             format="%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s",

@@ -46,7 +46,9 @@ class ControllerServer:
         reply = msg.reply
         raw_data = msg.data.decode()
         data = json.loads(raw_data)
-        print(data)
+
+        logger.debug(f"got => {data}")
+
         if type(data) is str:
             data = json.loads(data)
 
@@ -91,7 +93,7 @@ class ControllerServer:
             logger.debug("start update data")
             doors = models.Door.objects(status="active", device_type="pichayon")
             for door in doors:
-                logger.debug(f"start send data to {door.device_id}")
+                logger.debug(f"start send data to {door.device_id} - {door.name}")
                 if len(door.device_id) == 0:
                     continue
 
@@ -140,7 +142,7 @@ class ControllerServer:
                     topic,
                     json.dumps(response).encode(),
                 )
-            elif data["action"] == "open":
+            elif data["action"] == "open-door":
                 try:
                     await self.door_manager.open(data)
                 except Exception as e:
@@ -160,9 +162,19 @@ class ControllerServer:
                     await self.door_manager.update_member(data)
                 except Exception as e:
                     logger.exception(e)
-            elif data["action"] == "get-state":
+            elif data["action"] == "get-door-state":
                 try:
                     await self.door_manager.get_state(data)
+                except Exception as e:
+                    logger.exception(e)
+            elif data["action"] == "update-authorization":
+                try:
+                    await self.door_manager.update_authorization(data)
+                except Exception as e:
+                    logger.exception(e)
+            elif data["action"] == "delete-authorization":
+                try:
+                    await self.door_manager.delete_authorization(data)
                 except Exception as e:
                     logger.exception(e)
             else:
@@ -173,7 +185,11 @@ class ControllerServer:
     async def set_up(self):
         self.nc = NATS()
         logger.debug("Connecting....")
-        await self.nc.connect(self.settings["PICHAYON_MESSAGE_NATS_HOST"])
+        await self.nc.connect(
+            self.settings["PICHAYON_MESSAGE_NATS_HOST"],
+            max_reconnect_attempts=-1,
+            reconnect_time_wait=2,
+        )
         await self.door_manager.set_message_client(self.nc)
 
         logging.basicConfig(
