@@ -21,6 +21,7 @@ Room Application
                                   <th>Start Date</th>      
                                   <th>End Date</th>
                                   <th>Purpose</th>
+                                  <th>Status</th>
                                   <th>Delete</th>
                                 </tr></thead>
                                 <tbody>
@@ -45,6 +46,9 @@ Room Application
                                                 {{ application.purpose }}
                                         </td>
                                         <td>
+                                                {{ application.status }}
+                                        </td>
+                                        <td>
                                                 <a class="ui red icon button" href="{{ url_for('applications.delete', application_id=application.id) }}">
                                                         <i class="trash icon"></i>
                                                 </a>
@@ -58,38 +62,6 @@ Room Application
                                       {% endfor %}
                                     </table>
                         
-                <!-- {% for application in applications %}
-                <div class="ui grid two column">
-
-                        <div class="field">
-                                <label>Name : </label>
-                                {{ application.user.first_name }}
-                                {{ application.user.last_name }}
-                        </div>
-
-                        <div class="field">
-                                <label>Room : </label>        
-                                {{ application.room.name }}
-                        </div>
-
-                        <div class="field">
-                                <label>Purpose : </label>
-                                {{ application.purpose }}
-                        </div>
-
-                        <div class="field">
-                                <label>Start Date : </label>
-                                {{ application.started_date }}
-                        </div>
-                        <div class="field">
-                                <label>End Date : </label>
-                                {{ application.ended_date }}
-                        </div>
-                </div>
-
-                {% endfor %}
-                </div>
-        </div> -->
         
         <div>
         <a class="ui primary button" href="{{ url_for('applications.apply')}}">
