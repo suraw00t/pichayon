@@ -75,22 +75,20 @@ class DoorManager:
             logger.debug("No Authority")
             return
 
-        if "sparkbit" in door.device_type:
+        command = dict(device_id=door.device_id, user_id=data["user_id"], action="open")
+
+        topic = f"pichayon.door_controller.{door.device_id}"
+
+        if "sparkbit" == door.device_type:
             if not self.sparkbit_enable:
                 logger.debug("Sparkbit Disable")
                 return
 
-            logger.debug("open sparkbit")
+            logger.debug("open with sparkbit")
             topic = "pichayon.controller.sparkbit.command"
-            command = dict(
-                door_id=data["door_id"], user_id=data["user_id"], action="open"
-            )
-            logger.debug("set success")
+            command["door_id"] = data["door_id"]
         else:
-            topic = f"pichayon.door_controller.{door.device_id}"
-            command = dict(
-                device_id=door.device_id, user_id=data["user_id"], action="open"
-            )
+            logger.debug("open with pichayon")
 
         try:
             await self.nc.publish(topic, json.dumps(command).encode())
@@ -102,27 +100,27 @@ class DoorManager:
     async def get_state(self, data):
         door = models.Door.objects.get(id=data["door_id"])
 
-        if "sparkbit" in data["device_type"]:
+        command = dict(
+            device_id=door.device_id, user_id=data["user_id"], action="get-state"
+        )
+
+        if "sparkbit" == door.device_type:
             if not self.sparkbit_enable:
                 logger.debug("Sparkbit Disable")
                 return
 
-            logger.debug("open sparkbit")
+            logger.debug("get state with sparkbit")
             topic = "pichayon.controller.sparkbit.command"
-            command = dict(
-                door_id=data["door_id"], user_id=data["user_id"], action="open"
-            )
-            logger.debug("set success")
+            command = dict(door_id=data["door_id"])
         else:
+            logger.debug("get state with pichayon")
             topic = f"pichayon.door_controller.{door.device_id}"
-            command = dict(
-                device_id=door.device_id, user_id=data["user_id"], action="open"
-            )
 
         try:
             await self.nc.publish(topic, json.dumps(command).encode())
         except Exception as e:
             logger.exception(e)
+
         logger.debug("Send Success")
 
     async def process_door_controller_log(self, msg):
