@@ -1,0 +1,43 @@
+{% extends 'base/default-dashboard.html'%}
+
+{% block dashboard_title%}
+Applications Approval
+{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{{ url_for('administration.application_lists.index')}}" class="section">Applications Approval</a>
+{% endblock %}
+
+{% block content %}
+<div class="'ui content">
+    <div class='ui segment'>
+        <table class="ui celled table">
+            <thead>
+            <tr>
+            <th>From</th>
+            <th>View Detail</th>
+            <th>Approve</th>
+            </tr></thead>
+            <tbody>
+                <tr>
+
+                    {% for app_list in app_lists %}
+
+
+                    <td data-label="From">{{ app_list.user.first_name }} {{ app_list.user.last_name }}</td>
+
+                    <td> <a class="ui primary icon button" href=""> <i class="eye outline icon"></i> </a> </td>
+
+                    <td> <a class="ui primary icon button" href=""> <i class="check icon"></i> </a> <a class="ui red icon button" href=""> <i class="times icon"></i> </a></td>
+                    
+                    
+
+
+                    {% endfor %}
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
