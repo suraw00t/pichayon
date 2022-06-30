@@ -75,7 +75,9 @@ class DoorManager:
             logger.debug("No Authority")
             return
 
-        command = dict(device_id=door.device_id, user_id=data["user_id"], action="open")
+        command = dict(
+            device_id=door.device_id, user_id=data["user_id"], action="open-door"
+        )
 
         topic = f"pichayon.door_controller.{door.device_id}"
 
