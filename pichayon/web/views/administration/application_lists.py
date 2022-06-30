@@ -19,6 +19,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 module = Blueprint("application_lists", __name__, url_prefix="/application_lists")
 
+
 @module.route("")
 @acl.role_required("admin")
 def index():
@@ -33,9 +34,9 @@ def index():
 # @acl.role_required("admin")
 # def show():
 
-@module.route("/<app_lists_id/approve")
+
+@module.route("/<app_lists_id>/approve")
 @acl.role_required("admin")
 def approve(app_lists_id):
     app_lists = models.Application.objects().get(id=app_lists_id)
     app_lists = stat
-    
