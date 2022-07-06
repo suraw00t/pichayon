@@ -180,7 +180,6 @@ class DoorManager:
 
         for auth_group in auth_groups:
             for door in auth_group.door_group.doors:
-                print(door.id, door.name)
                 for user in users:
                     data = await self.data_resource.get_authorization_user_data(
                         user, user_group, door
