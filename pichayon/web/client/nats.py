@@ -86,6 +86,8 @@ class MessageThread(threading.Thread):
             message = data.get("message", {})
             msg_type = data.get("type", "publish")
 
+            print("-->", message)
+
             if msg_type == "publish":
                 await self.nc.publish(data.get("topic"), json.dumps(message).encode())
             elif msg_type == "request":
@@ -110,12 +112,12 @@ class MessageThread(threading.Thread):
 class NatsClient:
     def __init__(self, app=None):
         if app:
-            self.init(app)
+            self.init_app(app)
 
     def init_nats(self, app):
         message_thread = MessageThread(app)
         s = {"app": app, "thread": message_thread}
-        app.extensions["nokkhum_nats"][self] = s
+        app.extensions["pichayon_nats"][self] = s
         message_thread.start()
 
     def init_app(self, app):
@@ -123,13 +125,13 @@ class NatsClient:
 
         app.extensions = getattr(app, "extensions", {})
 
-        if "nokkhum_nats" not in app.extensions:
-            app.extensions["nokkhum_nats"] = {}
+        if "pichayon_nats" not in app.extensions:
+            app.extensions["pichayon_nats"] = {}
 
         @app.before_first_request
         def start_thread():
 
-            if self in app.extensions["nokkhum_nats"]:
+            if self in app.extensions["pichayon_nats"]:
                 self.stop()
 
             self.init_nats(app)
@@ -137,15 +139,15 @@ class NatsClient:
         atexit.register(self.stop)
 
     def stop(self):
-        if self in self.app.extensions["nokkhum_nats"]:
-            self.app.extensions["nokkhum_nats"][self]["thread"].stop()
+        if self in self.app.extensions["pichayon_nats"]:
+            self.app.extensions["pichayon_nats"][self]["thread"].stop()
 
     def publish(self, topic: str, message: str):
-        t = self.app.extensions["nokkhum_nats"][self]["thread"]
+        t = self.app.extensions["pichayon_nats"][self]["thread"]
         t.put_data(dict(topic=topic, message=message, type="publish"))
 
     def request(self, topic: str, message: str):
-        t = self.app.extensions["nokkhum_nats"][self]["thread"]
+        t = self.app.extensions["pichayon_nats"][self]["thread"]
         message_id = time.time()
         message["message_id"] = message_id
         t.put_data(dict(topic=topic, message=message, type="request"))
@@ -176,10 +178,3 @@ nats_client = NatsClient()
 
 def init_nats(app):
     nats_client.init_app(app)
-
-    # @app.before_first_request
-    # def init_nats_client():
-    #     with app.app_context():
-    #         app.loop = None
-    #         app.get_loop = get_loop
-    #         app.get_nats_client = get_nats_client
