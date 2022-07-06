@@ -17,7 +17,7 @@ from pichayon.web import acl
 from pichayon.web.forms.admin import *
 from flask_login import login_user, logout_user, login_required, current_user
 
-module = Blueprint("application_lists", __name__, url_prefix="/application_lists")
+module = Blueprint("applications", __name__, url_prefix="/applications")
 
 
 @module.route("")
@@ -26,7 +26,7 @@ def index():
     user = current_user._get_current_object()
     app_lists = models.Application.objects()
     return render_template(
-        "/administration/application_lists/index.html", app_lists=app_lists
+        "/administration/applications/index.html", app_lists=app_lists
     )
 
 
