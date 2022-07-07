@@ -17,12 +17,13 @@ Room Application
                                   <tr>
                                   <th>Name</th>
                                   <th>ID Number</th>
+                                  <th>Advisor</th>
                                   <th>Room</th>
                                   <th>Start Date</th>      
                                   <th>End Date</th>
                                   <th>Purpose</th>
                                   <th>Status</th>
-                                  <th>Delete</th>
+                                  <th>Cancel</th>
                                 </tr></thead>
                                 <tbody>
                                         <tr>
@@ -32,6 +33,9 @@ Room Application
                                         </td>
                                         <td class="center aligned">
                                                 {{ application.user.id_card_number }}
+                                        </td>
+                                        <td>
+                                                {{ application.advisor }}
                                         </td>
                                         <td class="center aligned">
                                                 {{ application.room.name }}
@@ -50,7 +54,7 @@ Room Application
                                         </td>
                                         <td>
                                                 <a class="ui red icon button" href="{{ url_for('applications.delete', application_id=application.id) }}">
-                                                        <i class="trash icon"></i>
+                                                        <i class="times icon"></i>
                                                 </a>
                                         </td>
                                         </tr>

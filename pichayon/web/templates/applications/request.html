@@ -20,6 +20,8 @@ Create Apply
 
                 {{ form.hidden_tag() }}
                 
+                {{ renderer.render_field(form.advisor) }}
+
                 {{ renderer.render_field(form.room) }}
 
                 {{ renderer.render_field(form.purpose) }}
