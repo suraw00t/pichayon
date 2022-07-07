@@ -38,7 +38,7 @@ class NatsClient:
         self.app = app
 
         @app.before_first_request
-        def init_nats():
+        def init_nats_client():
             print("init nats client")
             if "nats" not in app.extensions:
                 app.extensions["nats"] = {}
@@ -64,11 +64,19 @@ class NatsClient:
     def publish(self, topic: str, message: dict):
         client = self.app.extensions["nats"][self]["client"]
         loop = self.app.extensions["nats"][self]["loop"]
+        if not loop.is_running():
+            init_nats(self.app)
+            loop = self.app.extensions["nats"][self]["loop"]
+
         loop.run_until_complete(client.publish(topic, json.dumps(message).encode()))
 
     def request(self, topic: str, message: dict):
         client = self.app.extensions["nats"][self]["client"]
         loop = self.app.extensions["nats"][self]["loop"]
+        if not loop.is_running():
+            init_nats(self.app)
+            loop = self.app.extensions["nats"][self]["loop"]
+
         msg = loop.run_until_complete(
             client.request(topic, json.dumps(message).encode(), timeout=1)
         )
