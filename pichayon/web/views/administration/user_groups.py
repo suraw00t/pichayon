@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, g
 
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
-from pichayon.web import acl, forms, nats
+from pichayon.web import acl, forms
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
 import datetime
 import json

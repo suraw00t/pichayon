@@ -9,7 +9,7 @@ import ipaddress
 from . import views
 from . import acl
 from . import oauth2
-from .client import nats
+from .client import nats_client
 from .client import pichayon_client
 from .. import models
 
@@ -24,8 +24,8 @@ def create_app():
     oauth2.init_oauth(app)
 
     views.register_blueprint(app)
-    nats.init_nats(app)
-    pichayon_client.init_client(nats.nats_client)
+    nats_client.init_nats(app)
+    pichayon_client.init_client(nats_client.nats_client)
 
     @app.before_request
     def limit_remote_addr():
