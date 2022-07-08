@@ -18,21 +18,23 @@ class NatsClient:
         if app:
             self.init_app(app)
 
+        self.app = app
+        self.nc = None
+        self.loop = asyncio.new_event_loop()
+
     def init_nats(self, app):
 
-        nc = NATS()
+        self.nc = NATS()
+        if not self.loop or self.loop.is_running:
+            self.loop = asyncio.new_event_loop()
 
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(
-            nc.connect(
-                current_app.config.get("PICHAYON_MESSAGE_NATS_HOST"),
+        self.loop.run_until_complete(
+            self.nc.connect(
+                app.config.get("PICHAYON_MESSAGE_NATS_HOST"),
                 max_reconnect_attempts=-1,
                 reconnect_time_wait=2,
             )
         )
-
-        s = {"app": app, "client": nc, "loop": loop}
-        app.extensions["nats"][self] = s
 
     def init_app(self, app):
         self.app = app
@@ -40,51 +42,34 @@ class NatsClient:
         @app.before_first_request
         def init_nats_client():
             print("init nats client")
-            if "nats" not in app.extensions:
-                app.extensions["nats"] = {}
-
-            if self in app.extensions["nats"]:
-                self.stop()
-
-            self.init_nats(app)
-
-        atexit.register(self.stop)
+            print(self.app)
+            self.init_nats(self.app)
+            print("end init nats client")
 
     def stop(self):
-        if "nats" not in self.app.extensions:
-            print("nats not in extensions")
-            return
+        if self.nc:
+            self.nc.close()
+        if self.loop:
+            self.loop.close()
 
-        if self in self.app.extensions["nats"]:
-            loop = self.app.extensions["nats"][self]["loop"]
-            loop.run_until_complete(self.app.extensions["nats"][self]["client"].close())
+    def get_loop(self):
+        if not self.loop.is_running():
+            self.init_nats(self.app)
 
-        self.app.extensions.pop("nats")
+        return self.loop
 
     def publish(self, topic: str, message: dict):
-        client = self.app.extensions["nats"][self]["client"]
-        loop = self.app.extensions["nats"][self]["loop"]
-        if not loop.is_running():
-            init_nats(self.app)
-            loop = self.app.extensions["nats"][self]["loop"]
-
-        loop.run_until_complete(client.publish(topic, json.dumps(message).encode()))
+        loop = self.get_loop()
+        loop.run_until_complete(self.nc.publish(topic, json.dumps(message).encode()))
 
     def request(self, topic: str, message: dict):
-        client = self.app.extensions["nats"][self]["client"]
-        loop = self.app.extensions["nats"][self]["loop"]
-        if not loop.is_running():
-            init_nats(self.app)
-            loop = self.app.extensions["nats"][self]["loop"]
+        return message
+        loop = self.get_loop()
 
         msg = loop.run_until_complete(
-            client.request(topic, json.dumps(message).encode(), timeout=1)
+            self.nc.request(topic, json.dumps(message).encode(), timeout=1)
         )
         return json.loads(msg.data.decode())
 
 
 nats_client = NatsClient()
-
-
-def init_nats(app):
-    nats_client.init_app(app)

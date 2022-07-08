@@ -24,7 +24,7 @@ def create_app():
     oauth2.init_oauth(app)
 
     views.register_blueprint(app)
-    nats_client.init_nats(app)
+    nats_client.nats_client.init_app(app)
     pichayon_client.init_client(nats_client.nats_client)
 
     @app.before_request
