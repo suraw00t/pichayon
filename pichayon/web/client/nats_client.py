@@ -42,7 +42,6 @@ class NatsClient:
         @app.before_first_request
         def init_nats_client():
             print("init nats client")
-            print(self.app)
             self.init_nats(self.app)
             print("end init nats client")
 

@@ -43,8 +43,8 @@ def handle_authorize(remote, token, user_info):
         user = models.User(
             username=user_info.get("name"),
             email=user_info.get("email"),
-            first_name=user_info.get("given_name", ""),
-            last_name=user_info.get("family_name", ""),
+            first_name=user_info.get("given_name", "").title(),
+            last_name=user_info.get("family_name", "").title(),
             status="active",
         )
         user.resources[remote.name] = user_info
