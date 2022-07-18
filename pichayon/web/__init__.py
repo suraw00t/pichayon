@@ -3,7 +3,7 @@ __version__ = "0.0.1"
 
 import optparse
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, Response
 import ipaddress
 
 from . import views
@@ -41,7 +41,8 @@ def create_app():
                 break
 
         if not is_allow:
-            abort(403)
+            # abort(503)
+            abort(Response("Please, connect to allowed WiFi"))
 
     return app
 

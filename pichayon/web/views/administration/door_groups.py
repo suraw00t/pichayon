@@ -11,7 +11,7 @@ module = Blueprint("door_groups", __name__, url_prefix="/doors/groups")
 
 @module.route("")
 # @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def index():
     door_groups = models.DoorGroup.objects(status="active").order_by("name")
     return render_template(

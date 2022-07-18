@@ -29,21 +29,21 @@ def generate_passcode():
 
 
 @module.route("/")
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def index():
     users = models.User.objects().order_by("username", "role")
     return render_template("/administration/users/index.html", users=users)
 
 
 @module.route("/<user_group_id>/users_list", methods=["GET", "POST"])
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def list(user_group_id):
     group = models.UserGroup.objects.get(id=user_group_id)
     return render_template("administration/groups/users_list.html", group=group)
 
 
 @module.route("/<user_group_id>/adduser", methods=["GET", "POST"])
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def add(user_group_id):
 
     group = models.UserGroup.objects.get(id=user_group_id)
@@ -77,7 +77,7 @@ def add(user_group_id):
 
 
 @module.route("/<user_group_id>/add_role", methods=["GET", "POST"])
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def add_role(user_group_id):
     group = models.UserGroup.objects.get(id=user_group_id)
     user_id = request.args.get("user_id")
@@ -105,7 +105,7 @@ def add_role(user_group_id):
 
 
 @module.route("/<group_id>/deleteuser", methods=["GET", "POST"])
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def delete(group_id):
     group = models.UserGroup.objects.get(id=group_id)
     user_id = request.args.get("user_id")
@@ -120,7 +120,7 @@ def delete(group_id):
 
 
 @module.route("/<user_id>/edit", methods=["GET", "POST"])
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def edit(user_id):
     user = models.User.objects.get(id=user_id)
     form = EditForm(obj=user)
