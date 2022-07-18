@@ -28,7 +28,7 @@ def index():
         doors.extend(door_group.doors)
 
     door_states = dict()
-    doors = set(doors)
+    doors = list(set(doors))
 
     for door in doors:
         if door.device_type == "pichayon":
@@ -36,6 +36,8 @@ def index():
         elif door.device_type == "sparkbit":
             response = pichayon_client.pichayon_client.get_door_state(door, "sparkbit")
             door_states[door.id] = response["door"]["state"]
+
+    doors.sort(key=lambda d: d.name)
 
     return render_template(
         "/dashboard/index.html",
