@@ -12,6 +12,10 @@ import json
 import time
 import queue
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class NatsClient:
     def __init__(self, app=None):
@@ -58,13 +62,13 @@ class NatsClient:
         return self.loop
 
     def publish(self, topic: str, message: dict):
+        # logger.debug(f"publish -> {topic} => {message}")
         loop = self.get_loop()
         loop.run_until_complete(self.nc.publish(topic, json.dumps(message).encode()))
 
     def request(self, topic: str, message: dict):
-        return message
+        # logger.debug(f"request -> {topic} => {message}")
         loop = self.get_loop()
-
         msg = loop.run_until_complete(
             self.nc.request(topic, json.dumps(message).encode(), timeout=1)
         )

@@ -119,7 +119,7 @@ class DoorManager:
             topic = f"pichayon.door_controller.{door.device_id}"
 
         try:
-            await self.nc.publish(topic, json.dumps(command).encode())
+            self.nc.publish(topic, json.dumps(command).encode())
         except Exception as e:
             logger.exception(e)
 

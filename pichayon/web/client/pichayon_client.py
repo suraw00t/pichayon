@@ -10,9 +10,9 @@ class PichayonClient:
     def get_topic(self, type="pichayon"):
         topic = self.topic
         if type == "sparkbit":
-            self.topic = self.sparkbit_topic
+            topic = self.sparkbit_topic
 
-        return self.topic
+        return topic
 
     def open_door(self, door, user, type="pichayon", ip="127.0.0.1"):
         data = {
@@ -22,8 +22,8 @@ class PichayonClient:
             "user_id": str(user.id),
             "ip": ip,
         }
-        topic = self.get_topic(type)
-        return self.message_client.publish(topic, data)
+
+        return self.message_client.publish(self.topic, data)
 
     def get_door_state(self, door, type="pichayon"):
         data = {
@@ -34,23 +34,21 @@ class PichayonClient:
         topic = self.get_topic(type)
         return self.message_client.request(topic, data)
 
-    def change_door_group(self, door_group):
-        data = {
-            "action": "change-door-group",
-            "door_group_id": str(door_group.id),
-        }
+    # def change_door_group(self, door_group):
+    #     data = {
+    #         "action": "change-door-group",
+    #         "door_group_id": str(door_group.id),
+    #     }
 
-        topic = self.get_topic()
-        return self.message_client.request(topic, data)
+    #     return self.message_client.request(self.topic, data)
 
-    def change_user_group(self, user_group):
-        data = {
-            "action": "change-user-group",
-            "user_group_id": str(user_group.id),
-        }
+    # def change_user_group(self, user_group):
+    #     data = {
+    #         "action": "change-user-group",
+    #         "user_group_id": str(user_group.id),
+    #     }
 
-        topic = self.get_topic()
-        return self.message_client.request(topic, data)
+    #     return self.message_client.request(self.topic, data)
 
     def update_member(self, user):
 
