@@ -3,17 +3,16 @@
 {% block content %}
 
 <div class="ui grid">
-
-  {% for door in doors %}
-  <div class="four wide computer column sixteen wide mobile column">
-    <div class="ui centered cards">
+  <div class="ui cards">
+    {% for door in doors %}
       <div class="card">
         <div class="content">
           {% set door_state = door_states[door.id] %}
           <div class="header">
-            {% if 'closed' in door_state %}
+
+            {% if 'closed' == door_state %}
               <i class="door closed icon green"></i>
-            {% elif 'opened' in door_state %}
+            {% elif 'opened' == door_state %}
               <i class="door open icon red"></i>
             {% else %}  
               <i class="door closed icon"></i>
@@ -34,45 +33,36 @@
           <a href="{{ url_for('administration.history_logs.door_logs', door_id=door.id) }}"><i class="circular inverted blue history icon"></i></a>
           
           </div>
-        {% endif %}
+          {% endif %}
+        {#
         <!-- <div class="description">-->
         <!--   Elliot requested permission to view your contact details-->
         <!-- </div>-->
-      </div>
-      <div class="extra content">
-        {% if door.have_passcode %}
-          <div>
-            Passcode: {{ current_user.passcode }}
-            {#% if user_group[door_group.id].is_supervisor(current_user) %}
-            <a href="{{url_for('administration.doors.revoke_passcode', door_id=door.id)}}"><i class="redo icon"></i></a>
-            {% endif %#}
-          </div>
-        {% endif %}
-
-        {% if not door.is_web_open %}
-          <div class="opendoor ui two buttons">
-            <div id="{{ door.id }}" class="ui basic disabled button">Opening via Web was disabled</div>
-          </div>
-        {% else%}
-          <div class="opendoor ui two buttons">
-            <div id="{{ door.id }}" class="ui green button">Open</div>
-          </div>
-        {% endif %}
-        
-
-        
-      {#
-        {% if door_group.members | length == 0 %}
-          Don't have any door in this group.<br>
-          {% if user_group[door_group.id].is_supervisor(current_user) %}
-            <a style="color: green" href='{{url_for('administration.doors.create', group_id=door_group.id)}}'>Create now!</a>
-          {% endif %}
-        {% endif%}
         #}
+        </div>
+        <div class="extra content">
+          {% if door.have_passcode %}
+            <div>
+              Passcode: {{ current_user.passcode }}
+              {#% if user_group[door_group.id].is_supervisor(current_user) %}
+              <a href="{{url_for('administration.doors.revoke_passcode', door_id=door.id)}}"><i class="redo icon"></i></a>
+              {% endif %#}
+            </div>
+          {% endif %}
+
+          {% if not door.is_web_open %}
+            <div class="opendoor ui two buttons">
+              <div id="{{ door.id }}" class="ui basic disabled button">Opening via Web was disabled</div>
+            </div>
+          {% else%}
+            <div class="opendoor ui two buttons">
+              <div id="{{ door.id }}" class="ui green button">Open</div>
+            </div>
+          {% endif %}
+        </div>
       </div>
-    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>
 <script type="text/python" src="{{ url_for('static', filename='brython/controller.py') }}"></script>
 {% endblock %}

@@ -6,9 +6,9 @@ wheel
 nats-py
 
 # WEB
+Werkzeug==2.1.2
 flask
 flask-login
-flask-principal
 authlib
 python-dateutil
 # marshmallow-jsonapi
