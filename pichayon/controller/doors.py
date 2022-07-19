@@ -76,7 +76,10 @@ class DoorManager:
             return
 
         command = dict(
-            device_id=door.device_id, user_id=data["user_id"], action="open-door"
+            device_id=door.device_id,
+            user_id=data.get("user_id"),
+            action="open-door",
+            ip=data.get("ip"),
         )
 
         topic = f"pichayon.door_controller.{door.device_id}"

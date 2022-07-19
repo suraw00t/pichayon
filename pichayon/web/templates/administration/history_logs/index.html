@@ -59,8 +59,11 @@
           {% endif %}
         </td>
         <td>
-          {% set number = log.details.get('rfid', '') %}
-          {{ number }}
+          {% if log.details['type'] == 'rfid' %}
+            {{ log.details.get('rfid', '') }}
+          {% elif log.details['type'] == 'web' %}
+            {{ log.details.get('ip', '') }}
+          {% endif %}
           {{ log.message }}
         </td>
       </tr>

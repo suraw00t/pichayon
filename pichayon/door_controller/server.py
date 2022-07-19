@@ -76,7 +76,11 @@ class DoorControllerServer:
                 )
                 if user:
                     await self.log_manager.put_log(
-                        user, type="web", action="open-door", message="success"
+                        user,
+                        type="web",
+                        action="open-door",
+                        message="success",
+                        ip=data.get("ip"),
                     )
                     await self.device.open_door()
                 else:
