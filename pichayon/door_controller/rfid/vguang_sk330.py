@@ -58,12 +58,48 @@ class RS235Reader(readers.Reader):
         x = b"".join([chr(d).encode() for d in command])
         print("play_beep", [f"{d:02X}" for d in command])
         print(x)
-        self.writer.write(x)
+
+        await asyncio.sleep(0.2)
         self.writer.write(x)
         await self.writer.drain()
 
-    async def play_denined_action(self, seconds=1, times=1):
-        pass
+    async def play_denied_action(self, seconds=1, times=1):
+
+        command = [0x55, 0xAA, 0x04, 0x05, 0x00]
+        control = 0
+        red_light = 0b10
+        green_light = 0b100
+        buzzer = 0b1000
+        blue_light = 0b10000
+
+        duration = int(seconds * 1000 / 50)  # event long ms
+        if duration > 255:
+            duration = 255
+
+        times = times
+        interval = 0x01  # between event ms
+        keep = 0
+
+        control = buzzer
+
+        control |= red_light
+        times = 2
+        duration = 0x01
+
+        command.append(control)
+        command.extend([times, duration, interval, keep])
+
+        check_byte = await self.calculate_check_byte(command)
+        command.append(check_byte)
+
+        # print("play_beep", [hex(d) for d in command])
+
+        byte_command = b"".join([d.to_bytes(1, "big") for d in command])
+
+        await asyncio.sleep(0.2)
+        self.writer.write(byte_command)
+
+        await self.writer.drain()
 
     async def wait_for_tag(self):
         while self.running:

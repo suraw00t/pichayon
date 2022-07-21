@@ -31,7 +31,7 @@ class RS235Reader(vguang_sk330.RS235Reader):
             0x30,
         ]  # header 0x55 0xAA command word 0x02
 
-    async def play_beep(self, seconds=1, times=1, type="success"):
+    async def play_success_action(self, seconds=1, times=1):
         command = [0x55, 0xAA, 0x04, 0x05, 0x00]
         control = 0
         red_light = 0b10
@@ -49,12 +49,7 @@ class RS235Reader(vguang_sk330.RS235Reader):
 
         control = buzzer
 
-        if type == "success":
-            control |= green_light
-        else:
-            control |= red_light
-            times = 2
-            duration = 0x01
+        control |= green_light
 
         command.append(control)
         command.extend([times, duration, interval, keep])
@@ -65,6 +60,45 @@ class RS235Reader(vguang_sk330.RS235Reader):
         # print("play_beep", [hex(d) for d in command])
 
         byte_command = b"".join([d.to_bytes(1, "big") for d in command])
+
+        await asyncio.sleep(0.2)
+        self.writer.write(byte_command)
+
+        await self.writer.drain()
+
+    async def play_denied_action(self, seconds=1, times=1):
+        command = [0x55, 0xAA, 0x04, 0x05, 0x00]
+        control = 0
+        red_light = 0b10
+        green_light = 0b100
+        buzzer = 0b1000
+        blue_light = 0b10000
+
+        duration = int(seconds * 1000 / 50)  # event long ms
+        if duration > 255:
+            duration = 255
+
+        times = times
+        interval = 0x01  # between event ms
+        keep = 0
+
+        control = buzzer
+
+        control |= red_light
+        times = 2
+        duration = 0x01
+
+        command.append(control)
+        command.extend([times, duration, interval, keep])
+
+        check_byte = await self.calculate_check_byte(command)
+        command.append(check_byte)
+
+        # print("play_beep", [hex(d) for d in command])
+
+        byte_command = b"".join([d.to_bytes(1, "big") for d in command])
+
+        await asyncio.sleep(0.2)
         self.writer.write(byte_command)
 
         await self.writer.drain()

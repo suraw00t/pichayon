@@ -84,6 +84,7 @@ class DoorControllerServer:
                     )
                     await self.device.open_door()
                 else:
+                    await self.device.denied_access()
                     await self.log_manager.put_log(
                         user, type="web", action="open-door", message="denied"
                     )
@@ -164,6 +165,7 @@ class DoorControllerServer:
                 if user:
                     await self.device.open_door()
                 else:
+                    await self.device.deny_access()
                     message = "denied"
                     logger.debug(f"There are no user rfid {rfid_number}")
 

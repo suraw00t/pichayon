@@ -66,6 +66,7 @@ class WiegandReader(readers.Reader):
             self.data.append(1)
 
     async def play_success_action(self, seconds=1, times=1):
+        await asyncio.sleep(0.2)
         for i in range(times):
             GPIO.output(self.beep_pin, GPIO.LOW)
             await asyncio.sleep(seconds)
