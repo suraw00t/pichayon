@@ -12,12 +12,14 @@ import logging
 import time
 
 import serial_asyncio
+from . import readers
 
 logger = logging.getLogger(__name__)
 
 
-class RS235Reader:
+class RS235Reader(readers.Reader):
     def __init__(self, device="/dev/ttyACM0", baudrate=115200):
+        super().__init__()
 
         # Pin Definitons:
         self.device = device
@@ -30,22 +32,16 @@ class RS235Reader:
         self.serial = None
 
         self.read_header = [0x55, 0xAA, 0x00]  # header 0x55 0xAA command word 0x00
-        self.running = False
-        self.read_queue = asyncio.Queue()
-        self.tag_queue = asyncio.Queue()
 
     async def connect(self):
-
-        self.running = True
 
         self.reader, self.writer = await serial_asyncio.open_serial_connection(
             url=self.device, baudrate=self.baudrate
         )
 
-        self.read_task = asyncio.create_task(self.wait_for_tag())
-        self.tag_verify_task = asyncio.create_task(self.verify_tag())
+        await super().connect()
 
-    async def play_beep(self, seconds=1, times=1):
+    async def play_success_action(self, seconds=1, times=1):
         command = [0x55, 0xAA, 0x04, 0x01, 0x00]
         control = 0
         red_light = 0b10
@@ -65,6 +61,9 @@ class RS235Reader:
         self.writer.write(x)
         self.writer.write(x)
         await self.writer.drain()
+
+    async def play_denined_action(self, seconds=1, times=1):
+        pass
 
     async def wait_for_tag(self):
         while self.running:
