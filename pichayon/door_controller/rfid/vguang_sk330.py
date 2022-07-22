@@ -66,8 +66,10 @@ class RS235Reader(readers.Reader):
 
         await asyncio.sleep(0.3)
         self.writer.write(byte_command)
+        await self.writer.drain()
         await asyncio.sleep(0.05)
         self.writer.write(byte_command)
+        await self.writer.drain()
         await asyncio.sleep(0.05)
         self.writer.write(byte_command)
         await self.writer.drain()
@@ -91,6 +93,7 @@ class RS235Reader(readers.Reader):
 
         await asyncio.sleep(0.3)
         self.writer.write(byte_command)
+        await self.writer.drain()
         await asyncio.sleep(0.2)
         self.writer.write(byte_command)
         await self.writer.drain()

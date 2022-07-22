@@ -116,14 +116,14 @@ class RS235Reader(vguang_sk330.RS235Reader):
             if len(data_buffer) < 7:
                 continue
 
-            print("x>", [f"{d:02X}" for d in data_buffer])
-            print(len(data_buffer[6:]), data_buffer[4])
+            # print("x>", [f"{d:02X}" for d in data_buffer])
+            # print(len(data_buffer[6:]), data_buffer[4])
 
-            if len(data_buffer[6:]) == data_buffer[4] + 1:
+            if len(data_buffer[6:]) >= data_buffer[4] + 1:
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
 
-                print("->", [f"{d:02X}" for d in data_arr])
+                # print("->", [f"{d:02X}" for d in data_arr])
                 if await self.verify_data(data_arr):
                     await self.tag_queue.put(
                         "".join([f"{d:02X}" for d in data_arr[6:-1]])
