@@ -167,10 +167,6 @@ async def run():
         print("wait for tag")
         data = await readerx.get_id()
         print("got =>", data)
-        if data == "07225F00":
-            await readerx.play_beep()
-        else:
-            await readerx.play_beep(type="fail")
 
 
 if __name__ == "__main__":

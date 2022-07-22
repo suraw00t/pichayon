@@ -92,9 +92,9 @@ class Device:
 
         await beeb_task
 
-    async def denied_access(self):
+    async def deny_access(self):
         logger.debug("Denied Access")
-        beeb_task = asyncio.create_task(self.rfid.play_denined_action(0.1))
+        beeb_task = asyncio.create_task(self.rfid.play_denied_action(0.1))
         await beeb_task
 
     async def is_turn_on_switch(self):

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-PICHAYON_SETTINGS=$(pwd)/pichayon.cfg pichayon-door-controller
+PICHAYON_SETTINGS=$(pwd)/pichayon-door.cfg pichayon-door-controller

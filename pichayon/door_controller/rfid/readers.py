@@ -29,6 +29,7 @@ class Reader:
 
         self.read_task = asyncio.create_task(self.wait_for_tag())
         self.tag_verify_task = asyncio.create_task(self.verify_tag())
+        logger.debug("Reader connect")
 
     async def play_success_action(self, seconds=1, times=1):
         pass
