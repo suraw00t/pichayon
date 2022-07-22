@@ -53,7 +53,7 @@ class WiegandReader(readers.Reader):
         self.is_bit_reading = False
 
     async def connect(self):
-        super().connect()
+        await super().connect()
 
     def callback(self, pin):
         if not self.is_bit_reading:
@@ -90,7 +90,7 @@ class WiegandReader(readers.Reader):
             data = await self.read_queue.get()
             if await self.verify_data(data):
                 tag = await self.decrypt(data)
-                await self.read_queue.put(tag)
+                await self.tag_queue.put(tag)
 
     async def verify_data(self, data):
         if len(data) <= 24:
