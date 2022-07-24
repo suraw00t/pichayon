@@ -12,12 +12,14 @@ import logging
 import time
 
 import serial_asyncio
+from . import readers
 
 logger = logging.getLogger(__name__)
 
 
-class RS235Reader:
+class RS235Reader(readers.Reader):
     def __init__(self, device="/dev/ttyACM0", baudrate=115200):
+        super().__init__()
 
         # Pin Definitons:
         self.device = device
@@ -30,40 +32,70 @@ class RS235Reader:
         self.serial = None
 
         self.read_header = [0x55, 0xAA, 0x00]  # header 0x55 0xAA command word 0x00
-        self.running = False
-        self.read_queue = asyncio.Queue()
-        self.tag_queue = asyncio.Queue()
 
     async def connect(self):
-
-        self.running = True
 
         self.reader, self.writer = await serial_asyncio.open_serial_connection(
             url=self.device, baudrate=self.baudrate
         )
 
-        self.read_task = asyncio.create_task(self.wait_for_tag())
-        self.tag_verify_task = asyncio.create_task(self.verify_tag())
+        await super().connect()
 
-    async def play_beep(self, seconds=1, times=1):
+        turn_off_swiping_light_command = [0x55, 0xAA, 0x24, 0x01, 0x00, 0x00, 0xDA]
+        byte_command = b"".join(
+            [d.to_bytes(1, "big") for d in turn_off_swiping_light_command]
+        )
+        self.writer.write(byte_command)
+        await self.writer.drain()
+
+    async def play_success_action(self, seconds=1, times=1):
+        # command = [0x55, 0xAA, 0x04, 0x01, 0x00]
         command = [0x55, 0xAA, 0x04, 0x01, 0x00]
         control = 0
-        red_light = 0b10
+        # red_light = 0b10
         green_light = 0b100
         buzzer = 0b1000
 
-        control = red_light
+        control = buzzer | green_light
 
-        command.append(0x08)
-
+        command.append(control)
         check_byte = await self.calculate_check_byte(command)
         command.append(check_byte)
 
-        x = b"".join([chr(d).encode() for d in command])
-        print("play_beep", [f"{d:02X}" for d in command])
-        print(x)
-        self.writer.write(x)
-        self.writer.write(x)
+        byte_command = b"".join([d.to_bytes(1, "big") for d in command])
+
+        await asyncio.sleep(0.3)
+        self.writer.write(byte_command)
+        await self.writer.drain()
+        await asyncio.sleep(0.05)
+        self.writer.write(byte_command)
+        await self.writer.drain()
+        await asyncio.sleep(0.05)
+        self.writer.write(byte_command)
+        await self.writer.drain()
+
+    async def play_denied_action(self, seconds=1, times=1):
+
+        command = [0x55, 0xAA, 0x04, 0x01, 0x00]
+        control = 0
+        # red_light = 0b10
+        green_light = 0b100
+        buzzer = 0b1000
+        # blue_light = 0b10000
+
+        control = buzzer
+
+        command.append(control)
+        check_byte = await self.calculate_check_byte(command)
+        command.append(check_byte)
+
+        byte_command = b"".join([d.to_bytes(1, "big") for d in command])
+
+        await asyncio.sleep(0.3)
+        self.writer.write(byte_command)
+        await self.writer.drain()
+        await asyncio.sleep(0.2)
+        self.writer.write(byte_command)
         await self.writer.drain()
 
     async def wait_for_tag(self):
@@ -92,6 +124,7 @@ class RS235Reader:
             if len(data_buffer) < 7:
                 continue
 
+            # print(data_buffer)
             if len(data_buffer[6:]) >= data_buffer[4] + 1:
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
@@ -120,9 +153,6 @@ class RS235Reader:
 
         return True
 
-    async def decrypt(self, raw_data):
-        pass
-
     async def get_id(self):
         tag = await self.tag_queue.get()
         return tag
@@ -135,8 +165,6 @@ async def run():
         print("wait for tag")
         data = await readerx.get_id()
         print("got =>", data)
-        if data == "040031CB494C":
-            await readerx.play_beep()
 
 
 if __name__ == "__main__":

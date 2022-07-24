@@ -15,7 +15,7 @@
 {%- endblock %}
 
 {% block content %}
-  <div class="ui container">
+  <div>
     <div class="ui labeled icon menu">
 
       <a class="item" href="{{ url_for('administration.doors.create_or_edit') }}">
@@ -29,7 +29,7 @@
       </a>
     </div>
   </div>
-  <div class="ui container" style="margin-top: 1em;">
+  <div style="margin-top: 1em;">
   {% if doors | count > 0 %}
   <table class="ui selectable celled table">
     <thead>
@@ -39,7 +39,7 @@
         <th>Device ID</th>
         <th>Groups</th>
         <th>Updated Date</th>
-        <th>Operation</th>
+        <th class="ui single line">Operation</th>
       </tr>
     </thead>
 
@@ -51,7 +51,7 @@
           <td>{{ door.device_id }}</td>
           <td>
             {% for group in door.get_door_groups() %}
-              <a href="{{ url_for('administration.door_groups.view', door_group_id=group.id) }}">{{ group.name }}</a>
+              <a href="{{ url_for('administration.door_groups.view', door_group_id=group.id) }}">{{ group.name }}</a>,
             {% endfor %}
           </td>
           <td>{{ door.updated_date.ctime() }}</td>

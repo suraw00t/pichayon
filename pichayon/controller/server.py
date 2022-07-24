@@ -32,7 +32,7 @@ class ControllerServer:
         if type(data) is str:
             data = json.loads(data)
 
-        if data["action"] == "state":
+        if data["action"] == "get-door-state":
             response = await self.sparkbit_controller.get_state(data)
             await self.nc.publish(
                 reply,

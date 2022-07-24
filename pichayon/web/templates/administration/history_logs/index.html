@@ -15,7 +15,7 @@
 {%- endblock %}
 
 {% block content %}
-  <div class="ui container" style="margin-top: 1em;">
+  <div style="margin-top: 1em;">
     {% if logs and logs | count > 0 %}
   <table class="ui selectable celled table">
     <thead>
@@ -35,7 +35,11 @@
         <td>{{ log.log_date.ctime() }}</td>
         <td>{{ log.door.name }}</td>
         <td>{{ log.action }}</td>
-        <td>{{ log.user.username if log.user else '' }}</td>
+        <td>
+          {% if log.user %}
+            {{ log.user.first_name }} ({{log.user.username}}) 
+          {% endif %}
+        </td>
         <td>
           {% if 'delete' == log.action %}
             <i class="window close red icon"></i>
@@ -55,8 +59,11 @@
           {% endif %}
         </td>
         <td>
-          {% set number = log.details.get('rfid', '') %}
-          {{ number }}
+          {% if log.details['type'] == 'rfid' %}
+            {{ log.details.get('rfid', '') }}
+          {% elif log.details['type'] == 'web' %}
+            {{ log.details.get('ip', '') }}
+          {% endif %}
           {{ log.message }}
         </td>
       </tr>

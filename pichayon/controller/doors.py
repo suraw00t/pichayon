@@ -76,7 +76,10 @@ class DoorManager:
             return
 
         command = dict(
-            device_id=door.device_id, user_id=data["user_id"], action="open-door"
+            device_id=door.device_id,
+            user_id=data.get("user_id"),
+            action="open-door",
+            ip=data.get("ip"),
         )
 
         topic = f"pichayon.door_controller.{door.device_id}"
@@ -119,7 +122,7 @@ class DoorManager:
             topic = f"pichayon.door_controller.{door.device_id}"
 
         try:
-            await self.nc.publish(topic, json.dumps(command).encode())
+            self.nc.publish(topic, json.dumps(command).encode())
         except Exception as e:
             logger.exception(e)
 
@@ -180,7 +183,6 @@ class DoorManager:
 
         for auth_group in auth_groups:
             for door in auth_group.door_group.doors:
-                print(door.id, door.name)
                 for user in users:
                     data = await self.data_resource.get_authorization_user_data(
                         user, user_group, door

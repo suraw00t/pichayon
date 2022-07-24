@@ -3,13 +3,13 @@ __version__ = "0.0.1"
 
 import optparse
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, Response
 import ipaddress
 
 from . import views
 from . import acl
 from . import oauth2
-from .client import nats
+from .client import nats_client
 from .client import pichayon_client
 from .. import models
 
@@ -24,8 +24,8 @@ def create_app():
     oauth2.init_oauth(app)
 
     views.register_blueprint(app)
-    nats.init_nats(app)
-    pichayon_client.init_client(nats.nats_client)
+    nats_client.nats_client.init_app(app)
+    pichayon_client.init_client(nats_client.nats_client)
 
     @app.before_request
     def limit_remote_addr():
@@ -41,7 +41,8 @@ def create_app():
                 break
 
         if not is_allow:
-            abort(403)
+            # abort(503)
+            abort(Response("Please, connect to allowed WiFi"))
 
     return app
 

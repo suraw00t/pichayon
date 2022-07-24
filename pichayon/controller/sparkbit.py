@@ -88,7 +88,10 @@ class DoorController:
         sparkbit_door = models.SparkbitDoorSystem.objects(door=door).first()
 
         if not sparkbit_door:
-            logger.debug(f'door id {command.get("door_id")} is not sparkbit member')
+            logger.debug(
+                f'door id {command.get("door_id")} is not sparkbit member {command}'
+            )
+            return
 
         db = self.client[sparkbit_door.device_id]
         if not "user-{}".format(user.system_id) in db:

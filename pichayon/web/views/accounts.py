@@ -11,7 +11,6 @@ from flask import (
 )
 
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_principal import identity_changed, Identity, AnonymousIdentity
 from pichayon import models
 from pichayon.web.client.pichayon_client import pichayon_client
 
@@ -140,9 +139,6 @@ def authorized_engpsu():
         user.save()
 
     login_user(user)
-    identity_changed.send(
-        current_app._get_current_object(), identity=Identity(str(user.id))
-    )
 
     oauth2token = models.OAuth2Token(
         name=client.engpsu.name,
@@ -161,15 +157,6 @@ def authorized_engpsu():
 @login_required
 def logout():
     logout_user()
-
-    # Remove session keys set by Flask-Principal
-    for key in ("identity.name", "identity.auth_type"):
-        session.pop(key, None)
-
-    # Tell Flask-Principal the user is anonymous
-    identity_changed.send(
-        current_app._get_current_object(), identity=AnonymousIdentity()
-    )
 
     return redirect(url_for("site.index"))
 

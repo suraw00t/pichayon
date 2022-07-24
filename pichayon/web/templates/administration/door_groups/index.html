@@ -19,7 +19,7 @@
 {%- endblock %}
 
 {% block content %}
-  <div class="ui container">
+  <div>
     <div class="ui labeled icon menu">
       <a class="item" href="{{ url_for('administration.door_groups.create_or_edit') }}">
         <i class="add icon"></i>
@@ -27,7 +27,7 @@
       </a>
     </div>
   </div>
-  <div class="ui container" style="margin-top: 1em;">
+  <div style="margin-top: 1em;">
   {% if door_groups and door_groups | count > 0 %}
   <table class="ui selectable celled table">
     <thead>

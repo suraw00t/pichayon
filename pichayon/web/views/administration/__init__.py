@@ -6,6 +6,6 @@ module = Blueprint("administration", __name__, url_prefix="/administration")
 
 
 @module.route("/")
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def index():
     return "admin"

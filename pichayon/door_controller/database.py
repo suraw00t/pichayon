@@ -72,7 +72,6 @@ class Manager:
         if not user:
             return
 
-
         user_table.update(member, User.id == member["id"])
 
     async def delete_user(self, data):

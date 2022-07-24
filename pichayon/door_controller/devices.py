@@ -74,7 +74,7 @@ class Device:
             return
 
         logger.debug("Open door")
-        beeb_task = asyncio.create_task(self.rfid.play_beep(0.1))
+        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.1))
 
         self.last_opened_date = current_date
 
@@ -90,6 +90,11 @@ class Device:
         else:
             GPIO.output(self.relay_pin, GPIO.LOW)
 
+        await beeb_task
+
+    async def deny_access(self):
+        logger.debug("Denied Access")
+        beeb_task = asyncio.create_task(self.rfid.play_denied_action(0.1))
         await beeb_task
 
     async def is_turn_on_switch(self):

@@ -1,2 +1,2 @@
-from . import nats
+from . import nats_client
 from . import pichayon_client

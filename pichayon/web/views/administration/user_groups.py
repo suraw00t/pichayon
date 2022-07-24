@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, g
 
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
-from pichayon.web import acl, forms, nats
+from pichayon.web import acl, forms
+from pichayon.web.client import nats_client
 from pichayon.web.forms.admin import DoorGroupForm, UserGroupForm
 import datetime
 import json
@@ -128,7 +129,7 @@ def add_member(user_group_id):
             "user_ids": form.users.data,
         }
     )
-    nats.nats_client.publish("pichayon.controller.command", data)
+    nats_client.nats_client.publish("pichayon.controller.command", data)
     return redirect(
         url_for("administration.user_groups.view", user_group_id=user_group_id)
     )
@@ -149,7 +150,7 @@ def delete_member(user_group_id, member_id):
             "user_id": str(user.id),
         }
     )
-    nats.nats_client.publish("pichayon.controller.command", data)
+    nats_client.nats_client.publish("pichayon.controller.command", data)
 
     return redirect(
         url_for("administration.user_groups.view", user_group_id=user_group_id)

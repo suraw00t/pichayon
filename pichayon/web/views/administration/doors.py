@@ -84,18 +84,17 @@ def create_or_edit(door_id):
 
 
 @module.route("/<door_group_id>/doors_list", methods=["GET", "POST"])
-# @acl.allows.requires(Or(acl.is_admin, acl.is_supervisor))
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def list():
     doors = models.Door.objects.all()
     return render_template(
         "/administration/doors/list.html",
-        door_group=door_group,
+        doors=doors,
     )
 
 
 @module.route("/<door_id>")
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def view(door_id):
     door = models.Door.objects.get(id=door_id)
     return render_template(
@@ -105,7 +104,7 @@ def view(door_id):
 
 
 @module.route("/<door_id>/delete")
-@acl.admin_permission.require(http_exception=403)
+@acl.role_required("admin")
 def delete(door_id):
     door = models.Door.objects.get(id=door_id)
 
