@@ -22,7 +22,7 @@ Create Apply
                 
                 {{ renderer.render_field(form.advisor) }}
 
-                {{ renderer.render_field(form.room) }}
+                {{ renderer.render_select(form.room) }}
 
                 {{ renderer.render_field(form.purpose) }}
 
@@ -45,6 +45,12 @@ Create Apply
 {% endblock %}
 
 {% block additional_js %}
+
+{{ super() }}
+<script type="text/javascript">
+$('.selection.dropdown').dropdown();
+</script>
+
 <script type="text/javascript">
   datetime_formatter = {
     datetime: function (datetime, settings) {

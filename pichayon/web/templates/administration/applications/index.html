@@ -14,29 +14,64 @@ Applications Approval
         <table class="ui celled table">
             <thead>
             <tr>
-            <th>From</th>
-            <th>View Detail</th>
+            <th>Name</th>
+            <th>ID Number</th>
+            <th>Advisor</th>
+            <th>Room</th>
+            <th>Start Date</th>      
+            <th>End Date</th>
+            <th>Purpose</th>
+            <th>Status</th>
             <th>Approve</th>
             </tr></thead>
             <tbody>
                 <tr>
 
-                    {% for app_list in app_lists %}
+                    {% for application in applications %}
 
 
-                    <td data-label="From">{{ app_list.user.first_name }} {{ app_list.user.last_name }}</td>
+                    <td data-label="Name">
+                        {{ application.user.first_name }} {{ application.user.last_name }}
+                    </td>
 
-                    <td> <a class="ui primary icon button" href=""> <i class="eye outline icon"></i> </a> </td>
+                    <td data-label="ID Number">
+                        {{ application.user.id_card_number }}
+                    </td>
 
-                    <td> <a class="ui primary icon button" href=""> <i class="check icon"></i> </a> <a class="ui red icon button" href=""> <i class="times icon"></i> </a></td>
+                    <td data-label="Advisor">
+                        {{ application.advisor }}
+                    </td>
+
+                    <td data-label="Room">
+                        {{ application.room.name }}
+                    </td>
+
+                    <td data-label="Start Date">
+                        {{ application.started_date }}
+                    </td>
+
+                    <td data-label="End Date">
+                        {{ application.ended_date }}
+                    </td>
+
+                    <td data-label="Purpose">
+                        {{ application.purpose }}
+                    </td>
+
+                    <td data-label="Status">
+                        {{ application.status }}
+                    </td>
+
+                    <td> <a class="ui primary icon button" href="{{ url_for('administration.applications.approve', application_id=application.id)}}"> <i class="check icon"></i> </a> 
+                        <a class="ui red icon button" href="{{ url_for('administration.applications.reject', application_id=application.id)}}"> <i class="times icon"></i> </a>
+                    </td>
                     
+
+
                     
-
-
-                    {% endfor %}
-
                 </tr>
             </tbody>
+            {% endfor %}
         </table>
     </div>
 </div>

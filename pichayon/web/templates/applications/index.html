@@ -22,6 +22,7 @@ Room Application
                                   <th>Start Date</th>      
                                   <th>End Date</th>
                                   <th>Purpose</th>
+                                  <th>Remark</th>
                                   <th>Status</th>
                                   <th>Cancel</th>
                                 </tr></thead>
@@ -50,10 +51,14 @@ Room Application
                                                 {{ application.purpose }}
                                         </td>
                                         <td>
-                                                {{ application.status }}
+                                                {{ application.remark}}
                                         </td>
                                         <td>
-                                                <a class="ui red icon button" href="{{ url_for('applications.delete', application_id=application.id) }}">
+                                                {{ application.status }}
+                                        </td>
+
+                                        <td>
+                                                <a class="ui red icon button" href="{{ url_for('applications.cancel', application_id=application.id) }}">
                                                         <i class="times icon"></i>
                                                 </a>
                                         </td>

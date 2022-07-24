@@ -1,0 +1,28 @@
+{% extends 'administration/applications/index.html' %}
+{% import '/base/html-renderer.html' as renderer%}
+
+{% block dashboard_title %}
+Applications Approve
+{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{{ url_for('administration.applications.index')}}" class="section">Application Lists</a>
+<i class="right angle icon divider"></i>
+    <a  class="section">Remark</a>
+{% endblock %}
+
+{% block content %}
+    <div class="ui content">
+        <div class="ui segment">
+            <form class="ui form" method="POST">
+
+                {{ form.hidden_tag() }}
+
+                {{ renderer.render_field(form.remark)}}
+
+            <button class="ui primary button" type="submit">Submit</button>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}

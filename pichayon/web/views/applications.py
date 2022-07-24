@@ -47,10 +47,20 @@ def apply():
 
     return redirect(url_for("applications.index"))
 
-@module.route("/<application_id>/delete")
+# @module.route("/<application_id>/delete")
+# @login_required
+# def delete(application_id):
+#     application = models.Application.objects().get(id=application_id)
+#     application.delete()
+
+#     return redirect(url_for("applications.index"))
+
+@module.route("/<application_id>/cancel")
 @login_required
-def delete(application_id):
+def cancel(application_id):
     application = models.Application.objects().get(id=application_id)
-    application.delete()
+    application.status = "Canceled"
+    application.save()
 
     return redirect(url_for("applications.index"))
+   
