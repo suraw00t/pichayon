@@ -9,13 +9,14 @@ from flask_mongoengine.wtf import model_form
 BaseApplicationForm = model_form(
     models.Application,
     FlaskForm,
-    exclude=["users","status","remark"],
+    exclude=["users","status"],
     field_args={
         "advisor": {"label": "Advisor"},
         "started_date": {"label": "Start Date", "format": "%Y-%m-%d %H:%M"},
         "ended_date": {"label": "End Date", "format": "%Y-%m-%d %H:%M"},
         "room": {"label": "Room", "label_modifier": lambda r: r.name},
         "purpose": {"label": "Purpose"},
+        "remark": {"label": "Remark"},
     },
 )
 
