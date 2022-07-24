@@ -19,12 +19,12 @@ Create Apply
             <form class="ui form" method="POST">
 
                 {{ form.hidden_tag() }}
-                
-                {{ renderer.render_field(form.advisor) }}
 
                 {{ renderer.render_select(form.room) }}
 
                 {{ renderer.render_field(form.purpose) }}
+
+                {{ renderer.render_field(form.advisor) }}
 
                 <div class="two fields">
 
@@ -34,7 +34,14 @@ Create Apply
 
                 </div>
 
+                <div class="ui checkbox">
+                    <input type="checkbox" name="example">
+                    <label>ยอมรับนโยบายของการขอใช้งาน</label>
+                </div>
+
+                <div>
                 <button class="ui primary button" type="submit">Create</button>
+                </div>
 
             </form>
 
