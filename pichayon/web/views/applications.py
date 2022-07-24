@@ -46,7 +46,8 @@ def apply():
 
     return redirect(url_for("applications.index"))
 
-@module.route("/<application_id>/cancel")
+
+@module.route("/<application_id>/delete")
 @login_required
 def cancel(application_id):
     application = models.Application.objects().get(id=application_id)
