@@ -54,7 +54,6 @@ def reject(application_id):
 @acl.role_required("admin")
 def comment():
 
-    application = models.Application.objects()
     form = forms.applications.ApplicationForm()
     if not form.validate_on_submit():
         return render_template(
