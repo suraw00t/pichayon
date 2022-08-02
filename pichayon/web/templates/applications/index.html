@@ -12,6 +12,11 @@ Room Application
 
         <div class="'ui content">
                 <div class='ui segment'>
+                        <div>
+                                <a class="ui primary button" href="{{ url_for('applications.apply')}}">
+                                        Create Apply
+                                </a>
+                        </div>
                         <table class="ui celled padded table">
                                 <thead>
                                   <tr>
@@ -72,11 +77,6 @@ Room Application
                                     </table>
                         
         
-        <div>
-        <a class="ui primary button" href="{{ url_for('applications.apply')}}">
-                Create Apply
-        </a>
-        </div>
 
 {% endblock %}
 
