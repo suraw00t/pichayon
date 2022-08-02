@@ -26,7 +26,7 @@ module = Blueprint("applications", __name__, url_prefix="/applications")
 @acl.role_required("admin")
 def index():
     user = current_user._get_current_object()
-    applications = models.Application.objects()
+    applications = models.Application.objects().order_by('+started_date')
     return render_template(
         "/administration/applications/index.html", applications=applications)
 
@@ -38,7 +38,7 @@ def approve(application_id):
     application.status = "Approved"
     application.save()
 
-    return redirect(url_for("administration.applications.comment"))
+    return redirect(url_for("administration.applications.index"))
 
 @module.route("/<application_id>/reject")
 @acl.role_required("admin")

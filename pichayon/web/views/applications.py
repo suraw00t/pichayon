@@ -23,7 +23,7 @@ module = Blueprint("applications", __name__, url_prefix="/application")
 @login_required
 def index():
     user = current_user._get_current_object()
-    applications = models.Application.objects(user=user)
+    applications = models.Application.objects(user=user).order_by("started_date")
     return render_template("/applications/index.html", applications=applications)
 
 
