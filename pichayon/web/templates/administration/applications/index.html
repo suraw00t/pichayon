@@ -7,31 +7,29 @@ Applications Approval
 {% block content %}
 <div class="'ui content">
     <div class='ui segment'>
+
         <table class="ui celled table">
             <thead>
             <tr>
-            <th>Name</th>
-            <th>ID Number</th>
+            <th>Name - ID Number</th>
             <th>Advisor</th>
             <th>Room</th>
+            <th>Request Date</th>
             <th>Start Date</th>      
             <th>End Date</th>
             <th>Purpose</th>
             <th>Status</th>
             <th>Approve</th>
-            </tr></thead>
+            </tr>
+            </thead>
             <tbody>
                 <tr>
 
                     {% for application in applications %}
 
 
-                    <td data-label="Name">
-                        {{ application.user.first_name }} {{ application.user.last_name }}
-                    </td>
-
-                    <td data-label="ID Number">
-                        {{ application.user.id_card_number }}
+                    <td data-label="Name - ID Number">
+                        {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
                     </td>
 
                     <td data-label="Advisor">
@@ -40,6 +38,10 @@ Applications Approval
 
                     <td data-label="Room">
                         {{ application.room.name }}
+                    </td>
+
+                    <td data-label="Request Date">
+                        {{ application.created_date }}
                     </td>
 
                     <td data-label="Start Date">
