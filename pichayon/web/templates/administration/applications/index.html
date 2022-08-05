@@ -1,8 +1,18 @@
-{% extends 'base/default-dashboard.html'%}
+{% extends '/administration/index.html'%}
 
 {% block dashboard_title%}
 Applications Approval
 {% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if url_for('administration.applications.index') == request.path %}
+  <div class="active section">Applications Approval</div>
+{% else %}
+  <a href="{{ url_for('administration.applications.index') }}" class="section">Applications Approval</a>
+{% endif %}
+{%- endblock %}
 
 {% block content %}
 <div class="'ui content">
