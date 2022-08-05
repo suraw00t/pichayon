@@ -26,7 +26,7 @@ module = Blueprint("applications", __name__, url_prefix="/applications")
 @acl.role_required("admin")
 def index():
     user = current_user._get_current_object()
-    applications = models.Application.objects().order_by('+started_date')
+    applications = models.Application.objects().order_by('-id')
     return render_template(
         "/administration/applications/index.html", applications=applications)
 
@@ -35,7 +35,10 @@ def index():
 @acl.role_required("admin")
 def approve(application_id):
     application = models.Application.objects().get(id=application_id)
-    application.status = "Approved"
+    application.status = "approved"
+    application.ip_address = request.headers.get(
+        "X-Forwarded-For", request.remote_addr
+    )
     application.save()
 
     return redirect(url_for("administration.applications.index"))
@@ -44,28 +47,33 @@ def approve(application_id):
 @acl.role_required("admin")
 def reject(application_id):
     application = models.Application.objects().get(id=application_id)
-    application.status = "Rejected"
+    application.status = "rejected"
+    application.ip_address = request.headers.get(
+        "X-Forwarded-For", request.remote_addr
+    )
     application.save()
 
     return redirect(url_for("administration.applications.comment"))
 
 
-@module.route("/applications/comments", methods=["GET", "POST"])
+@module.route("/<application_id>/comments", methods=["GET", "POST"])
 @acl.role_required("admin")
-def comment():
-
+def comment(application_id):
     form = forms.applications.ApplicationForm()
     if not form.validate_on_submit():
         return render_template(
             "/administration/applications/comment.html",
             form=form,
         )
-
+    
     application = models.Application()
 
     form.populate_obj(application)
     application.user = current_user._get_current_object()
 
+    application.ip_address = request.headers.get(
+        "X-Forwarded-For", request.remote_addr
+    )
     application.save()
 
     return redirect(url_for("administration.applications.index"))
