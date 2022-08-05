@@ -12,18 +12,20 @@ Room Application
 
         <div class="'ui content">
                 <div class='ui segment'>
+
                         <div>
                                 <a class="ui primary button" href="{{ url_for('applications.apply')}}">
                                         Create Apply
                                 </a>
                         </div>
-                        <table class="ui celled padded table">
+
+                        <table class="ui celled table">
                                 <thead>
                                   <tr>
-                                  <th>Name</th>
-                                  <th>ID Number</th>
+                                  <th>Name - ID Number</th>
                                   <th>Advisor</th>
                                   <th>Room</th>
+                                  <th>Request Date</th>
                                   <th>Start Date</th>      
                                   <th>End Date</th>
                                   <th>Purpose</th>
@@ -33,36 +35,38 @@ Room Application
                                 </tr></thead>
                                 <tbody>
                                         <tr>
-                                        {% for application in applications %}
-                                        <td class="single line">
-                                                {{ application.user.first_name }} {{ application.user.last_name }}
-                                        </td>
-                                        <td class="center aligned">
-                                                {{ application.user.id_card_number }}
-                                        </td>
-                                        <td>
-                                                {{ application.advisor }}
-                                        </td>
-                                        <td class="center aligned">
-                                                {{ application.room.name }}
-                                        </td>
-                                        <td>
-                                                {{ application.started_date }}
-                                        </td>
-                                        <td>
-                                                {{ application.ended_date }}
-                                        </td>
-                                        <td>
-                                                {{ application.purpose }}
-                                        </td>
-                                        <td>
-                                                {{ application.remark}}
-                                        </td>
-                                        <td>
-                                                {{ application.status }}
-                                        </td>
 
-                                        <td>
+                                                {% for application in applications %}
+
+                                                <td data-label="Name">
+                                                        {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
+                                                </td>
+                                                <td data-label="Advisor">
+                                                        {{ application.advisor }}
+                                                </td>
+                                                <td data-label="Room">
+                                                        {{ application.room.name }}
+                                                </td>
+                                                <td data-label="Request Date">
+                                                        {{ application.created_date }}
+                                                </td>
+                                                <td data-label="Start Date">
+                                                        {{ application.started_date }}
+                                                </td>
+                                                <td data-label="End Date">
+                                                        {{ application.ended_date }}
+                                                </td>
+                                                <td data-label="Purpose">
+                                                        {{ application.purpose }}
+                                                </td >
+                                                <td data-label="Remark">
+                                                        {{ application.remark}}
+                                                </td>
+                                                <td data-label="Status">
+                                                        {{ application.status }}
+                                                </td>
+
+                                                <td>
                                                 <a class="ui red icon button" href="{{ url_for('applications.cancel', application_id=application.id) }}">
                                                         <i class="times icon"></i>
                                                 </a>
