@@ -23,7 +23,7 @@ module = Blueprint("applications", __name__, url_prefix="/application")
 @login_required
 def index():
     user = current_user._get_current_object()
-    applications = models.Application.objects(user=user).order_by("started_date")
+    applications = models.Application.objects(user=user).order_by("-id")
     return render_template("/applications/index.html", applications=applications)
 
 
@@ -47,12 +47,20 @@ def apply():
     return redirect(url_for("applications.index"))
 
 
-@module.route("/<application_id>/delete")
+@module.route("/<application_id>/cancel")
 @login_required
 def cancel(application_id):
     application = models.Application.objects().get(id=application_id)
     application.status = "Canceled"
     application.save()
+
+    return redirect(url_for("applications.index"))
+
+@module.route("/<application_id>/delete")
+@login_required
+def delete(application_id):
+    application = models.Application.objects().get(id=application_id)
+    application.delete()
 
     return redirect(url_for("applications.index"))
    
