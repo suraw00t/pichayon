@@ -9,7 +9,7 @@ from flask_mongoengine.wtf import model_form
 BaseApplicationForm = model_form(
     models.Application,
     FlaskForm,
-    exclude=["users","status"],
+    exclude=["users","status","created_date"],
     field_args={
         "advisor": {"label": "Advisor"},
         "started_date": {"label": "Start Date", "format": "%Y-%m-%d %H:%M"},
