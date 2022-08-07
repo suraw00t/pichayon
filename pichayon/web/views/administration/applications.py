@@ -56,15 +56,14 @@ def reject(application_id):
     )
 
 
-@module.route("/<application_id>/comment", methods=["GET", "POST"])
+@module.route("/application/comment", methods=["GET", "POST"])
 @acl.role_required("admin")
-def comment(application_id):
+def comment():
     form = forms.applications.ApplicationForm()
     if not form.validate_on_submit():
         return render_template(
             "/administration/applications/comment.html",
             form=form,
-            application_id=application_id,
         )
 
     application = models.Application()
