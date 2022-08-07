@@ -44,6 +44,16 @@ def apply():
 
     application.save()
 
+    req_checkbox = False
+
+    if request.method == "POST":
+        request.form.get("req_checkbox")
+        req_checkbox = True
+        if req_checkbox == True:
+            return render_template("/applications/index.html")
+        elif req_checkbox == False:
+            return render_template("/applications/request.html")
+
     return redirect(url_for("applications.index"))
 
 
@@ -56,6 +66,7 @@ def cancel(application_id):
 
     return redirect(url_for("applications.index"))
 
+
 @module.route("/<application_id>/delete")
 @login_required
 def delete(application_id):
@@ -63,4 +74,3 @@ def delete(application_id):
     application.delete()
 
     return redirect(url_for("applications.index"))
-   
