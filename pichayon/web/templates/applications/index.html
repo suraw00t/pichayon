@@ -23,6 +23,7 @@ Room Application
                                 <thead>
                                   <tr>
                                   <th>Name - ID Number</th>
+                                  <th>Degree</th>
                                   <th>Advisor</th>
                                   <th>Room</th>
                                   <th>Request Date</th>
@@ -40,6 +41,9 @@ Room Application
 
                                                 <td data-label="Name">
                                                         {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
+                                                </td>
+                                                <td data-label="Degree">
+                                                        {{ application.degree }} 
                                                 </td>
                                                 <td data-label="Advisor">
                                                         {{ application.advisor }}
