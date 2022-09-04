@@ -12,7 +12,10 @@ BaseApplicationForm = model_form(
     exclude=["users", "status", "created_date"],
     field_args={
         "degree": {"label": "Degrees"},
-        "advisor": {"label": "Advisor"},
+        "advisor": {
+            "label": "Advisor",
+            "label_modifier": lambda ad: ad.first_name,
+        },
         "started_date": {"label": "Start Date", "format": "%Y-%m-%d %H:%M"},
         "ended_date": {"label": "End Date", "format": "%Y-%m-%d %H:%M"},
         "room": {"label": "Room", "label_modifier": lambda r: r.name},

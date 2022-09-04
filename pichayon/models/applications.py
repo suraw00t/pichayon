@@ -15,7 +15,7 @@ class Application(me.Document):
 
     user = me.ReferenceField("User", dbref=True)
     degree = me.StringField(choices=degrees)
-    advisor = me.StringField(required=True)
+    advisor = me.ReferenceField("User", dbref=True)
 
     created_date = me.DateTimeField(default=datetime.datetime.now)
     started_date = me.DateTimeField(required=True, default=datetime.datetime.now())
