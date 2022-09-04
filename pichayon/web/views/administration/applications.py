@@ -23,7 +23,7 @@ module = Blueprint("applications", __name__, url_prefix="/applications")
 
 
 @module.route("")
-@acl.role_required("admin")
+@acl.role_required("admin", "lecuturer")
 def index():
     user = current_user._get_current_object()
     applications = models.Application.objects().order_by("-id")
@@ -33,7 +33,7 @@ def index():
 
 
 @module.route("/<application_id>/approve")
-@acl.role_required("admin")
+@acl.role_required("admin", "lecuturer")
 def approve(application_id):
     application = models.Application.objects().get(id=application_id)
     application.status = "approved"
@@ -44,7 +44,7 @@ def approve(application_id):
 
 
 @module.route("/<application_id>/reject")
-@acl.role_required("admin")
+@acl.role_required("admin", "lecuturer")
 def reject(application_id):
     application = models.Application.objects().get(id=application_id)
     application.status = "rejected"
@@ -56,16 +56,20 @@ def reject(application_id):
     )
 
 
-@module.route("/application/comment", methods=["GET", "POST"])
-@acl.role_required("admin")
-def comment():
+@module.route("/<application_id>/comment", methods=["GET", "POST"])
+@acl.role_required("admin", "lecuturer")
+def comment(application_id):
+    application = models.Application.objects().get(id=application_id)
     form = forms.applications.ApplicationForm()
+
     if not form.validate_on_submit():
         return render_template(
             "/administration/applications/comment.html",
             form=form,
+            application_id=application_id,
         )
 
+    print("test")
     application = models.Application()
 
     form.populate_obj(application)
@@ -74,4 +78,6 @@ def comment():
     application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     application.save()
 
-    return redirect(url_for("administration.applications.index"))
+    return redirect(
+        url_for("administration.applications.index"), application_id=application_id
+    )

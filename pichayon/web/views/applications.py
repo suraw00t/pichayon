@@ -44,15 +44,15 @@ def apply():
 
     application.save()
 
-    req_checkbox = False
+    # req_checkbox = False
 
-    if request.method == "POST":
-        request.form.get("req_checkbox")
-        req_checkbox = True
-        if req_checkbox == True:
-            return render_template("/applications/index.html")
-        elif req_checkbox == False:
-            return render_template("/applications/request.html")
+    # if request.method == "POST":
+    #     request.form.get("req_checkbox")
+    #     req_checkbox = True
+    #     if req_checkbox == True:
+    #         return render_template("/applications/index.html")
+    #     elif req_checkbox == False:
+    #         return render_template("/applications/request.html")
 
     return redirect(url_for("applications.index"))
 
