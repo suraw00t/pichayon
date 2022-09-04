@@ -126,6 +126,7 @@ def edit(user_id):
     form = EditForm(obj=user)
     form.roles.choices = [
         ("admin", "Admin"),
+        ("lecturer", "Lecturer"),
         ("supervisor", "Supervisor"),
         ("student", "Student"),
         ("user", "User"),
