@@ -22,6 +22,7 @@ Applications Approval
             <thead>
             <tr>
             <th>Name - ID Number</th>
+            <th>Degree</th>
             <th>Advisor</th>
             <th>Room</th>
             <th>Request Date</th>
@@ -41,6 +42,11 @@ Applications Approval
                     <td data-label="Name - ID Number">
                         {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
                     </td>
+
+                    <td data-label="Degree">
+                        {{ application.degree }}
+                    </td>
+
 
                     <td data-label="Advisor">
                         {{ application.advisor }}
