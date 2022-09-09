@@ -46,7 +46,7 @@ Room Application
                                                         {{ application.degree }} 
                                                 </td>
                                                 <td data-label="Advisor">
-                                                        {{ application.advisor }}
+                                                        {{ application.advisor.first_name }} {{ application.advisor.last_name }}
                                                 </td>
                                                 <td data-label="Room">
                                                         {{ application.room.name }}
