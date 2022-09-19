@@ -30,7 +30,9 @@ def index():
 @module.route("/applications", methods=["GET", "POST"])
 @login_required
 def apply():
+    lecturers = models.User.objects(roles="lecturer")
     form = forms.applications.ApplicationForm()
+    form.advisor.queryset = lecturers
     if not form.validate_on_submit():
         return render_template(
             "/applications/request.html",
@@ -43,16 +45,6 @@ def apply():
     application.user = current_user._get_current_object()
 
     application.save()
-
-    # req_checkbox = False
-
-    # if request.method == "POST":
-    #     request.form.get("req_checkbox")
-    #     req_checkbox = True
-    #     if req_checkbox == True:
-    #         return render_template("/applications/index.html")
-    #     elif req_checkbox == False:
-    #         return render_template("/applications/request.html")
 
     return redirect(url_for("applications.index"))
 
