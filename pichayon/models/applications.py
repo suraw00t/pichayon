@@ -9,8 +9,8 @@ class Application(me.Document):
     meta = {"collection": "applications"}
 
     degrees = (
-        ("ระดับปริญญาตรี", "Undergraduate Degrees"),
-        ("ระดับปริญญาโท", "Graduate Degrees"),
+        ("Undergraduate Degrees"),
+        ("Graduate Degrees"),
     )
 
     user = me.ReferenceField("User", dbref=True)
@@ -26,3 +26,5 @@ class Application(me.Document):
     status = me.StringField(required=True, default="pending")
     remark = me.StringField()
     ip_address = me.StringField(max_length=255)
+
+    request_checkbox = me.BooleanField(required=True, default=False)
