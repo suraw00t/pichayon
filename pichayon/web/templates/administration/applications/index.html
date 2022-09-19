@@ -21,11 +21,10 @@ Applications Approval
         <table class="ui celled table">
             <thead>
             <tr>
-            <th>Name - ID Number</th>
+            <th>ID Number - Name</th>
             <th>Degree</th>
             <th>Advisor</th>
             <th>Room</th>
-            <th>Request Date</th>
             <th>Start Date</th>      
             <th>End Date</th>
             <th>Purpose</th>
@@ -40,7 +39,7 @@ Applications Approval
 
 
                     <td data-label="Name - ID Number">
-                        {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
+                        {{ application.user.id_card_number }} {{ application.user.first_name }} {{ application.user.last_name }} 
                     </td>
 
                     <td data-label="Degree">
@@ -49,15 +48,11 @@ Applications Approval
 
 
                     <td data-label="Advisor">
-                        {{ application.advisor }}
+                        {{ application.advisor.first_name }} {{ application.advisor.last_name }}
                     </td>
 
                     <td data-label="Room">
                         {{ application.room.name }}
-                    </td>
-
-                    <td data-label="Request Date">
-                        {{ application.created_date }}
                     </td>
 
                     <td data-label="Start Date">

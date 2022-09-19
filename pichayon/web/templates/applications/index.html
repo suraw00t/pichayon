@@ -22,7 +22,7 @@ Room Application
                         <table class="ui celled table">
                                 <thead>
                                   <tr>
-                                  <th>Name - ID Number</th>
+                                  <th>ID Number - Name</th>
                                   <th>Degree</th>
                                   <th>Advisor</th>
                                   <th>Room</th>
@@ -40,7 +40,7 @@ Room Application
                                                 {% for application in applications %}
 
                                                 <td data-label="Name">
-                                                        {{ application.user.first_name }} {{ application.user.last_name }} {{ application.user.id_card_number }}
+                                                        {{ application.user.id_card_number }} {{ application.user.first_name }} {{ application.user.last_name }} 
                                                 </td>
                                                 <td data-label="Degree">
                                                         {{ application.degree }} 
