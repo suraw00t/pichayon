@@ -59,9 +59,7 @@ def reject(application_id):
 @module.route("/<application_id>/comment", methods=["GET", "POST"])
 @acl.role_required("admin", "lecturer")
 def comment(application_id):
-    application = models.Application.objects().get(id=application_id)
-    form = forms.applications.ApplicationForm()
-
+    form = forms.application_remarks.ApplicationRemarkForm()
     if not form.validate_on_submit():
         return render_template(
             "/administration/applications/comment.html",
@@ -69,14 +67,15 @@ def comment(application_id):
             application_id=application_id,
         )
 
-    print("test")
-    application = models.Application()
+    application_remarks = models.Application(Remark)
 
-    form.populate_obj(application)
-    application.user = current_user._get_current_object()
+    form.populate_obj(application_remarks)
+    application_remarks.user = current_user._get_current_object()
 
-    application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    application.save()
+    application_remarks.ip_address = request.headers.get(
+        "X-Forwarded-For", request.remote_addr
+    )
+    application_remarks.save()
 
     return redirect(
         url_for("administration.applications.index"), application_id=application_id
