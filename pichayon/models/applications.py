@@ -9,8 +9,9 @@ class Application(me.Document):
     meta = {"collection": "applications"}
 
     degrees = (
-        ("Undergraduate Degrees"),
-        ("Graduate Degrees"),
+        ("B.Eng. (CoE)", "B.Eng. (CoE)"),
+        ("B.Eng. (AIE)", "B.Eng. (AIE)"),
+        ("graduate", "Graduate Degrees"),
     )
 
     user = me.ReferenceField("User", dbref=True)
@@ -18,7 +19,7 @@ class Application(me.Document):
     advisor = me.ReferenceField("User", dbref=True)
 
     created_date = me.DateTimeField(default=datetime.datetime.now)
-    started_date = me.DateTimeField(required=True, default=datetime.datetime.now())
+    started_date = me.DateTimeField(required=True, default=datetime.date.today)
     ended_date = me.DateTimeField(required=True)
 
     room = me.ReferenceField("Door", dbref=True)
