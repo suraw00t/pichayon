@@ -26,8 +26,9 @@
     </thead>
     <tbody>
       {% for identity in user.identities %}
+      {% set number = identity.identifier %}
       <tr>
-        <td>{{ identity.identifier }}</td>
+	<td>{{ '*' * number[:-3] | length + number[-3:] }}</td>
         <td>{{ identity.type }}</td>
         <td>{{ identity.status }}</td>
         <td>{{ identity.created_date }}</td>
