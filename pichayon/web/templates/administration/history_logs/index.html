@@ -60,7 +60,10 @@
         </td>
         <td>
           {% if log.details['type'] == 'rfid' %}
-            {{ log.details.get('rfid', '') }}
+	    {% set rfid = log.details.get('rfid', '') %}
+	    {% if log.message == 'success' %}
+		{{ '*' * rfid[:-3] | length + rfid[-3:] }}
+	    {% endif %}
           {% elif log.details['type'] == 'web' %}
             {{ log.details.get('ip', '') }}
           {% endif %}

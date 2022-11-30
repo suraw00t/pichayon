@@ -49,7 +49,7 @@
             <i class="large delete icon red"></i>
           #}
           {% for identity in user.identities if identity.status == 'active' %}
-            {{ identity.identifier }},
+            {{ '*' * identity.identifier[:-3] | length + identity.identifier[-3:] }},
           {% endfor %}
       {% endif %}
      

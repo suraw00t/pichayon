@@ -53,7 +53,7 @@ class User(me.Document, UserMixin):
 
     meta = {"collection": "users"}
 
-    def has_roles(self, roles):
+    def has_roles(self, *roles):
         for role in roles:
             if role in self.roles:
                 return True
