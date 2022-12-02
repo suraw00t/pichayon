@@ -7,7 +7,7 @@ RUN apt install -y python3 python3-dev python3-pip python3-venv  npm
 RUN python3 -m venv /venv
 ENV PYTHON=/venv/bin/python3
 
-RUN $PYTHON -m pip install flask wheel uwsgi poetry
+RUN $PYTHON -m pip install poetry
 
 WORKDIR /app
 COPY poetry.lock pyproject.toml /app/

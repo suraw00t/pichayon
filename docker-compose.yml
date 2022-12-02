@@ -49,7 +49,7 @@ services:
                 max-file: "3"
         environment:
             PICHAYON_SETTINGS: /app/pichayon-production.cfg
-        command: uwsgi --lazy-apps --ini /app/scripts/pichayon-uwsgi-web.ini
+        command: /venv/bin/gunicorn -w 2 --bind 0.0.0.0:9000 "pichayon.web:create_app()"
     controller:
         build: .
         image: pichayon-image
