@@ -30,11 +30,11 @@ class AuthorityForm(FlaskForm):
     )
     start_time = fields.TimeField(
         "Start Time",
-        default=datetime.time(0, 0),
+        format="%H:%M",
         widget=widgets.TextInput(),
     )
     end_time = fields.TimeField(
         "End Time",
-        default=datetime.time(0, 0),
+        format="%H:%M",
         widget=widgets.TextInput(),
     )

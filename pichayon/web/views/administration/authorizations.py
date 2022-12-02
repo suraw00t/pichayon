@@ -60,14 +60,11 @@ def add_or_edit(auth_id):
     )
 
     if not form.validate_on_submit():
-
         return render_template(
             "/administration/authorizations/add_edit.html",
             form=form,
         )
 
-    # print(form.end_time.data)
-    # print(form.start_time.data)
     if not group_auth:
         group_auth = models.GroupAuthorization()
 
@@ -80,8 +77,8 @@ def add_or_edit(auth_id):
     start_time = form.start_time.data
     end_time = form.end_time.data
 
-    rrule.start_time = [start_time.hour, start_time.minute, start_time.second]
-    rrule.end_time = [start_time.hour, start_time.minute, start_time.second]
+    rrule.start_time = [start_time.hour, start_time.minute]
+    rrule.end_time = [start_time.hour, start_time.minute]
 
     user_group = models.UserGroup.objects.get(id=form.user_group.data)
     door_group = models.DoorGroup.objects.get(id=form.door_group.data)

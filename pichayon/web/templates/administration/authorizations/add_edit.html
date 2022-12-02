@@ -34,12 +34,18 @@
     $('#start_time')
     .calendar({
       type: 'time',
-      ampm: false
+      formatter: {
+        time: 'HH:mm',
+        cellTime: 'HH:mm'
+      } 
     });
     $('#end_time')
     .calendar({
       type: 'time',
-      ampm: false
+      formatter: {
+        time: 'HH:mm',
+        cellTime: 'HH:mm'
+      }
     });
   </script>
 {% endblock %}
