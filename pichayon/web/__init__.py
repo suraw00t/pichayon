@@ -26,28 +26,6 @@ def create_app():
     views.register_blueprint(app)
     nats_client.nats_client.init_app(app)
     pichayon_client.init_client(nats_client.nats_client)
-
-    @app.before_request
-    def limit_remote_addr():
-        allow_ips = app.config.get("PICHAYON_WEB_ALLOW_IPS")
-        ip = request.headers.get("X-Forwarded-For", request.remote_addr)
-        
-        if ',' in ip:
-            ip = ip.split(',').strip()
-
-        is_allow = False
-        if not allow_ips:
-            is_allow = True
-
-        for allow_ip in allow_ips:
-            if ipaddress.ip_address(ip) in ipaddress.ip_network(allow_ip):
-                is_allow = True
-                break
-
-        if not is_allow:
-            # abort(503)
-            abort(Response("Please, connect to allowed WiFi"))
-
     return app
 
 

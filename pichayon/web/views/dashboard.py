@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, url_for, request, Response, redirect, g
+from flask import (
+    Blueprint,
+    render_template,
+    url_for,
+    request,
+    Response,
+    redirect,
+    g,
+    current_app,
+)
 from flask_login import login_required, current_user
 from pichayon import models
 import json
@@ -48,9 +57,35 @@ def index():
     )
 
 
+# @app.before_request
+def limit_remote_addr():
+    allow_ips = current_app.config.get("PICHAYON_WEB_ALLOW_IPS")
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+
+    if "," in ip:
+        ip = ip.split(",")[0].strip()
+
+    is_allow = False
+    if not allow_ips:
+        is_allow = True
+
+    for allow_ip in allow_ips:
+        if ipaddress.ip_address(ip) in ipaddress.ip_network(allow_ip):
+            is_allow = True
+            break
+
+    if not is_allow:
+        # abort(503)
+        abort(Response("Please, connect to allowed WiFi"))
+
+    return ip
+
+
 @module.route("/open_door", methods=("GET", "POST"))
 @login_required
 def open_door():
+    ip = limit_remote_addr()
+
     door_id = request.form.get("door_id")
     # user_group_id = request.form.get('user_group_id')
     door = models.Door.objects.get(id=door_id)
@@ -58,7 +93,7 @@ def open_door():
     pichayon_client.pichayon_client.open_door(
         door,
         current_user,
-        ip=request.headers.get("X-Forwarded-For", request.remote_addr),
+        ip=ip,
     )
 
     response = Response()
