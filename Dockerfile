@@ -11,7 +11,7 @@ RUN $PYTHON -m pip install poetry
 
 WORKDIR /app
 COPY pichayon/cmd /app/pichayon/cmd
-COPY poetry.lock pyproject.toml /app/
+COPY poetry.lock pyproject.toml README.md /app/
 RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry install --no-interaction --only main
 
 COPY pichayon/web/static/package.json pichayon/web/static/package-lock.json pichayon/web/static/

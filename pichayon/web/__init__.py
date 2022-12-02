@@ -31,6 +31,10 @@ def create_app():
     def limit_remote_addr():
         allow_ips = app.config.get("PICHAYON_WEB_ALLOW_IPS")
         ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+        
+        if ',' in ip:
+            ip = ip.split(',').strip()
+
         is_allow = False
         if not allow_ips:
             is_allow = True
