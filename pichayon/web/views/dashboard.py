@@ -14,6 +14,8 @@ import json
 import datetime
 from pichayon.web import pichayon_client
 
+import ipaddress
+
 module = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 

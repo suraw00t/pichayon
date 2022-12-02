@@ -4,7 +4,6 @@ __version__ = "0.0.1"
 import optparse
 
 from flask import Flask, request, abort, Response
-import ipaddress
 
 from . import views
 from . import acl
