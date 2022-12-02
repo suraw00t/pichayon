@@ -72,6 +72,6 @@ services:
                 max-file: "3"
         environment:
             PICHAYON_SETTINGS: /app/pichayon-production.cfg
-        command: pichayon-controller
+        command: /venv/bin/pichayon-controller
 networks:
     default:
