@@ -36,10 +36,10 @@ def add_or_edit(auth_id):
     if auth_id:
         group_auth = models.GroupAuthorization.objects.get(id=auth_id)
         form = AuthorityForm(obj=group_auth)
-        form.door_group.data = str(group_auth.door_group.id)
-        form.user_group.data = str(group_auth.user_group.id)
 
     if group_auth and request.method == "GET":
+        form.door_group.data = str(group_auth.door_group.id)
+        form.user_group.data = str(group_auth.user_group.id)
         form.start_time.data = datetime.time(
             group_auth.rrule.start_time[0],
             group_auth.rrule.start_time[1],
@@ -60,10 +60,12 @@ def add_or_edit(auth_id):
     )
 
     if not form.validate_on_submit():
+
         return render_template(
             "/administration/authorizations/add_edit.html",
             form=form,
         )
+
     # print(form.end_time.data)
     # print(form.start_time.data)
     if not group_auth:

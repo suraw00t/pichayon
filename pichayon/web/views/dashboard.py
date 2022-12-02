@@ -45,8 +45,13 @@ def index():
         if door.device_type == "pichayon":
             door_states[door.id] = door.get_state()
         elif door.device_type == "sparkbit":
-            response = pichayon_client.pichayon_client.get_door_state(door, "sparkbit")
-            door_states[door.id] = response["door"]["state"]
+            try:
+                response = pichayon_client.pichayon_client.get_door_state(
+                    door, "sparkbit"
+                )
+                door_states[door.id] = response["door"]["state"]
+            except Exception as e:
+                door_states[door.id] = "Unknow"
 
     doors.sort(key=lambda d: d.name)
 
