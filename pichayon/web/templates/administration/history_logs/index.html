@@ -62,7 +62,9 @@
           {% if log.details['type'] == 'rfid' %}
 	    {% set rfid = log.details.get('rfid', '') %}
 	    {% if log.message == 'success' %}
-		{{ '*' * rfid[:-3] | length + rfid[-3:] }}
+        {{ '*' * rfid[:-3] | length + rfid[-3:] }}
+      {% else %}
+		      {{ rfid }}
 	    {% endif %}
           {% elif log.details['type'] == 'web' %}
             {{ log.details.get('ip', '') }}
