@@ -1,0 +1,90 @@
+{% extends 'base/default-dashboard.html'%}
+
+{% block dashboard_title%}
+Room Application
+{% endblock %}
+
+{% block breadcrumbs %}
+<a href="{{ url_for('applications.index')}}" class="section">Application Lists</a>
+{% endblock %}
+
+{% block content %}
+
+        <div class="'ui content">
+                <div class='ui segment'>
+
+                        <div>
+                                <a class="ui primary button" href="{{ url_for('applications.apply')}}">
+                                        Create Application
+                                </a>
+                        </div>
+
+                        <table class="ui celled table">
+                                <thead>
+                                  <tr>
+                                  <th>ID Number - Name</th>
+                                  <th>Degree</th>
+                                  <th>Advisor</th>
+                                  <th>Room</th>
+                                  <th>Request Date</th>
+                                  <th>Start Date</th>      
+                                  <th>End Date</th>
+                                  <th>Purpose</th>
+                                  <th>Remark</th>
+                                  <th>Status</th>
+                                  <th>Cancel</th>
+                                </tr></thead>
+                                <tbody>
+                                        <tr>
+
+                                                {% for application in applications %}
+
+                                                <td data-label="Name">
+                                                        {{ application.user.id_card_number }} {{ application.user.first_name }} {{ application.user.last_name }} 
+                                                </td>
+                                                <td data-label="Degree">
+                                                        {{ application.degree }} 
+                                                </td>
+                                                <td data-label="Advisor">
+                                                        {{ application.advisor.first_name }} {{ application.advisor.last_name }}
+                                                </td>
+                                                <td data-label="Room">
+                                                        {{ application.room.name }}
+                                                </td>
+                                                <td data-label="Request Date">
+                                                        {{ application.created_date }}
+                                                </td>
+                                                <td data-label="Start Date">
+                                                        {{ application.started_date }}
+                                                </td>
+                                                <td data-label="End Date">
+                                                        {{ application.ended_date }}
+                                                </td>
+                                                <td data-label="Purpose">
+                                                        {{ application.purpose }}
+                                                </td >
+                                                <td data-label="Remark">
+                                                        {{ application.remark}}
+                                                </td>
+                                                <td data-label="Status">
+                                                        {{ application.status }}
+                                                </td>
+
+                                                <td>
+                                                <a class="ui red icon button" href="{{ url_for('applications.delete', application_id=application.id) }}">
+                                                        <i class="times icon"></i>
+                                                </a>
+                                        </td>
+                                        </tr>
+                                      </tbody>
+                                      <tfoot>
+                                          </div>
+                                        </th>
+                                      </tr>
+                                      {% endfor %}
+                                    </table>
+                        
+        
+
+{% endblock %}
+

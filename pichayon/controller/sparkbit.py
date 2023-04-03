@@ -216,12 +216,12 @@ class DoorController:
         )
 
         # if not user.username.isdigit():
-        #     for id in user.identities:
-        #         id_data = {f"{id.identifier}": {}}
-        #         response_data["mifareCards"][f"{id.identifier}"] = dict(
-        #             enabled=True if id.status == "active" else False,
-        #             deactivated=False,
-        #         )
+        for id in user.identities:
+            id_data = {f"{id.identifier}": {}}
+            response_data["mifareCards"][f"{id.identifier}"] = dict(
+                enabled=True if id.status == "active" else False,
+                deactivated=False,
+            )
         return response_data
 
     async def get_state(self, command):
