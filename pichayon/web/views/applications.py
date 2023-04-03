@@ -12,11 +12,11 @@ from flask import (
 
 from flask_login import login_user, logout_user, login_required, current_user
 from pichayon import models
-from .. import oauth2
 from .. import forms
 from .. import views
+from .. import acl
 
-module = Blueprint("applications", __name__, url_prefix="/application")
+module = Blueprint("applications", __name__, url_prefix="/applications")
 
 
 @module.route("/")
@@ -27,7 +27,7 @@ def index():
     return render_template("/applications/index.html", applications=applications)
 
 
-@module.route("/applications", methods=["GET", "POST"])
+@module.route("/apply", methods=["GET", "POST"])
 @login_required
 def apply():
     lecturers = models.User.objects(roles="lecturer")
@@ -51,6 +51,14 @@ def apply():
     application.save()
 
     return redirect(url_for("applications.index"))
+
+
+@module.route("/approve")
+@acl.role_required("lecturer")
+def approve():
+    user = current_user._get_current_object()
+    applications = models.Application.objects(advisor=user).order_by("-id")
+    return render_template("/applications/approve.html", applications=applications)
 
 
 @module.route("/<application_id>/cancel")

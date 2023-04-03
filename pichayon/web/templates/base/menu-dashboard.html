@@ -21,10 +21,11 @@
   <a class="item" href="{{ url_for('administration.history_logs.index') }}"><i class="history closed icon"></i>History Log</a>
   <a class="item" href="{{ url_for('administration.users.index') }}"><i class="users icon"></i>Users</a>
   
-  <a class="item" href="{{ url_for('administration.applications.index') }}"><i class="list alternate icon"></i>Applications Approval</a>
+  <a class="item" href="{{ url_for('administration.applications.index') }}"><i class="list alternate icon"></i>Admin Applications Approval</a>
 {% endif %}
 
 <a class="item" href="{{ url_for('applications.index') }}"><i class="address card icon"></i>Door Application</a>
+  <a class="item" href="{{ url_for('applications.approve') }}"><i class="list alternate icon"></i>Applications Approval</a>
 <a class="item" href="{{ url_for('accounts.logout') }}"><i class="icon sign out"></i>Logout</a>
 
 

@@ -187,7 +187,6 @@ class DoorController:
         logger.debug(f"sparkbit update {user.system_id} success")
 
     async def get_document(self, user, data):
-
         started_date = int(
             datetime.datetime.fromisoformat(data["started_date"]).timestamp() * 1000
         )
@@ -216,13 +215,13 @@ class DoorController:
             pin="",
         )
 
-        if not user.username.isdigit():
-            for id in user.identities:
-                id_data = {f"{id.identifier}": {}}
-                response_data["mifareCards"][f"{id.identifier}"] = dict(
-                    enabled=True if id.status == "active" else False,
-                    deactivated=False,
-                )
+        # if not user.username.isdigit():
+        #     for id in user.identities:
+        #         id_data = {f"{id.identifier}": {}}
+        #         response_data["mifareCards"][f"{id.identifier}"] = dict(
+        #             enabled=True if id.status == "active" else False,
+        #             deactivated=False,
+        #         )
         return response_data
 
     async def get_state(self, command):
