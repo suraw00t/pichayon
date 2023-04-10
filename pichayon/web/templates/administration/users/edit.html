@@ -5,9 +5,15 @@
 {% endblock %}
 
 {%- block breadcrumbs %}
-{{ super() }}
+  {{ super() }}
 <i class="right angle icon divider"></i>
-<div class="active section">Edit {{user.username}}</div>
+<div class="active section">
+  {% if 'edit' in request.path %}
+    Edit {{user.username}}
+  {% else %}
+    Create
+  {% endif %}
+</div>
 {%- endblock %}
 {% block content %}
 <div class="ui container" style="margin-top: 1em;">

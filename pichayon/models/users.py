@@ -3,6 +3,14 @@ import datetime
 
 from flask_login import UserMixin
 
+ROLE_CHOICES = [
+    ("admin", "Admin"),
+    ("lecturer", "Lecturer"),
+    ("supervisor", "Supervisor"),
+    ("student", "Student"),
+    ("user", "User"),
+]
+
 
 class Identity(me.EmbeddedDocument):
     identifier = me.StringField(required=True, default="")
@@ -14,17 +22,17 @@ class Identity(me.EmbeddedDocument):
 
 
 class User(me.Document, UserMixin):
-    username = me.StringField(required=True, unique=True)
-    email = me.StringField()
-    first_name = me.StringField(required=True)
-    last_name = me.StringField(required=True)
+    username = me.StringField(required=True, unique=True, max_length=256)
+    email = me.StringField(max_length=256)
+    first_name = me.StringField(required=True, max_length=256)
+    last_name = me.StringField(required=True, max_length=256)
 
-    first_name_th = me.StringField(required=True, default="")
-    last_name_th = me.StringField(required=True, default="")
+    first_name_th = me.StringField(required=True, default="", max_length=256)
+    last_name_th = me.StringField(required=True, default="", max_length=256)
 
-    system_id = me.StringField(default="", required=True)
+    system_id = me.StringField(default="", required=True, max_length=256)
 
-    id_card_number = me.StringField(required=True, default="", max_length=13)
+    id_card_number = me.StringField(default="", max_length=13)
 
     identities = me.EmbeddedDocumentListField(Identity)
 
@@ -35,7 +43,7 @@ class User(me.Document, UserMixin):
 
     profile_image = me.FileField()
 
-    status = me.StringField(required=True, default="disactive")
+    status = me.StringField(required=True, default="active", max_length=100)
 
     roles = me.ListField(me.StringField(), default=["user"])
 

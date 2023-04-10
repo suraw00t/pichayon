@@ -45,7 +45,6 @@ def list(user_group_id):
 @module.route("/<user_group_id>/adduser", methods=["GET", "POST"])
 @acl.role_required("admin")
 def add(user_group_id):
-
     group = models.UserGroup.objects.get(id=user_group_id)
     users = models.User.objects(status="active")
     form = AddingUserForm()
@@ -57,7 +56,7 @@ def add(user_group_id):
     form.username.choices = choices
     if not form.validate_on_submit():
         return render_template(
-            "administration/users/adding_user.html", form=form, group=group
+            "administration/users/adding-user.html", form=form, group=group
         )
     for username in form.username.data:
         user = models.User.objects.get(username=username)
@@ -92,7 +91,7 @@ def add_role(user_group_id):
     if not form.validate_on_submit():
         form.role.data = selected_member.role
         return render_template(
-            "administration/users/add_role.html", group=group, form=form
+            "administration/users/add-role.html", group=group, form=form
         )
     user_group = models.UserGroupMember.objects.get(user=user, group=group)
     user_group.role = form.role.data
@@ -119,22 +118,32 @@ def delete(group_id):
     return redirect(url_for("administration.users.list", group_id=group_id))
 
 
-@module.route("/<user_id>/edit", methods=["GET", "POST"])
+@module.route("/add", methods=["POST", "GET"], defaults={"user_id": None})
+@module.route("/<user_id>/edit", methods=["POST", "GET"])
 @acl.role_required("admin")
-def edit(user_id):
-    user = models.User.objects.get(id=user_id)
-    form = EditForm(obj=user)
-    form.roles.choices = [
-        ("admin", "Admin"),
-        ("lecturer", "Lecturer"),
-        ("supervisor", "Supervisor"),
-        ("student", "Student"),
-        ("user", "User"),
-    ]
+def add_or_edit(user_id):
+    form = forms.admin.users.UserForm()
+    user = None
+    if user_id:
+        user = models.User.objects(id=user_id).first()
+        form = forms.admin.users.UserForm(obj=user)
+
+    form.roles.choices = models.users.ROLE_CHOICES
+
     if not form.validate_on_submit():
-        return render_template("administration/users/edit.html", form=form, user=user)
-    user.roles = form.roles.data
+        return render_template(
+            "/administration/users/add-or-edit.html",
+            user=user,
+            form=form,
+        )
+
+    if not user:
+        user = models.User()
+
+    form.populate_obj(user)
+
     user.save()
+
     return redirect(url_for("administration.users.index"))
 
 

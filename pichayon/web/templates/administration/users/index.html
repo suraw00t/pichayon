@@ -15,7 +15,10 @@
 {%- endblock %}
 
 {% block content %}
-  <div style="margin-top: 1em;">
+  <div style="margin: 1em 0 1em 0;" class="right aligned message">
+    <a class="ui primary icon button" href="{{ url_for('administration.users.add_or_edit') }}"><i class="add icon"></i> Add</a>
+  </div>
+  <div>
   {% if users and users | count > 0 %}
   <table class="ui selectable celled table">
     <thead>
@@ -65,7 +68,7 @@
       </td>
       #}
       <td>
-        <a href="{{url_for('administration.users.edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
+        <a href="{{url_for('administration.users.add_or_edit', user_id=user.id)}}"><i class="circular inverted edit icon"></i></a>
         <a href="{{url_for('administration.users.identity', user_id=user.id)}}"><i class="circular inverted id card icon"></i></a>
       </td>
     </tr>

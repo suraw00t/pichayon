@@ -3,7 +3,11 @@ from wtforms import fields
 from wtforms import validators
 from wtforms import widgets
 from flask_wtf import FlaskForm
+from flask_mongoengine.wtf import model_form
 from io import StringIO
+
+from pichayon import models
+from ..fields import TagListField
 
 
 class MultiCheckboxField(fields.SelectMultipleField):
@@ -20,11 +24,40 @@ class AddRoleUserForm(FlaskForm):
     role = fields.SelectMultipleField("Role")
 
 
-class UserForm(FlaskForm):
-    username = fields.StringField(
-        "Username", validators=[validators.InputRequired(), validators.Length(min=3)]
-    )
-    # rooms = MultiCheckboxField('Rooms')
+# class UserForm(FlaskForm):
+#     username = fields.StringField(
+#         "Username", validators=[validators.InputRequired(), validators.Length(min=3)]
+#     )
+# rooms = MultiCheckboxField('Rooms')
+
+BaseUserForm = model_form(
+    models.User,
+    FlaskForm,
+    exclude=[
+        "created_date",
+        "updated_date",
+        "last_login_date",
+        "roles",
+        "resources",
+        "identities",
+        "gave_informations",
+    ],
+    field_args={
+        "first_name": {"label": "First Name"},
+        "last_name": {"label": "Last Name"},
+        "first_name_th": {"label": "Thai First Name"},
+        "last_name_th": {"label": "Thai Last Name"},
+        "system_id": {"label": "Systen ID"},
+        "email": {"label": "Email"},
+        "username": {"label": "Username"},
+        "status": {"label": "Status"},
+        "id_card_number": {"label": "Citizen ID"},
+    },
+)
+
+
+class UserForm(BaseUserForm):
+    roles = TagListField("Roles", default=["user"])
 
 
 class AddingRoomForm(FlaskForm):
