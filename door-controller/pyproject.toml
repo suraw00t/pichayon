@@ -7,7 +7,7 @@ readme = "../README.md"
 packages = [{include = "pichayon", from = ".."}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 wheel = "^0.40.0"
 nats-py = "^2.3.1"
 rpi-gpio = "^0.7.1"
