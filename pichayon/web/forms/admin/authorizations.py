@@ -32,9 +32,11 @@ class AuthorityForm(FlaskForm):
         "Start Time",
         format="%H:%M",
         widget=widgets.TextInput(),
+        validators=[validators.Optional()],
     )
     end_time = fields.TimeField(
         "End Time",
         format="%H:%M",
         widget=widgets.TextInput(),
+        validators=[validators.Optional()],
     )

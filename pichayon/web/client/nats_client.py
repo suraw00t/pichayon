@@ -43,11 +43,14 @@ class NatsClient:
     def init_app(self, app):
         self.app = app
 
-        @app.before_first_request
-        def init_nats_client():
-            print("init nats client")
+        with app.app_context():
             self.init_nats(self.app)
-            print("end init nats client")
+
+        # @app.before_first_request
+        # def init_nats_client():
+        #     print("init nats client")
+        #     self.init_nats(self.app)
+        #     print("end init nats client")
 
     def stop(self):
         if self.nc:

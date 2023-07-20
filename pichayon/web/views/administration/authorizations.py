@@ -77,8 +77,13 @@ def add_or_edit(auth_id):
     start_time = form.start_time.data
     end_time = form.end_time.data
 
-    rrule.start_time = [start_time.hour, start_time.minute]
-    rrule.end_time = [start_time.hour, start_time.minute]
+    rrule.start_time = None
+    if start_time:
+        rrule.start_time = [start_time.hour, start_time.minute]
+
+    end_time = None
+    if end_time:
+        rrule.end_time = [start_time.hour, start_time.minute]
 
     user_group = models.UserGroup.objects.get(id=form.user_group.data)
     door_group = models.DoorGroup.objects.get(id=form.door_group.data)
