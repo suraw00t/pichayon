@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "pichayon-door-controller"
+version = "0.1.0"
+description = ""
+authors = ["Thanathip Limna <boatkrap@gmail.com>"]
+readme = "../README.md"
+packages = [{include = "pichayon", from = ".."}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+wheel = "^0.40.0"
+nats-py = "^2.3.1"
+rpi-gpio = "^0.7.1"
+pi-rc522 = "^2.2.1"
+tinydb = "^4.8.0"
+tinydb-serialization = "^2.1.0"
+pyserial-asyncio = "^0.6"
+flask = "^2.3.2"
+setuptools-rust = "^1.6.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+pichayon-door-controller = 'pichayon.cmd.door_controller:main'
+
+
