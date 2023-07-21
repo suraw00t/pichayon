@@ -62,6 +62,14 @@ class DoorControllerServer:
         await self.request_initial_authorization()
 
         logger.debug("start process controller command")
+        commands = {
+            "initial": self.db_manager.initial_data,
+            "add-user": self.db_manager.add_user,
+            "delete-user": self.db_manager.delete_user,
+            "update-user": self.db_manager.update_user,
+            "update-door-information": self.device.update_information,
+        }
+
         while self.running:
             data = await self.controller_command_queue.get()
 
@@ -88,14 +96,10 @@ class DoorControllerServer:
                         user, type="web", action="open-door", message="denied"
                     )
                     logger.debug(f"user not allow")
-            elif data["action"] == "initial":
-                await self.db_manager.initial_data(data)
-            elif data["action"] == "add-user":
-                await self.db_manager.add_user(data)
-            elif data["action"] == "delete-user":
-                await self.db_manager.delete_user(data)
-            elif data["action"] == "update-user":
-                await self.db_manager.update_user(data)
+            elif data["action"] in commands:
+                await commandsp[data["action"]](data)
+            else:
+                logger.debug(f"command: {data['action']} not found")
 
             await asyncio.sleep(0.01)
 

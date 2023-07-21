@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, g
 
 from pichayon import models
-from pichayon.web import acl
+from pichayon.web import acl, pichayon_client
 from pichayon.web.forms.admin import DoorForm, DoorGroupForm
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -45,6 +45,8 @@ def create_or_edit(door_id):
         door.creator = current_user._get_current_object()
 
     form.populate_obj(door)
+    door.updater = current_user._get_current_object()
+    door.updated_date = datetime.datetime.now()
 
     # if form.have_passcode.data:
     # door /.passcode = generate_passcode()
@@ -77,6 +79,14 @@ def create_or_edit(door_id):
         sparkbit_system = models.SparkbitDoorSystem.objects(door=door).first()
         if sparkbit_system:
             sparkbit_system.delete()
+
+    if door.device_type == "pichayon" and "edit" in request.path:
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+        pichayon_client.pichayon_client.update_door_information(
+            door,
+            current_user,
+            ip=ip,
+        )
 
     # door_group.members.append(door)
     # door_group.save()

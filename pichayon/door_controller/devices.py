@@ -36,6 +36,9 @@ class Device:
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
         self.rfid = self.get_reader_device(self.reader_name)
 
+        self.is_auto_relock = True
+        self.force_unlock = False
+
     def get_reader_device(self, name):
         if name == "ASR1200E":
             return asr1200e.WiegandReader()
@@ -64,7 +67,18 @@ class Device:
 
         return self.device_id
 
+    async def update_information(self, data):
+        self.is_auto_relock = data.get("is_auto_relock", True)
+        if self.is_auto_relock:
+            self.force_unlock = False
+
     async def open_door(self):
+        if not self.is_auto_relock and self.force_unlock:
+            logger.debug(
+                f"auto relock status {self.is_auto_relock} and force unlock {self.force_unlock}"
+            )
+            return
+
         current_date = datetime.datetime.now()
         diff = current_date - self.last_opened_date
         open_door_duration = 3
@@ -85,7 +99,7 @@ class Device:
         # lock door
         await beeb_task
 
-    async def unlock_dock(self):
+    async def unlock_door(self):
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.LOW)
         else:
@@ -99,6 +113,19 @@ class Device:
 
     async def unlock_door_until(self):
         logger.debug(f"unlock door until")
+
+        if self.is_auto_relock:
+            logger.debug(f"auto_relock is on")
+            return
+
+        if not self.force_unlock:
+            logger.debug(f"force unlock is on")
+            await self.unlock_door()
+            self.force_unlock = True
+        else:
+            logger.debug(f"force unlock is off")
+            await self.lock_door()
+            self.force_unlock = False
 
     async def deny_access(self):
         logger.debug("Denied Access")

@@ -49,9 +49,18 @@ class PichayonClient:
     #     }
 
     #     return self.message_client.request(self.topic, data)
+    def update_door_information(self, door, user, ip):
+        data = {
+            "action": "update-door-information",
+            "user_id": str(user.id),
+            "door_id": str(door.id),
+            "ip": ip,
+        }
+
+        topic = self.get_topic()
+        return self.message_client.publish(topic, data)
 
     def update_member(self, user):
-
         data = {
             "action": "update-member",
             "user_id": str(user.id),

@@ -228,7 +228,6 @@ class DoorManager:
         data = dict(id=data["user_id"])
         for auth_group in auth_groups:
             for door in auth_group.door_group.doors:
-
                 command = dict(
                     action="delete-user",
                     user=data,
@@ -258,7 +257,6 @@ class DoorManager:
         for user_group in user_groups:
             for auth_group in user_group.get_group_authorizations():
                 for door in auth_group.door_group.doors:
-
                     if door not in doors:
                         doors.append(door)
                     else:
@@ -287,3 +285,27 @@ class DoorManager:
 
     async def delete_authorization(self, data):
         print("act delete authorization", data)
+
+    async def update_door_information(self, data):
+        door = models.Door.objects.get(id=data["door_id"])
+        user = models.User.objects.get(id=data["user_id"])
+
+        if not door.device_id:
+            logger.debug("Device ID Not Found")
+            return
+
+        command = dict(
+            device_id=door.device_id,
+            user_id=data.get("user_id"),
+            action="update_door_information",
+            ip=data.get("ip"),
+            is_auto_relock=door.is_auto_relock,
+        )
+
+        topic = f"pichayon.door_controller.{door.device_id}"
+        try:
+            await self.nc.publish(topic, json.dumps(command).encode())
+        except Exception as e:
+            logger.exception(e)
+
+        logger.debug("Send Success")

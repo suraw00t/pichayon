@@ -72,6 +72,7 @@ class ControllerServer:
         if door:
             response["status"] = "registed"
             response["door_id"] = str(door.id)
+            response["is_auto_relock"] = door.is_auto_relock
             response["completed_date"] = datetime.datetime.now().isoformat()
             door.device_updated_date = datetime.datetime.now()
             door.save()
@@ -88,7 +89,6 @@ class ControllerServer:
         await self.door_manager.process_door_controller_log(msg)
 
     async def update_data_to_door_controller(self):
-
         while self.running:
             logger.debug("start update data")
             doors = models.Door.objects(status="active", device_type="pichayon")
@@ -127,6 +127,18 @@ class ControllerServer:
             #                     json.dumps(response).encode())
             #     logger.debug('update Success')
             #     continue
+
+            commands = {
+                "open-door": self.door_manager.open,
+                "add-member-to-group": self.door_manager.add_member_to_group,
+                "delete-member-from-group": self.door_manager.add_member_to_group,
+                "update-member": self.door_manager.update_member,
+                "get-door-state": self.door_manager.get_state,
+                "update-authorization": self.door_manager.update_authorization,
+                "delete-authorization": self.door_manager.delete_authorization,
+                "update-door-information": self.door_manager.update_door_information,
+            }
+
             if data["action"] == "request_initial_data":
                 logger.debug("got request_initial_data")
                 door = models.Door.objects(device_id=data["device_id"]).first()
@@ -142,39 +154,9 @@ class ControllerServer:
                     topic,
                     json.dumps(response).encode(),
                 )
-            elif data["action"] == "open-door":
+            elif data["action"] in commands:
                 try:
-                    await self.door_manager.open(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "add-member-to-group":
-                try:
-                    await self.door_manager.add_member_to_group(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "delete-member-from-group":
-                try:
-                    await self.door_manager.delete_member_from_group(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "update-member":
-                try:
-                    await self.door_manager.update_member(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "get-door-state":
-                try:
-                    await self.door_manager.get_state(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "update-authorization":
-                try:
-                    await self.door_manager.update_authorization(data)
-                except Exception as e:
-                    logger.exception(e)
-            elif data["action"] == "delete-authorization":
-                try:
-                    await self.door_manager.delete_authorization(data)
+                    await commands[data["action"]](data)
                 except Exception as e:
                     logger.exception(e)
             else:

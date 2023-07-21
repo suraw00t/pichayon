@@ -13,9 +13,9 @@ BaseDoorForm = model_form(
         "created_date",
         "updated_date",
         "creator",
+        "updater",
         "camera_url",
         "is_passcode",
-        "is_web_open",
         "status",
     ],
     field_args={
@@ -29,7 +29,8 @@ BaseDoorForm = model_form(
 
 class DoorForm(BaseDoorForm):
     device_type = fields.SelectField("Device Type")
-    is_web_open = fields.BooleanField("Web Open", default=False)
+    is_web_open = fields.BooleanField("Allow web open", default=False)
+    is_auto_relock = fields.BooleanField("Allow auto relock", default=True)
 
 
 # class DoorForm(FlaskForm):

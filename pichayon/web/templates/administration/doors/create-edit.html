@@ -45,9 +45,7 @@
   #}
   <div class="two fields">
     {{ renderer.render_checkbox(form.is_web_open) }}
-    {#
-    {{ renderer.render_checkbox(form.have_passcode) }}
-    #}
+    {{ renderer.render_checkbox(form.is_auto_relock) }}
   </div>
 
   {% if device_id_error == 'True' %}

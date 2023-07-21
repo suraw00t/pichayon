@@ -12,6 +12,7 @@ class Door(me.Document):
     creator = me.ReferenceField("User", dbref=True)
     is_web_open = me.BooleanField(default=False, required=True)
     is_passcode = me.BooleanField(default=False, required=True)
+    is_auto_relock = me.BooleanField(default=True, required=True)
 
     status = me.StringField(required=True, default="active")
 
