@@ -10,9 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self, settings):
+    def __init__(self, settings, ):
         self.settings = settings
         self.device_id = "0000000000000000"
+        self.door_id = None
+        self.log_manager = None
 
         self.door_closed_pin = 15
         self.switch_pin = 16
@@ -26,18 +28,14 @@ class Device:
         GPIO.setup(self.switch_pin, GPIO.IN)
         GPIO.setup(self.door_closed_pin, GPIO.IN)
 
-        if self.is_relay_active_high:
-            GPIO.output(self.relay_pin, GPIO.HIGH)
-        else:
-            GPIO.output(self.relay_pin, GPIO.LOW)
-
         self.last_opened_date = datetime.datetime.now()
 
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
         self.rfid = self.get_reader_device(self.reader_name)
 
         self.is_auto_relock = True
-        self.force_unlock = False
+        self.is_force_unlock = False
+
 
     def get_reader_device(self, name):
         if name == "ASR1200E":
@@ -49,7 +47,11 @@ class Device:
 
         return None
 
+    async def set_log_manager(self, log_manager):
+        self.log_manager = log_manager
+
     async def initial(self):
+        await self.lock_door()
         await self.rfid.connect()
 
     def get_device_id(self):
@@ -69,19 +71,24 @@ class Device:
 
     async def update_information(self, data):
         self.is_auto_relock = data.get("is_auto_relock", True)
+        self.door_id = data.get("door_id", '')
         if self.is_auto_relock:
-            self.force_unlock = False
+            self.is_force_unlock = False
+            await self.lock_door()
+
+        logger.debug(f'auto_relock status -> {self.is_auto_relock}')
+        logger.debug(f'force_unlock status -> {self.is_force_unlock}')
 
     async def open_door(self):
-        if not self.is_auto_relock and self.force_unlock:
+        if not self.is_auto_relock and self.is_force_unlock:
             logger.debug(
-                f"auto relock status {self.is_auto_relock} and force unlock {self.force_unlock}"
+                f"auto relock status {self.is_auto_relock} and force unlock {self.is_force_unlock}"
             )
             return
 
         current_date = datetime.datetime.now()
         diff = current_date - self.last_opened_date
-        open_door_duration = 3
+        open_door_duration = 5
         # print(f'--> {diff}')
         if diff.seconds < open_door_duration:
             logger.debug(f"Last opened date less than {open_door_duration} seconds")
@@ -96,36 +103,46 @@ class Device:
         await asyncio.sleep(open_door_duration)
         await self.lock_door()
 
-        # lock door
         await beeb_task
 
     async def unlock_door(self):
+        logger.debug("unlock door")
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.LOW)
         else:
             GPIO.output(self.relay_pin, GPIO.HIGH)
 
-    async def lock_dock(self):
+    async def lock_door(self):
+        logger.debug("lock door")
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.HIGH)
         else:
             GPIO.output(self.relay_pin, GPIO.LOW)
 
-    async def unlock_door_until(self):
+    async def force_unlock(self):
         logger.debug(f"unlock door until")
 
         if self.is_auto_relock:
-            logger.debug(f"auto_relock is on")
+            logger.debug(f"auto_relock is on force unlock is disable")
             return
 
-        if not self.force_unlock:
+        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.2))
+        if not self.is_force_unlock:
             logger.debug(f"force unlock is on")
             await self.unlock_door()
-            self.force_unlock = True
+            await self.put_log(None, type="switch", action="force-unlock")
+            self.is_force_unlock = True
         else:
             logger.debug(f"force unlock is off")
             await self.lock_door()
-            self.force_unlock = False
+            await self.put_log(None, type="switch", action="relock")
+            self.is_force_unlock = False
+        await beeb_task
+
+    async def put_log(self, user, type="switch", action=""):
+        if self.log_manager:
+            await self.log_manager.put_log(user, type=type, action=action)
+
 
     async def deny_access(self):
         logger.debug("Denied Access")

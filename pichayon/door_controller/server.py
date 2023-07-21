@@ -26,16 +26,21 @@ class DoorControllerServer:
         self.controller_command_queue = asyncio.Queue()
         self.rfid_queue = asyncio.Queue()
 
+
         self.device = devices.Device(self.settings)
         self.device_id = self.device.get_device_id()
-        # self.keypad = keypad.Keypad()
-        # self.passcode = ''
         self.db_manager = database.Manager(self.settings, self.device_id)
 
         self.log_manager = logs.LogManager(
             self.db_manager,
             self.device_id,
         )
+
+
+
+
+        # self.keypad = keypad.Keypad()
+        # self.passcode = ''
 
         self.running = False
 
@@ -67,7 +72,7 @@ class DoorControllerServer:
             "add-user": self.db_manager.add_user,
             "delete-user": self.db_manager.delete_user,
             "update-user": self.db_manager.update_user,
-            "update-door-information": self.device.update_information,
+            "update_door_information": self.device.update_information,
         }
 
         while self.running:
@@ -97,7 +102,7 @@ class DoorControllerServer:
                     )
                     logger.debug(f"user not allow")
             elif data["action"] in commands:
-                await commandsp[data["action"]](data)
+                await commands[data["action"]](data)
             else:
                 logger.debug(f"command: {data['action']} not found")
 
@@ -196,18 +201,17 @@ class DoorControllerServer:
             is_open = await self.device.is_turn_on_switch()
             if is_open:
                 logger.debug(f"Listen switch {is_open}")
-                await self.log_manager.put_log(None, type="switch", action="open-door")
-                await self.device.open_door()
-                await asyncio.sleep(0.1)
-
                 counter = 0
-                for i in range(3):
-                    if await self.device.is_turn_on_switch():
-                        counter += 1
+                while await self.device.is_turn_on_switch():
+                    counter += 1
                     await asyncio.sleep(0.1)
 
-                if counter >= 3:
-                    await self.device.unlock_door_until()
+                if counter < 10:
+                    await self.log_manager.put_log(None, type="switch", action="open-door")
+                    await self.device.open_door()
+                    await asyncio.sleep(0.1)
+                else:
+                    await self.device.force_unlock()
 
             await asyncio.sleep(0.1)
 
@@ -261,7 +265,7 @@ class DoorControllerServer:
                     and data["status"] == "registed"
                 ):
                     self.is_register = True
-                    self.door_id = data["door_id"]
+                    await self.device.update_information(data.get('door', {}))
 
                     self.cc_id = await self.nc.subscribe(
                         f"pichayon.door_controller.{self.device_id}",
@@ -295,6 +299,7 @@ class DoorControllerServer:
         )
 
         await self.log_manager.set_message_client(self.nc)
+        await self.device.set_log_manager(self.log_manager)
         logger.debug("setup success")
 
     def run(self):
