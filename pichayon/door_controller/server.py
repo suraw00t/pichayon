@@ -58,7 +58,6 @@ class DoorControllerServer:
         )
 
     async def process_controller_command(self):
-
         logger.debug("initial authorization")
         await self.request_initial_authorization()
 
@@ -146,7 +145,6 @@ class DoorControllerServer:
 
     async def process_rfid(self):
         while self.running:
-
             # logger.debug(f'while in process{type(rfid_number)}')
             # rfid_number = self.rfid.get_id()
             if self.rfid_queue.empty():
@@ -196,7 +194,17 @@ class DoorControllerServer:
                 logger.debug(f"Listen switch {is_open}")
                 await self.log_manager.put_log(None, type="switch", action="open-door")
                 await self.device.open_door()
-                await asyncio.sleep(0.3)
+                await asyncio.sleep(0.1)
+
+                counter = 0
+                for i in range(3):
+                    if await self.device.is_turn_on_switch():
+                        counter += 1
+                    await asyncio.sleep(0.1)
+
+                if counter >= 3:
+                    await self.device.unlock_door_until()
+
             await asyncio.sleep(0.1)
 
     async def listen_door_closed(self):

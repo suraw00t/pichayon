@@ -78,19 +78,27 @@ class Device:
 
         self.last_opened_date = current_date
 
-        if self.is_relay_active_high:
-            GPIO.output(self.relay_pin, GPIO.LOW)
-        else:
-            GPIO.output(self.relay_pin, GPIO.HIGH)
-
+        await self.unlock_door()
         await asyncio.sleep(open_door_duration)
+        await self.lock_door()
 
+        # lock door
+        await beeb_task
+
+    async def unlock_dock(self):
+        if self.is_relay_active_high:
+            GPIO.output(self.relay_pin, GPIO.LOW)
+        else:
+            GPIO.output(self.relay_pin, GPIO.HIGH)
+
+    async def lock_dock(self):
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.HIGH)
         else:
             GPIO.output(self.relay_pin, GPIO.LOW)
 
-        await beeb_task
+    async def unlock_door_until(self):
+        logger.debug(f"unlock door until")
 
     async def deny_access(self):
         logger.debug("Denied Access")

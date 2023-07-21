@@ -11,7 +11,7 @@ SyslogIdentifier='pichayon-door'
 User=pcy
 Group=pcy
 Restart=always
-Environment="PICHAYON_SETTINGS=pichayon.cfg"
+Environment="PICHAYON_SETTINGS=pichayon-door.cfg"
 
 
 [Install]
