@@ -39,7 +39,7 @@
         <th>Device ID</th>
         <th>Groups</th>
         <th>Updated Date</th>
-        <th class="ui single line">Operation</th>
+        <th>Operation</th>
       </tr>
     </thead>
 
@@ -55,7 +55,7 @@
             {% endfor %}
           </td>
           <td>{{ door.updated_date.ctime() }}</td>
-          <td>
+          <td class="ui single line">
           
           <a href="{{ url_for('administration.history_logs.door_logs', door_id=door.id) }}"><i class="circular inverted blue history icon"></i></a>
           <a href="{{ url_for('administration.doors.create_or_edit', door_id=door.id) }}"><i class="circular inverted edit icon"></i></a>

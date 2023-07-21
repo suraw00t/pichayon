@@ -28,7 +28,10 @@ class DoorManager:
         data = msg.data.decode()
 
         data = json.loads(data)
+
+        device_id = data["device_id"]
         logger.debug(f"door manager process -> {data}")
+
         if data["action"] == "register":
             # logger.debug('before res')
             logger.debug(f'client {data["device_id"]} is registering')
@@ -38,12 +41,17 @@ class DoorManager:
             response = data
             if door:
                 response["status"] = "registed"
-                registed["completed_date"] = datetime.datetime.now()
-                door.device_updated_date = datetime.datetime.now()
+                response["completed_date"] = datetime.datetime.now().isoformat()
+                response["door"] = dict(
+                    is_auto_relock=door.is_auto_relock, door_id=str(door.id)
+                )
+
+                door.device_updated_date = datetime.datetime.now().isoformat()
                 door.save()
             else:
                 response["status"] = "rejected"
 
+            logger.debug(f"xxx ---> {response}")
             await self.nc.publish(reply, json.dumps(response).encode())
             logger.debug("client {} is registed".format(data["device_id"]))
 
@@ -128,7 +136,7 @@ class DoorManager:
 
         logger.debug("Send Success")
 
-    async def process_door_controller_log(self, msg):
+    async def handle_door_controller_log(self, msg):
         subject = msg.subject
         reply = msg.reply
         data = msg.data.decode()

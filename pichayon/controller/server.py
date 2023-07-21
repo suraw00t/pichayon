@@ -54,40 +54,6 @@ class ControllerServer:
 
         await self.command_queue.put(data)
 
-    async def handle_door_controller_greeting(self, msg):
-        subject = msg.subject
-        reply = msg.reply
-        data = msg.data.decode()
-
-        data = json.loads(data)
-        if data["action"] != "register":
-            return
-
-        # logger.debug('before res')
-        logger.debug(f'client {data["device_id"]} is registering')
-        # response = await self.data_resource.get_authorization_data(data['device_id'])
-        # logger.debug('after res')
-        door = models.Door.objects(device_id=data["device_id"]).first()
-        response = data
-        if door:
-            response["status"] = "registed"
-            response["door_id"] = str(door.id)
-            response["is_auto_relock"] = door.is_auto_relock
-            response["completed_date"] = datetime.datetime.now().isoformat()
-            door.device_updated_date = datetime.datetime.now()
-            door.save()
-        else:
-            response["status"] = "rejected"
-
-        await self.nc.publish(
-            reply,
-            json.dumps(response).encode(),
-        )
-        logger.debug("client {} is registed".format(data["device_id"]))
-
-    async def handle_door_controller_log(self, msg):
-        await self.door_manager.process_door_controller_log(msg)
-
     async def update_data_to_door_controller(self):
         while self.running:
             logger.debug("start update data")
@@ -186,10 +152,10 @@ class ControllerServer:
         logger.debug("OK")
 
         nc_id = await self.nc.subscribe(
-            greeting_topic, cb=self.handle_door_controller_greeting
+            greeting_topic, cb=self.door_manager.handle_door_controller_greeting
         )
         log_id = await self.nc.subscribe(
-            logging_topic, cb=self.handle_door_controller_log
+            logging_topic, cb=self.door_manager.handle_door_controller_log
         )
         cc_id = await self.nc.subscribe(command_topic, cb=self.handle_command)
         if self.sparkbit_enable:
