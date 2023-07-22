@@ -9,6 +9,9 @@ else
     echo "python virtual env found"
 fi
 
+echo "install package"
+sudo apt install -y rustc libssl-dev libffi-dev
+
 export PYTHON=$(pwd)/venv/bin/python
 
 echo "install poetry"
@@ -19,9 +22,6 @@ cd door-controller
 $PYTHON -m poetry install
 cd ..
 
-
-echo "install package"
-sudo apt install -y rustc libssl-dev libffi-dev
 
 echo "copy service file"
 sudo cp scripts/pichayon-door.service /lib/systemd/system
