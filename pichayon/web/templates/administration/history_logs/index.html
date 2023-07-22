@@ -51,14 +51,16 @@
             <i class="door closed red icon"></i>
           {% elif log.action in ['open-door', 'force-unlock'] %}
             <i class="door open green icon"></i>
-            {% if log.details['type'] == 'rfid' %}
-              <i class="id badge blue icon"></i>
-            {% elif log.details['type'] == 'web' %}
-              <i class="globe blue icon"></i>
-            {% elif log.details['type'] == 'switch' %}
-              <i class="hand point up blue icon"></i>
-            {% endif %}
           {% endif %}
+
+          {% if log.details['type'] == 'rfid' %}
+            <i class="id badge blue icon"></i>
+          {% elif log.details['type'] == 'web' %}
+            <i class="globe blue icon"></i>
+          {% elif log.details['type'] == 'switch' %}
+            <i class="hand point up blue icon"></i>
+          {% endif %}
+
         </td>
         <td>
           {% if log.details['type'] == 'rfid' %}
