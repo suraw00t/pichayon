@@ -47,7 +47,9 @@
             <i class="pen blue icon"></i>
           {% elif 'create' == log.action %}
             <i class="add green icon"></i>
-          {% elif log.action == 'open-door' %}
+          {% elif 'relock' == log.action %}
+            <i class="door closed red icon"></i>
+          {% elif log.action in ['open-door', 'force-unlock'] %}
             <i class="door open green icon"></i>
             {% if log.details['type'] == 'rfid' %}
               <i class="id badge blue icon"></i>
