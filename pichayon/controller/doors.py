@@ -51,7 +51,7 @@ class DoorManager:
             else:
                 response["status"] = "rejected"
 
-            logger.debug(f"xxx ---> {response}")
+            # logger.debug(f"xxx ---> {response}")
             await self.nc.publish(reply, json.dumps(response).encode())
             logger.debug("client {} is registed".format(data["device_id"]))
 
