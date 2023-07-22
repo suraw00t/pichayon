@@ -40,16 +40,19 @@ def add_or_edit(auth_id):
     if group_auth and request.method == "GET":
         form.door_group.data = str(group_auth.door_group.id)
         form.user_group.data = str(group_auth.user_group.id)
-        form.start_time.data = datetime.time(
-            group_auth.rrule.start_time[0],
-            group_auth.rrule.start_time[1],
-            group_auth.rrule.start_time[2],
-        )
-        form.end_time.data = datetime.time(
-            group_auth.rrule.end_time[0],
-            group_auth.rrule.end_time[1],
-            group_auth.rrule.end_time[2],
-        )
+
+        if group_auth.rrule.start_time:
+            form.start_time.data = datetime.time(
+                group_auth.rrule.start_time[0],
+                group_auth.rrule.start_time[1],
+                group_auth.rrule.start_time[2],
+            )
+        if group_auth.rrule.end_time:
+            form.end_time.data = datetime.time(
+                group_auth.rrule.end_time[0],
+                group_auth.rrule.end_time[1],
+                group_auth.rrule.end_time[2],
+            )
         form.days.data = group_auth.rrule.days
 
     form.door_group.choices = sorted(
