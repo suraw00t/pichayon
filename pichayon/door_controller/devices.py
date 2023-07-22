@@ -10,7 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class Device:
-    def __init__(self, settings, ):
+    def __init__(
+        self,
+        settings,
+    ):
         self.settings = settings
         self.device_id = "0000000000000000"
         self.door_id = None
@@ -35,7 +38,6 @@ class Device:
 
         self.is_auto_relock = True
         self.is_force_unlock = False
-
 
     def get_reader_device(self, name):
         if name == "ASR1200E":
@@ -71,13 +73,13 @@ class Device:
 
     async def update_information(self, data):
         self.is_auto_relock = data.get("is_auto_relock", True)
-        self.door_id = data.get("door_id", '')
+        self.door_id = data.get("door_id", "")
         if self.is_auto_relock:
             self.is_force_unlock = False
             await self.lock_door()
 
-        logger.debug(f'auto_relock status -> {self.is_auto_relock}')
-        logger.debug(f'force_unlock status -> {self.is_force_unlock}')
+        logger.debug(f"auto_relock status -> {self.is_auto_relock}")
+        logger.debug(f"force_unlock status -> {self.is_force_unlock}")
 
     async def open_door(self):
         if not self.is_auto_relock and self.is_force_unlock:
@@ -143,10 +145,17 @@ class Device:
         if self.log_manager:
             await self.log_manager.put_log(user, type=type, action=action)
 
-
     async def deny_access(self):
         logger.debug("Denied Access")
         beeb_task = asyncio.create_task(self.rfid.play_denied_action(0.1))
+        await beeb_task
+
+    async def play_deny_access_sound(self, duration=0.1):
+        beeb_task = asyncio.create_task(self.rfid.play_denied_action(duration))
+        await beeb_task
+
+    async def play_success_access_sound(self, duration=0.1):
+        beeb_task = asyncio.create_task(self.rfid.play_success_action(duration))
         await beeb_task
 
     async def is_turn_on_switch(self):
