@@ -92,11 +92,12 @@ class DoorControllerServer:
                     )
                     await self.device.open_door()
                 else:
-                    await self.device.denied_access()
+                    await self.device.play_denied_access_sound()
                     await self.log_manager.put_log(
                         user, type="web", action="open-door", message="denied"
                     )
                     logger.debug(f"user not allow")
+
             elif data["action"] in commands:
                 await commands[data["action"]](data)
             else:
@@ -168,7 +169,7 @@ class DoorControllerServer:
                 if user:
                     await self.device.open_door()
                 else:
-                    await self.device.deny_access()
+                    await self.device.play_denied_access_sound()
                     message = "denied"
                     logger.debug(f"There are no user rfid {rfid_number}")
 
@@ -204,9 +205,9 @@ class DoorControllerServer:
                     await asyncio.sleep(0.1)
 
                     if counter == force_unlock_max_counter:
-                        self.device.play_success_sound(0.2)
+                        await self.device.play_success_access_sound(0.2)
 
-                print("got counter:", counter)
+                # print("got counter:", counter)
                 if counter < force_unlock_max_counter:
                     await self.log_manager.put_log(
                         None, type="switch", action="open-door"

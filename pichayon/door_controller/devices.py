@@ -108,14 +108,14 @@ class Device:
         await beeb_task
 
     async def unlock_door(self):
-        logger.debug("unlock door")
+        # logger.debug("unlock door")
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.LOW)
         else:
             GPIO.output(self.relay_pin, GPIO.HIGH)
 
     async def lock_door(self):
-        logger.debug("lock door")
+        # logger.debug("lock door")
         if self.is_relay_active_high:
             GPIO.output(self.relay_pin, GPIO.HIGH)
         else:
@@ -145,12 +145,7 @@ class Device:
         if self.log_manager:
             await self.log_manager.put_log(user, type=type, action=action)
 
-    async def deny_access(self):
-        logger.debug("Denied Access")
-        beeb_task = asyncio.create_task(self.rfid.play_denied_action(0.1))
-        await beeb_task
-
-    async def play_deny_access_sound(self, duration=0.1):
+    async def play_denied_access_sound(self, duration=0.1):
         beeb_task = asyncio.create_task(self.rfid.play_denied_action(duration))
         await beeb_task
 
