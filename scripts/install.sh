@@ -13,6 +13,8 @@ fi
 echo "install package"
 sudo apt install -y rustc libssl-dev libffi-dev
 
+export CFLAGS="-fcommon"
+
 source $(pwd)/venv/bin/activate
 # export PYTHON=$(pwd)/venv/bin/python
 
@@ -25,7 +27,6 @@ cd door-controller
 # $PYTHON -m poetry install 
 python -m poetry install
 cd ..
-
 
 
 echo "copy service file"
@@ -41,9 +42,7 @@ else
 fi
 
 
-
 echo "enable service"
 sudo systemctl daemon-reload
 sudo systemctl enable pichayon-door.service
 
-export CFLAGS="-fcommon"
