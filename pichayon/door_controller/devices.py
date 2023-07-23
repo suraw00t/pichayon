@@ -128,7 +128,7 @@ class Device:
             logger.debug(f"auto_relock is on force unlock is disable")
             return
 
-        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.2))
+        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.3))
         if not self.is_force_unlock:
             logger.debug(f"force unlock is on")
             await self.unlock_door()
