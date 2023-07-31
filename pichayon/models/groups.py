@@ -19,6 +19,8 @@ class UserGroupMember(me.Document):
         required=True, default=datetime.datetime.now, auto_now=True
     )
 
+    application = me.ReferenceField("Application", dbref=True)
+
     meta = {"collection": "user_group_members"}
 
 

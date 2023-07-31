@@ -21,15 +21,16 @@ Applications Approval
         <table class="ui celled table">
             <thead>
             <tr>
-            <th>ID Number - Name</th>
-            <th>Degree</th>
-            <th>Advisor</th>
-            <th>Room</th>
-            <th>Start Date</th>      
-            <th>End Date</th>
-            <th>Purpose</th>
-            <th>Status</th>
-            <th>Approve</th>
+              <th>ID Number - Name</th>
+              <th>Degree</th>
+              <th>Advisor</th>
+              <th>Room</th>
+              <th>Start Date</th>      
+              <th>End Date</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Group</th>
+              <th>Approve</th>
             </tr>
             </thead>
             <tbody>
@@ -39,13 +40,13 @@ Applications Approval
 
 
                     <td data-label="Name - ID Number">
-                        {{ application.user.id_card_number }} {{ application.user.first_name }} {{ application.user.last_name }} 
+                      {{ application.user.first_name }} {{ application.user.last_name }} <br/>
+                      {{ application.user.username }}
                     </td>
 
                     <td data-label="Degree">
                         {{ application.degree }}
                     </td>
-
 
                     <td data-label="Advisor">
                         {{ application.advisor.first_name }} {{ application.advisor.last_name }}
@@ -69,6 +70,12 @@ Applications Approval
 
                     <td data-label="Status">
                         {{ application.status }}
+                    </td>
+
+                    <td data-label="Group">
+                      {% for member in application.get_user_group_members() %}
+                        <a href="{{ url_for('administration.user_groups.view', user_group_id=member.group.id) }}">{{ member.group.name }}</a>
+                      {% endfor %}
                     </td>
 
                     <td> <a class="ui primary icon button" href="{{ url_for('administration.applications.approve', application_id=application.id)}}"> <i class="check icon"></i> </a> 

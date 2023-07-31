@@ -22,6 +22,9 @@ class Application(me.Document):
     started_date = me.DateTimeField(required=True, default=datetime.date.today)
     ended_date = me.DateTimeField(required=True)
 
+    approved_by = me.ReferenceField("User", dbref=True)
+    approved_date = me.DateTimeField(required=True)
+
     room = me.ReferenceField("Door", dbref=True)
     purpose = me.StringField(required=True)
     status = me.StringField(required=True, default="pending")
@@ -29,3 +32,8 @@ class Application(me.Document):
     ip_address = me.StringField(max_length=255)
 
     request_checkbox = me.BooleanField(required=True, default=False)
+
+    def get_user_group_members(self):
+        from .groups import UserGroupMember
+
+        return UserGroupMember.objects(application=self)

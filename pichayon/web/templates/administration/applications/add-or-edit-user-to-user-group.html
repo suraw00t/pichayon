@@ -1,0 +1,70 @@
+{% extends '/administration/applications/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block dashboard_title %}
+	Add user to user group from application
+{% endblock %}
+
+{%- block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">Application</div>
+{%- endblock %}
+
+{% block additional_js %}
+  <script>
+    $('.ui.dropdown').dropdown();
+
+    datetime_formatter = {
+      datetime: 'YYYY-MM-DD HH:mm'
+    };
+
+    $('#started_date_calendar').calendar({
+      //type: 'date',
+      formatter: datetime_formatter,
+      endCalendar: $('#expired_date_calendar')
+    });
+    $('#expired_date_calendar').calendar({
+      //type: 'date',
+      formatter: datetime_formatter,
+      startCalendar: $('#started_date_calendar')
+    });
+
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="ui container">
+    <div class="ui message">
+      <b>Create Date</b> {{ application.created_date }} <br>
+      <b>Update Date</b> {{ application.updated_date }} <br>
+    </div>
+  </div>
+
+  <div class="ui container" style="margin-top: 1em;">
+    <h3>Add Users to Group</h3>
+    <form class="ui form" action="" method="POST">
+      {{ form.hidden_tag() }}
+      <div class="two fields">
+        <div class="field">
+          {{ application.user.username }} - {{ application.user.get_full_name() }}
+        </div>
+        {{ renderer.render_select(form.user_groups) }}
+        {{ renderer.render_select(form.role) }}
+      </div>
+      <div class="two fields">
+        {{ renderer.render_calendar(form.started_date, calendar_id='started_date_calendar') }}
+        {{ renderer.render_calendar(form.expired_date, calendar_id='expired_date_calendar') }}
+      </div>
+      <button type='submit' class="ui button primary">Add User</button>
+    </form>
+    {#
+    <div class="ui labeled icon menu">
+      <a class="item" href="{{ url_for('administration.user_groups.add_users', user_group_id=group.id) }}">
+        <i class="add icon"></i>
+        Add User
+      </a>
+    </div>
+    #}
+  </div>
+{% endblock %}

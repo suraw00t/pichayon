@@ -15,8 +15,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from pichayon import models
 from pichayon.web import acl
-from pichayon.web.forms.admin import *
-from flask_login import login_user, logout_user, login_required, current_user
 from pichayon.web import forms
 
 module = Blueprint("applications", __name__, url_prefix="/applications")
@@ -36,9 +34,71 @@ def index():
 @acl.role_required("admin", "lecturer")
 def approve(application_id):
     application = models.Application.objects().get(id=application_id)
+
+    application.approved_by = current_user._get_current_object()
+    application.approved_date = datetime.datetime.now()
     application.status = "approved"
     application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+
     application.save()
+
+    return redirect(
+        url_for(
+            "administration.applications.add_or_edit_user_to_user_group",
+            application_id=application_id,
+        )
+    )
+
+
+@module.route(
+    "/<application_id>/add-or-edit-user-to-user-group", methods=["GET", "POST"]
+)
+@acl.role_required("admin", "lecturer")
+def add_or_edit_user_to_user_group(application_id):
+    application = models.Application.objects().get(id=application_id)
+    form = forms.applications.UserGroupMemberFromApplicationForm()
+
+    user_groups = models.UserGroup.objects(status="active").order_by("name")
+
+    form.user_groups.choices = [
+        (str(user_group.id), user_group.name) for user_group in user_groups
+    ]
+
+    if request.method == "GET":
+        form.started_date.data = application.started_date
+        form.expired_date.data = application.ended_date
+
+    if not form.validate_on_submit():
+        return render_template(
+            "/administration/applications/add-or-edit-user-to-user-group.html",
+            form=form,
+            application=application,
+        )
+
+    for user_group_id in form.user_groups.data:
+        user_group = models.UserGroup.objects(id=user_group_id).first()
+        if not user_group:
+            continue
+
+        user_group_member = models.UserGroupMember.objects(
+            user=application.user,
+            group=user_group,
+            application=application,
+        ).first()
+
+        if not user_group_member:
+            user_group_member = models.UserGroupMember(
+                user=application.user,
+                group=user_group,
+                started_date=form.started_date.data,
+                expired_date=form.expired_date.data,
+                added_by=current_user._get_current_object(),
+                application=application,
+            )
+
+        user_group_member.started_date = form.started_date.data
+        user_group_member.expired_date = form.expired_date.data
+        user_group_member.save()
 
     return redirect(url_for("administration.applications.index"))
 
@@ -47,6 +107,9 @@ def approve(application_id):
 @acl.role_required("admin", "lecturer")
 def reject(application_id):
     application = models.Application.objects().get(id=application_id)
+
+    application.approved_by = current_user._get_current_object()
+    application.approved_date = datetime.datetime.now()
     application.status = "rejected"
     application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     application.save()
@@ -59,7 +122,9 @@ def reject(application_id):
 @module.route("/<application_id>/comment", methods=["GET", "POST"])
 @acl.role_required("admin", "lecturer")
 def comment(application_id):
-    form = forms.application_remarks.ApplicationRemarkForm()
+    application = models.Application.objects().get(id=application_id)
+    form = forms.applications.ApplicationRemarkForm(obj=application)
+
     if not form.validate_on_submit():
         return render_template(
             "/administration/applications/comment.html",
@@ -67,16 +132,12 @@ def comment(application_id):
             application_id=application_id,
         )
 
-    application_remarks = models.Application(Remark)
+    form.populate_obj(application)
+    application.user = current_user._get_current_object()
 
-    form.populate_obj(application_remarks)
-    application_remarks.user = current_user._get_current_object()
-
-    application_remarks.ip_address = request.headers.get(
-        "X-Forwarded-For", request.remote_addr
-    )
-    application_remarks.save()
+    application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    application.save()
 
     return redirect(
-        url_for("administration.applications.index"), application_id=application_id
+        url_for("administration.applications.index", application_id=application_id)
     )

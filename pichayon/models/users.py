@@ -61,6 +61,9 @@ class User(me.Document, UserMixin):
 
     meta = {"collection": "users"}
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     def has_roles(self, *roles):
         for role in roles:
             if role in self.roles:
