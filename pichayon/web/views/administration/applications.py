@@ -58,7 +58,18 @@ def add_or_edit_user_to_user_group(application_id):
     application = models.Application.objects().get(id=application_id)
     form = forms.applications.UserGroupMemberFromApplicationForm()
 
-    user_groups = models.UserGroup.objects(status="active").order_by("name")
+    user_groups = []
+
+    if "admin" in current_user.roles:
+        user_groups = models.UserGroup.objects(status="active").order_by("name")
+    else:
+        user_group_members = models.UserGroupMember.objects(
+            status="active", role="admin", user=current_user._get_current_object()
+        ).order_by("name")
+
+        user_groups = [
+            user_group_member.group for user_group_member in user_group_members
+        ]
 
     form.user_groups.choices = [
         (str(user_group.id), user_group.name) for user_group in user_groups
