@@ -23,7 +23,7 @@ class Application(me.Document):
     ended_date = me.DateTimeField(required=True)
 
     approved_by = me.ReferenceField("User", dbref=True)
-    approved_date = me.DateTimeField(required=True)
+    approved_date = me.DateTimeField()
 
     room = me.ReferenceField("Door", dbref=True)
     purpose = me.StringField(required=True)

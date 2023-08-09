@@ -10,7 +10,7 @@ from flask_mongoengine.wtf import model_form
 BaseApplicationForm = model_form(
     models.Application,
     FlaskForm,
-    exclude=["users", "status", "created_date"],
+    exclude=["users", "status", "created_date", "approved_date"],
     field_args={
         "degree": {"label": "Degrees"},
         "advisor": {
