@@ -34,7 +34,6 @@ def apply():
     form = forms.applications.ApplicationForm()
     form.advisor.queryset = lecturers
     if not form.validate_on_submit():
-        print(form.errors)
         if request.method == "GET":
             form.ended_date.data = form.started_date.data + datetime.timedelta(
                 weeks=52 * 4
