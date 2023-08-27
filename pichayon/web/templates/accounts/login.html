@@ -14,30 +14,48 @@
     </h2>
     <div>
       <div class="ui large vertical buttons" >
-        <div class="row" style="padding-top: 10px;">
+
+  {% if 'PSU' in config.LOGIN_PROVIDERS %}
+    	  <div class="row" style="padding: 10px;">
           <div class="column header" style="text-align: left;">
-            <h3>For PSU Engineering Faculty Member</h3>
+            <h3>{{ "For PSU" }}</h3>
           </div>
         </div>
         <div class="row" style="padding-top: 5px;">
-          <a class="ui labeled icon button primary huge" href="{{ url_for('accounts.login_engpsu') }}">
+          <a class="ui labeled icon button primary huge" href="{{ url_for('accounts.login_oauth', name='psu') }}">
             <i class="user icon"></i>
-            PSU Passport by Eng
+            {{ "PSU Passport" }}
           </a>
         </div>
-        <div class="row" style="padding-top: 20px;">
+	{% endif %}
+        {% if 'ENGPSU' in config.LOGIN_PROVIDERS %}
+        <div class="row" style="padding: 10px;">
           <div class="column header" style="text-align: left;">
-            <h3>Other</h3>
+            <h3>{{ "For PSU Engineering Faculty Member" }}</h3>
           </div>
         </div>
-        {#
         <div class="row" style="padding-top: 5px;">
-          <a class="ui labeled icon red button huge" href="{{ url_for('loginpass.login', name='google') }}">
+          <a class="ui labeled icon button primary huge" href="{{ url_for('accounts.login', name='engpsu') }}">
+            <i class="user icon"></i>
+            {{ "PSU Passport by Eng" }}
+          </a>
+	      </div>
+	{% endif %}
+        {% if 'GOOGLE' in config.LOGIN_PROVIDERS %}
+        <div class="row" style="padding: 10px;">
+          <div class="column header" style="text-align: left;">
+            <h3>{{ "For Participant" }}</h3>
+          </div>
+        </div>
+        <div class="row" style="padding-top: 5px;">
+          <a class="ui  labeled icon red button huge" href="{{ url_for('loginpass.login', name='google') }}">
             <i class="google icon"></i>
-            Google
+            {{ "Google" }}
           </a>
         </div>
-        #}
+{% endif %}
+
+
       </div>
     </div>
   </div>

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-PICHAYON_SETTINGS=$(pwd)/pichayon.cfg pichayon-controller
+PICHAYON_SETTINGS=$(pwd)/pichayon-development.cfg pichayon-controller
