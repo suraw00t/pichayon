@@ -1,0 +1,10 @@
+- name: Run login for internet access and update aptitude
+  hosts: all:!pcy-ai-door
+  tasks:
+    - name: login for internet access
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64
+- name: Run login for internet access and update aptitude (aarch32)
+  hosts: pcy-ai-door
+  tasks:
+    - name: login for internet access (aarch32)
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch32
