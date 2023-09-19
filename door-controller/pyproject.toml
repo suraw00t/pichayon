@@ -17,6 +17,7 @@ tinydb-serialization = "^2.1.0"
 pyserial-asyncio = "^0.6"
 flask = "^2.3.2"
 setuptools-rust = "^1.6.0"
+pycryptodome = "^3.19.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
