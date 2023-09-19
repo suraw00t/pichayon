@@ -1,0 +1,5 @@
+- name: Deploy pichayon door controller 
+  hosts: pcy-test
+  tasks:
+    - name: login for internet access
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64

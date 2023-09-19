@@ -19,3 +19,7 @@ coe_floor4:
     pcy-robot-door:
     pcy-r407-door:
     pcy-r411-door:
+
+test:
+  hosts:
+    pcy-test:
