@@ -2,7 +2,7 @@ import datetime
 import asyncio
 import json
 import requests
-from pichayon import models
+from pichayon import models, crypto
 
 import logging
 
@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class DataResourceManager:
+    def __init__(self, settings=None):
+        self.setting = settings
+
     async def get_authorization_data(self, device_id):
         response = dict()
         door = models.Door.objects(device_id=device_id).first()
@@ -88,3 +91,20 @@ class DataResourceManager:
         }
 
         return data
+
+
+    async def get_key_type_access(self, device_id):
+        aes_crypto = crypto.AESCrypto(device_id)
+        key_types = {}
+        key_type_a = self.setting.get("KEY_TYPE_A")
+        key_type_a_sector_0 = self.setting.get("KEY_TYPE_A_SECTOR_0")
+        default_key_type_a = self.setting.get("DEFAULT_KEY_TYPE_A")
+        default_key_type_b = self.setting.get("DEFAULT_KEY_TYPE_B")
+
+        key_types["key_type_a"] = key_type_a
+        key_types["key_type_a_sector_0"] = key_type_a_sector_0
+        key_types["default_key_type_a"] = default_key_type_a
+        key_types["default_key_type_b"] = default_key_type_b
+        en_key_types = aes_crypto.encrypt(str(key_types))
+
+        return en_key_types

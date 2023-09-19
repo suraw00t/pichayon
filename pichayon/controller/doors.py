@@ -45,6 +45,7 @@ class DoorManager:
                 response["door"] = dict(
                     is_auto_relock=door.is_auto_relock, door_id=str(door.id)
                 )
+                response["key_types"] = await self.data_resource.get_key_type_access(device_id)
 
                 door.device_updated_date = datetime.datetime.now().isoformat()
                 door.save()

@@ -17,7 +17,7 @@ class ControllerServer:
         models.init_mongoengine(settings)
         self.running = False
         self.command_queue = asyncio.Queue()
-        self.data_resource = data_resources.DataResourceManager()
+        self.data_resource = data_resources.DataResourceManager(self.settings)
         self.door_manager = doors.DoorManager(self.data_resource)
 
         self.sparkbit_enable = self.settings.get("SPARKBIT_ENABLE", False)
