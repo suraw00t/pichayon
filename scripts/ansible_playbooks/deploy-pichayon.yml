@@ -1,0 +1,10 @@
+- name: Deploy pichayon door controller (aarch32)
+  hosts: pcy-ai-door
+  tasks:
+    - name: login for internet access (aarch32)
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch32
+- name: Deploy pichayon door controller 
+  hosts: all:!pcy-ai-door
+  tasks:
+    - name: login for internet access
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64

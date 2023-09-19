@@ -1,0 +1,25 @@
+coe_floor1:
+  hosts:
+    pcy-r100-door:
+
+coe_floor2:
+  hosts:
+    pcy-r205-door:
+
+coe_floor3:
+  hosts:
+    pcy-ai-door:
+    pcy-aic-door:
+    pcy-server-door:
+
+coe_floor4:
+  hosts:
+    pcy-r403-door:
+    pcy-r404-door:
+    pcy-robot-door:
+    pcy-r407-door:
+    pcy-r411-door:
+
+test:
+  hosts:
+    pcy-test:
