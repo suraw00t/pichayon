@@ -17,7 +17,7 @@ from . import readers
 logger = logging.getLogger(__name__)
 
 
-class RS235Reader(readers.Reader):
+class RS485Reader(readers.Reader):
     def __init__(self, device="/dev/ttyACM0", baudrate=115200):
         super().__init__()
 
@@ -159,7 +159,7 @@ class RS235Reader(readers.Reader):
 
 
 async def run():
-    readerx = RS235Reader("/dev/ttyS0")
+    readerx = RS485Reader("/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")

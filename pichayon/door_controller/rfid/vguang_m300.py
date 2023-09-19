@@ -20,7 +20,7 @@ from . import vguang_sk330
 logger = logging.getLogger(__name__)
 
 
-class RS235Reader(vguang_sk330.RS235Reader):
+class RS485Reader(vguang_sk330.RS485Reader):
     def __init__(self, device="/dev/ttyACM0", baudrate=115200):
         super().__init__(device, baudrate)
 
@@ -159,9 +159,9 @@ class RS235Reader(vguang_sk330.RS235Reader):
 
 
 async def run():
-    # readerx = RS235Reader("/dev/ttyACM0")
-    # readerx = RS235Reader("/dev/ttyS0")
-    readerx = RS235Reader("/dev/ttyS0")
+    # readerx = RS485Reader("/dev/ttyACM0")
+    # readerx = RS485Reader("/dev/ttyS0")
+    readerx = RS485Reader("/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")
