@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 
 from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout
+from pichayon import crypto
 
 from . import devices
 
@@ -34,6 +35,7 @@ class DoorControllerServer:
             self.db_manager,
             self.device_id,
         )
+        self.key_types = {}
 
         # self.keypad = keypad.Keypad()
         # self.passcode = ''
@@ -270,6 +272,11 @@ class DoorControllerServer:
                 ):
                     self.is_register = True
                     await self.device.update_information(data.get("door", {}))
+
+                    ciphertext = data.get("key_types", "")
+                    aes_crypto = crypto.AESCrypto(self.device_id)
+                    self.key_types = aes_crypto.decrypt(ciphertext)
+                    print(self.key_types)
 
                     self.cc_id = await self.nc.subscribe(
                         f"pichayon.door_controller.{self.device_id}",
