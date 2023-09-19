@@ -273,9 +273,9 @@ class DoorControllerServer:
                     self.is_register = True
                     await self.device.update_information(data.get("door", {}))
 
-                    ciphertext = data.get("key_types", "")
+                    ciphertext = data.get("key_types", "{}")
                     aes_crypto = crypto.AESCrypto(self.device_id)
-                    self.key_types = aes_crypto.decrypt(ciphertext)
+                    self.key_types = eval(aes_crypto.decrypt(ciphertext))
 
                     self.cc_id = await self.nc.subscribe(
                         f"pichayon.door_controller.{self.device_id}",
