@@ -44,7 +44,7 @@ class DoorControllerServer:
     async def get_ipv4(self):
         import subprocess
         output = subprocess.getoutput("hostname -I")
-        print(output.split(" ")[0])
+        
         return output.split(" ")[0]
 
     async def handle_controller_command(self, msg):
