@@ -44,7 +44,7 @@ class DoorControllerServer:
     async def get_ipv4(self):
         import subprocess
         output = subprocess.getoutput("hostname -I")
-        
+
         return output.split(" ")[0]
 
     async def handle_controller_command(self, msg):
@@ -180,13 +180,18 @@ class DoorControllerServer:
                     await self.device.play_denied_access_sound()
                     message = "denied"
                     logger.debug(f"There are no user rfid {rfif_data['uid']}")
-
+                    identity_number = {}
+                    if "identity_number" in rfif_data:
+                        identity_number["identity_number"] = rfif_data["identity_number"]
+                        identity_number["expire_date"] = rfif_data["expire_date"]
+                
                 await self.log_manager.put_log(
                     user,
                     type="rfid",
                     action="open-door",
                     rfid=rfif_data["uid"],
                     message=message,
+                    **identity_number,
                 )
 
                 while not self.rfid_queue.empty():
