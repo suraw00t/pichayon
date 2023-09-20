@@ -185,23 +185,16 @@ class RS485Reader(vguang_sk330.RS485Reader):
         return True
 
     async def read_sector0(self):
-        key_type_a = self.key_types.get("key_type_a_sector_0")
-        read_sector0_command = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
-        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
-        read_sector0_command.extend(key_type_a_list + [0x37])
-        
-        byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_command])
+        byte_command = b"".join([d.to_bytes(1, "big") for d in self.command_read_sector0])
         self.writer.write(byte_command)
+        await self.writer.drain()
+
 
     async def read_default_sector0(self):
-        key_type_a = self.key_types.get("default_key_type_a")
-        read_sector0_default_command = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
-
-        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
-        read_sector0_default_command.extend(key_type_a_list + [0x36])
-        
-        byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_default_command])
+        byte_command = b"".join([d.to_bytes(1, "big") for d in self.command_read_default_sector0])
         self.writer.write(byte_command)
+        await self.writer.drain()
+
 
     async def decrypt(self, raw_data):
         pass

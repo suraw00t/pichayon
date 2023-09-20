@@ -27,6 +27,8 @@ class RS485Reader(readers.Reader):
         self.timeout = 0.5
 
         self.key_types = key_types
+        self.command_read_sector0 = self.get_command_read_sector0()
+        self.command_read_default_sector0 = self.get_command_read_default_sector0()
         self.data = []
         self.raw_data = []
         self.tag = []
@@ -158,6 +160,21 @@ class RS485Reader(readers.Reader):
         tag = await self.tag_queue.get()
         return tag
 
+    async def get_command_read_sector0(self):
+        key_type_a = self.key_types.get("key_type_a_sector_0")
+        command_read_sector0 = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
+        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
+        command_read_sector0.extend(key_type_a_list + [0x37])
+
+        return command_read_sector0
+    
+    async def get_command_read_default_sector0(self):
+        default_key_type_a = self.key_types.get("default_key_type_a")
+        command_read_default_sector0 = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
+        key_type_a_list = [int(default_key_type_a[i:i+2], 16) for i in range(0, len(default_key_type_a), 2)]
+        command_read_default_sector0.extend(key_type_a_list + [0x37])
+
+        return command_read_default_sector0
 
 async def run():
     readerx = RS485Reader("/dev/ttyS0")
