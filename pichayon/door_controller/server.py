@@ -27,7 +27,7 @@ class DoorControllerServer:
         self.controller_command_queue = asyncio.Queue()
         self.rfid_queue = asyncio.Queue()
 
-        self.device = devices.Device(self.settings)
+        self.device = devices.Device(self.settings, self.key_types)
         self.device_id = self.device.get_device_id()
         self.db_manager = database.Manager(self.settings, self.device_id)
 

@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class RS485Reader(vguang_sk330.RS485Reader):
-    def __init__(self, device="/dev/ttyACM0", baudrate=115200):
-        super().__init__(device, baudrate)
+    def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
+        super().__init__(key_types, device, baudrate)
 
         # self.read_header = [0x55, 0xAA, 0x02]  # header 0x55 0xAA command word 0x02
         self.read_header = [
@@ -128,7 +128,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
                     tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
 
 
-            elif len(data_buffer[6:]) >= data_buffer[4] + 1 and buffer_index == 2:
+            elif len(data_buffer[6:]) >= data_buffer[4] + data_buffer[5] and buffer_index == 2:
                 data_arr2 = data_buffer.copy()
                 data_buffer.clear()
 
@@ -185,12 +185,21 @@ class RS485Reader(vguang_sk330.RS485Reader):
         return True
 
     async def read_sector0(self):
-        read_sector0_command = []
+        key_type_a = self.key_types.get("key_type_a_sector_0")
+        read_sector0_command = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
+        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
+        read_sector0_command.extend(key_type_a_list + [0x37])
+        
         byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_command])
         self.writer.write(byte_command)
 
     async def read_default_sector0(self):
-        read_sector0_default_command = []
+        key_type_a = self.key_types.get("default_key_type_a")
+        read_sector0_default_command = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
+
+        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
+        read_sector0_default_command.extend(key_type_a_list + [0x36])
+        
         byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_default_command])
         self.writer.write(byte_command)
 

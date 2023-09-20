@@ -13,8 +13,10 @@ class Device:
     def __init__(
         self,
         settings,
+        key_types,
     ):
         self.settings = settings
+        self.key_types = key_types
         self.device_id = "0000000000000000"
         self.door_id = None
         self.log_manager = None
@@ -41,11 +43,11 @@ class Device:
 
     def get_reader_device(self, name):
         if name == "ASR1200E":
-            return asr1200e.WiegandReader()
+            return asr1200e.WiegandReader(self.key_types)
         elif name == "VGUANG-M300":
-            return vguang_m300.RS485Reader("/dev/ttyS0")
+            return vguang_m300.RS485Reader(self.key_types, "/dev/ttyS0")
         elif name == "VGUANG-SK330":
-            return vguang_sk330.RS485Reader("/dev/ttyS0")
+            return vguang_sk330.RS485Reader(self.key_types, "/dev/ttyS0")
 
         return None
 
