@@ -127,7 +127,6 @@ class RS485Reader(vguang_sk330.RS485Reader):
                     buffer_index = 2
                     tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
 
-
             elif len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 2:
                 data_arr2 = data_buffer.copy()
                 data_buffer.clear()
@@ -142,7 +141,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
                 await self.tag_queue.put(tag_dict)
                 buffer_index = 1
 
-            elif len(data_buffer[6:]) > data_buffer[4] + 1:
+            elif len(data_buffer[6:-1]) > data_buffer[4] + data_buffer[5]:
                 data_buffer.clear()
                 buffer_index = 1
 
