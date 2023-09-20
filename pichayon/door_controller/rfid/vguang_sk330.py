@@ -172,7 +172,7 @@ class RS485Reader(readers.Reader):
         default_key_type_a = self.key_types.get("default_key_type_a")
         command_read_default_sector0 = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
         key_type_a_list = [int(default_key_type_a[i:i+2], 16) for i in range(0, len(default_key_type_a), 2)]
-        command_read_default_sector0.extend(key_type_a_list + [0x37])
+        command_read_default_sector0.extend(key_type_a_list + [0x36])
 
         return command_read_default_sector0
 
