@@ -17,6 +17,7 @@ BaseDoorForm = model_form(
         "camera_url",
         "is_passcode",
         "status",
+        "ipv4"
     ],
     field_args={
         "name": {"label": "Name"},

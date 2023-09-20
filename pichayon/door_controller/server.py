@@ -41,6 +41,12 @@ class DoorControllerServer:
 
         self.running = False
 
+    async def get_ipv4(self):
+        import subprocess
+        output = subprocess.getoutput("hostname -I")
+        print(output.split(" ")[0])
+        return output.split(" ")[0]
+
     async def handle_controller_command(self, msg):
         subject = msg.subject
         reply = msg.reply
@@ -53,6 +59,7 @@ class DoorControllerServer:
         data = dict(
             action="request_initial_data",
             device_id=self.device_id,
+            ipv4=await self.get_ipv4()
         )
         await self.nc.publish(
             "pichayon.controller.command",

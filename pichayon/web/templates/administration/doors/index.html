@@ -38,6 +38,7 @@
         <th>Description</th>
         <th>Device ID</th>
         <th>Groups</th>
+        <th>IP Address</th>
         <th>Updated Date</th>
         <th>Operation</th>
       </tr>
@@ -54,6 +55,7 @@
               <a href="{{ url_for('administration.door_groups.view', door_group_id=group.id) }}">{{ group.name }}</a>,
             {% endfor %}
           </td>
+          <td>{{ door.ipv4 }}</td>
           <td>{{ door.updated_date.ctime() }}</td>
           <td class="ui single line">
           

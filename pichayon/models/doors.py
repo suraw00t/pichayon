@@ -13,6 +13,7 @@ class Door(me.Document):
     is_web_open = me.BooleanField(default=False, required=True)
     is_passcode = me.BooleanField(default=False, required=True)
     is_auto_relock = me.BooleanField(default=True, required=True)
+    ipv4 = me.StringField(required=True, default="0.0.0.0")
 
     status = me.StringField(required=True, default="active")
 

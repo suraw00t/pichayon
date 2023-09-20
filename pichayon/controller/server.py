@@ -111,6 +111,10 @@ class ControllerServer:
                 if not door:
                     continue
 
+                if "ipv4" in data:
+                    door.ipv4 = data["ipv4"]
+                    door.save()
+
                 topic = f"pichayon.door_controller.{door.device_id}"
                 response = await self.data_resource.get_authorization_data(
                     door.device_id
