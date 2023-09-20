@@ -139,6 +139,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
                     logger.debug(f"Identity number({len(identity_number)}): {str(identity_number)} expire date({len(expire_date)}): {str(expire_date)}")
 
                 await self.tag_queue.put(tag_dict)
+                tag_dict.clear()
                 buffer_index = 1
 
             elif len(data_buffer[6:-1]) > data_buffer[4] + data_buffer[5]:
