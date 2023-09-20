@@ -193,9 +193,7 @@ class DoorControllerServer:
                     message=message,
                     **identity_number,
                 )
-                if len(identity_number) > 0:
-                    identity_number.clear()
-                    
+                
                 while not self.rfid_queue.empty():
                     await self.rfid_queue.get()
 
