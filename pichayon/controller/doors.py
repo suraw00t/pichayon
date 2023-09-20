@@ -164,6 +164,21 @@ class DoorManager:
         # logger.debug('3 loop')
         history_log.save()
 
+        if log["message"] == "denied" and log.get("identity_number"):
+            user = models.User.objects(username=log["identity_number"]).first()
+            identity = models.Identity(identifier=log["rfid"], status="disactive")
+            if user:
+                user.identities.append(identity)
+                user.updated_date = datetime.datetime.now()
+                logger.debug(f"Added New RFID {identity.identifier} to User {user.username}")
+            else:
+                user = models.User(username=log["identity_number"], first_name="", last_name="")
+                user.identities.append(identity)
+                logger.debug(f"Created new User {user.username} and added new RFID {identity.identifier}")
+
+            user.save()
+
+
         # logger.debug('4 loop')
 
         response = dict(status="OK")

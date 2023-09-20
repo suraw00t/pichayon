@@ -113,6 +113,7 @@ class ControllerServer:
 
                 if "ipv4" in data:
                     door.ipv4 = data["ipv4"]
+                    door.updated_date = datetime.datetime.now()
                     door.save()
 
                 topic = f"pichayon.door_controller.{door.device_id}"

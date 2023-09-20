@@ -39,6 +39,7 @@ def handle_authorize(remote, token, user_info):
     user = models.User.objects(
         me.Q(username=user_info.get("name")) | me.Q(email=user_info.get("email"))
     ).first()
+
     if not user:
         user = models.User(
             username=user_info.get("name"),
@@ -51,6 +52,10 @@ def handle_authorize(remote, token, user_info):
         email = user_info.get("email")
         if email[: email.find("@")].isdigit():
             user.roles.append("student")
+        user.save()
+    elif user and (user.first_name == "" or user.last_name == ""):
+        user.first_name = user_info.get("given_name", "").title()
+        user.last_name = user_info.get("family_name", "").title(),
         user.save()
 
     login_user(user)
