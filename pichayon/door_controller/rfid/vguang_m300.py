@@ -107,7 +107,6 @@ class RS485Reader(vguang_sk330.RS485Reader):
         # print("verify_tag")
         data_buffer = []
         buffer_index = 1
-        tag_dict = {}
         while self.running:
             data = await self.read_queue.get()
             data_buffer.append(data)
@@ -119,9 +118,8 @@ class RS485Reader(vguang_sk330.RS485Reader):
                 continue
 
             if len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 1:
+                tag_dict = {}
                 data_arr = data_buffer.copy()
-                data_buffer.clear()
-                tag_dict.clear()
                 
                 if await self.verify_data(data_arr):
                     await self.read_sector0()
