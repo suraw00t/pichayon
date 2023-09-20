@@ -164,7 +164,7 @@ class DoorManager:
         # logger.debug('3 loop')
         history_log.save()
 
-        if log["message"] == "denied" and log.get("identity_number"):
+        if log.get("message") == "denied" and log.get("identity_number"):
             user = models.User.objects(username=log["identity_number"]).first()
             identity = models.Identity(identifier=log["rfid"], status="disactive")
             if user:
