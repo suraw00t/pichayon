@@ -121,6 +121,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
             if len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 1:
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
+                tag_dict.clear()
                 
                 if await self.verify_data(data_arr):
                     await self.read_sector0()
@@ -139,7 +140,6 @@ class RS485Reader(vguang_sk330.RS485Reader):
                     logger.debug(f"Identity number({len(identity_number)}): {str(identity_number)} expire date({len(expire_date)}): {str(expire_date)}")
 
                 await self.tag_queue.put(tag_dict)
-                tag_dict.clear()
                 buffer_index = 1
 
             elif len(data_buffer[6:-1]) > data_buffer[4] + data_buffer[5]:
