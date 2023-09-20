@@ -143,10 +143,10 @@ class DoorControllerServer:
     async def read_rfid(self):
         await self.device.initial()
         while self.running:
-            rfid_number = await self.device.rfid.get_id()
+            rfif_data = await self.device.rfid.get_data()
 
-            if len(rfid_number) > 0:
-                await self.rfid_queue.put(rfid_number)
+            if len(rfif_data) > 0:
+                await self.rfid_queue.put(rfif_data)
                 await asyncio.sleep(1)
             await asyncio.sleep(0.1)
             # logger.debug(f'rfid in read rfid>>>{rfid_number}')
@@ -159,12 +159,12 @@ class DoorControllerServer:
                 await asyncio.sleep(0.1)
                 continue
 
-            rfid_number = await self.rfid_queue.get()
+            rfif_data = await self.rfid_queue.get()
             try:
-                logger.debug(f"rfid >>> {rfid_number}")
+                logger.debug(f"rfid >>> {rfif_data['uid']}")
                 # user = await self.db_manager.get_user_by_rfid(rfid_number)
                 user = await self.db_manager.get_user_by_rfid_with_current_date(
-                    rfid_number
+                    rfif_data["uid"]
                 )
 
                 message = "success"
@@ -173,13 +173,13 @@ class DoorControllerServer:
                 else:
                     await self.device.play_denied_access_sound()
                     message = "denied"
-                    logger.debug(f"There are no user rfid {rfid_number}")
+                    logger.debug(f"There are no user rfid {rfif_data['uid']}")
 
                 await self.log_manager.put_log(
                     user,
                     type="rfid",
                     action="open-door",
-                    rfid=rfid_number,
+                    rfid=rfif_data["uid"],
                     message=message,
                 )
 
@@ -264,6 +264,11 @@ class DoorControllerServer:
                     timeout=5,
                 )
                 data = json.loads(response.data.decode())
+
+                if "key_types" in data:
+                    ciphertext = data.get("key_types", "{}")
+                    del data["key_types"]
+
                 logger.debug(f"-> {data}")
                 if (
                     data["action"] == "register"
@@ -273,7 +278,6 @@ class DoorControllerServer:
                     self.is_register = True
                     await self.device.update_information(data.get("door", {}))
 
-                    ciphertext = data.get("key_types", "{}")
                     aes_crypto = crypto.AESCrypto(self.device_id)
                     self.key_types = eval(aes_crypto.decrypt(ciphertext))
 

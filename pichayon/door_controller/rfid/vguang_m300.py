@@ -106,6 +106,8 @@ class RS485Reader(vguang_sk330.RS485Reader):
     async def verify_tag(self):
         # print("verify_tag")
         data_buffer = []
+        buffer_index = 1
+        tag_dict = {}
         while self.running:
             data = await self.read_queue.get()
             data_buffer.append(data)
@@ -116,20 +118,33 @@ class RS485Reader(vguang_sk330.RS485Reader):
             if len(data_buffer) < 7:
                 continue
 
-            # print("x>", [f"{d:02X}" for d in data_buffer])
-            # print(len(data_buffer[6:]), data_buffer[4])
-
-            if len(data_buffer[6:]) >= data_buffer[4] + 1:
+            if len(data_buffer[6:]) >= data_buffer[4] + 1 and buffer_index == 1:
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
-
-                # print("->", [f"{d:02X}" for d in data_arr])
+                
                 if await self.verify_data(data_arr):
-                    await self.tag_queue.put(
-                        "".join([f"{d:02X}" for d in data_arr[6:-1]])
-                    )
+                    await self.read_sector0()
+                    buffer_index = 2
+                    tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
+
+
+            elif len(data_buffer[6:]) >= data_buffer[4] + 1 and buffer_index == 2:
+                data_arr2 = data_buffer.copy()
+                data_buffer.clear()
+
+                if await self.verify_sector0_data(data_arr2):
+                    sector0_data = data_arr2[6:-1]
+                    identity_number, expire_date, _ = [ "".join([chr(d) for d in sector0_data[i:i+16] if d]) for i in range(0, len(sector0_data), 16)]
+                    tag_dict["identity_number"] = identity_number
+                    tag_dict["expire_date"] = expire_date
+                    logger.debug(f"Identity number({len(identity_number)}): {str(identity_number)} expire date({len(expire_date)}): {str(expire_date)}")
+
+                await self.tag_queue.put(tag_dict)
+                buffer_index = 1
+
             elif len(data_buffer[6:]) > data_buffer[4] + 1:
                 data_buffer.clear()
+                buffer_index = 1
 
     async def verify_data(self, data):
         # check header
@@ -149,14 +164,42 @@ class RS485Reader(vguang_sk330.RS485Reader):
             return False
 
         return True
+    
+    async def verify_sector0_data(self, data):
+        data_header = [0x55, 0xAA, 0xA0] 
+        if not data_header == data[:3]:
+            return False
+
+        if data[3] != 0:
+            return False
+
+        lenght = data[4]
+        if len(data[6:-1]) != lenght:
+            return False
+
+        check_byte = await self.calculate_check_byte(data[:-1])
+
+        if check_byte != data[-1]:
+            return False
+
+        return True
+
+    async def read_sector0(self):
+        read_sector0_command = []
+        byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_command])
+        self.writer.write(byte_command)
+
+    async def read_default_sector0(self):
+        read_sector0_default_command = []
+        byte_command = b"".join([d.to_bytes(1, "big") for d in read_sector0_default_command])
+        self.writer.write(byte_command)
 
     async def decrypt(self, raw_data):
         pass
 
-    async def get_id(self):
+    async def get_data(self):
         tag = await self.tag_queue.get()
         return tag
-
 
 async def run():
     # readerx = RS485Reader("/dev/ttyACM0")
