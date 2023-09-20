@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class RS485Reader(vguang_sk330.RS485Reader):
     def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
         super().__init__(key_types, device, baudrate)
-
+        
         # self.read_header = [0x55, 0xAA, 0x02]  # header 0x55 0xAA command word 0x02
         self.read_header = [
             0x55,

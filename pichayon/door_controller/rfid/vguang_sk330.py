@@ -18,15 +18,15 @@ logger = logging.getLogger(__name__)
 
 
 class RS485Reader(readers.Reader):
-    def __init__(self,key_types={}, device="/dev/ttyACM0", baudrate=115200):
+    def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
         super().__init__()
 
         # Pin Definitons:
-        self.key_types = key_types
         self.device = device
         self.baudrate = baudrate
         self.timeout = 0.5
 
+        self.key_types = key_types
         self.data = []
         self.raw_data = []
         self.tag = []

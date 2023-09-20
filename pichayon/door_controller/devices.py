@@ -13,14 +13,12 @@ class Device:
     def __init__(
         self,
         settings,
-        key_types,
     ):
         self.settings = settings
-        self.key_types = key_types
         self.device_id = "0000000000000000"
         self.door_id = None
         self.log_manager = None
-
+        self.key_types = {}
         self.door_closed_pin = 15
         self.switch_pin = 16
         self.relay_pin = 18
@@ -36,25 +34,26 @@ class Device:
         self.last_opened_date = datetime.datetime.now()
 
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
-        self.rfid = self.get_reader_device(self.reader_name)
+        self.rfid = None
 
         self.is_auto_relock = True
         self.is_force_unlock = False
 
-    def get_reader_device(self, name):
+    def get_reader_device(self, name, key_types):
         if name == "ASR1200E":
-            return asr1200e.WiegandReader(self.key_types)
+            return asr1200e.WiegandReader(key_types)
         elif name == "VGUANG-M300":
-            return vguang_m300.RS485Reader(self.key_types, "/dev/ttyS0")
+            return vguang_m300.RS485Reader(key_types, "/dev/ttyS0")
         elif name == "VGUANG-SK330":
-            return vguang_sk330.RS485Reader(self.key_types, "/dev/ttyS0")
+            return vguang_sk330.RS485Reader(key_types, "/dev/ttyS0")
 
         return None
 
     async def set_log_manager(self, log_manager):
         self.log_manager = log_manager
 
-    async def initial(self):
+    async def initial(self, key_types):
+        self.rfid = self.get_reader_device(self.reader_name, key_types)
         await self.lock_door()
         await self.rfid.connect()
 

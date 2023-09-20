@@ -26,9 +26,7 @@ class DoorControllerServer:
         self.is_register = False
         self.controller_command_queue = asyncio.Queue()
         self.rfid_queue = asyncio.Queue()
-
-        self.key_types = {}
-        self.device = devices.Device(self.settings, self.key_types)
+        self.device = devices.Device(self.settings)
         self.device_id = self.device.get_device_id()
         self.db_manager = database.Manager(self.settings, self.device_id)
 
@@ -37,6 +35,7 @@ class DoorControllerServer:
             self.device_id,
         )
 
+        self.key_types = {}
         # self.keypad = keypad.Keypad()
         # self.passcode = ''
 
@@ -141,7 +140,7 @@ class DoorControllerServer:
             await asyncio.sleep(0.2)
 
     async def read_rfid(self):
-        await self.device.initial()
+        await self.device.initial(self.key_types)
         while self.running:
             rfif_data = await self.device.rfid.get_data()
 
@@ -320,6 +319,8 @@ class DoorControllerServer:
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
         self.running = True
+        loop.run_until_complete(self.set_up())
+        loop.run_until_complete(self.register_node())
 
         read_rfid_task = loop.create_task(self.read_rfid())
         process_rfid_task = loop.create_task(self.process_rfid())
@@ -327,8 +328,6 @@ class DoorControllerServer:
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
 
-        loop.run_until_complete(self.set_up())
-        loop.run_until_complete(self.register_node())
         controller_command_task = loop.create_task(self.process_controller_command())
 
         # process_keypad_task = loop.create_task(self.process_keypad())
