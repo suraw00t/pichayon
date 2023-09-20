@@ -154,7 +154,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
         if data[3] != 0:
             return False
 
-        lenght = data[4]
+        lenght = data[4] + data[5]
         if len(data[6:-1]) != lenght:
             return False
 
@@ -173,7 +173,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
         if data[3] != 0:
             return False
 
-        lenght = data[4]
+        lenght = data[4] + data[5]
         if len(data[6:-1]) != lenght:
             return False
 
