@@ -65,7 +65,6 @@ class DataResourceManager:
         return await self.render_json(user, door_auth)
 
     async def render_json(self, user, door_auth):
-
         user_group_member = door_auth.user_group.get_user_group_member(user)
         started_date = user_group_member.started_date
         expired_date = user_group_member.expired_date
@@ -92,14 +91,13 @@ class DataResourceManager:
 
         return data
 
-
     async def get_key_type_access(self, device_id):
         aes_crypto = crypto.AESCrypto(device_id)
         key_types = {}
-        key_type_a = self.setting.get("KEY_TYPE_A")
-        key_type_a_sector_0 = self.setting.get("KEY_TYPE_A_SECTOR_0")
-        default_key_type_a = self.setting.get("DEFAULT_KEY_TYPE_A")
-        default_key_type_b = self.setting.get("DEFAULT_KEY_TYPE_B")
+        key_type_a = self.setting.get("KEY_TYPE_A", "")
+        key_type_a_sector_0 = self.setting.get("KEY_TYPE_A_SECTOR_0", "")
+        default_key_type_a = self.setting.get("DEFAULT_KEY_TYPE_A", "")
+        default_key_type_b = self.setting.get("DEFAULT_KEY_TYPE_B", "")
 
         key_types["key_type_a"] = key_type_a
         key_types["key_type_a_sector_0"] = key_type_a_sector_0
