@@ -284,9 +284,10 @@ class DoorManager:
                     json.dumps(command).encode(),
                 )
 
-    async def update_member(self, user=None):
+    async def update_member(self, user=None, data=None):
         logger.debug("try to update member")
-        # user = models.User.objects(id=data.get("user_id")).first()
+        if data and not user:
+            user = models.User.objects(id=data.get("user_id")).first()
 
         if not user:
             logger.debug("user not found")
