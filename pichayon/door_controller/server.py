@@ -174,16 +174,17 @@ class DoorControllerServer:
                 )
 
                 message = "success"
-                identity_number = {}
                 if user:
                     await self.device.open_door()
                 else:
                     await self.device.play_denied_access_sound()
                     message = "denied"
                     logger.debug(f"There are no user rfid {rfif_data['uid']}")
-                    if "identity_number" in rfif_data:
-                        identity_number["identity_number"] = rfif_data["identity_number"]
-                        identity_number["expire_date"] = rfif_data["expire_date"]
+
+                identity_number = {}
+                if "identity_number" in rfif_data:
+                    identity_number["identity_number"] = rfif_data["identity_number"]
+                    identity_number["expire_date"] = rfif_data["expire_date"]
                 
                 await self.log_manager.put_log(
                     user,
