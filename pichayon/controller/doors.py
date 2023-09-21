@@ -194,7 +194,7 @@ class DoorManager:
                 )
 
             user.save()
-            await self.update_member(user)
+            await self.update_member(log)
 
         # logger.debug('4 loop')
 
