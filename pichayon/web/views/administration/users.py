@@ -195,6 +195,9 @@ def add_or_edit_identity(user_id, index):
         identity = user.identities[index]
 
     form.populate_obj(identity)
+    identity.added_with = "web"
+    identity.added_by = str(current_user.id)
+    identity.updated_date = datetime.datetime.now()
 
     if index < 0:
         is_found = False
