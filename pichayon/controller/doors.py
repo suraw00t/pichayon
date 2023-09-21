@@ -194,7 +194,7 @@ class DoorManager:
                 )
 
             user.save()
-            await self.update_member(log)
+            await self.update_member(user)
 
         # logger.debug('4 loop')
 
@@ -284,9 +284,9 @@ class DoorManager:
                     json.dumps(command).encode(),
                 )
 
-    async def update_member(self, data):
+    async def update_member(self, user=None):
         logger.debug("try to update member")
-        user = models.User.objects(id=data.get("user_id")).first()
+        # user = models.User.objects(id=data.get("user_id")).first()
 
         if not user:
             logger.debug("user not found")
