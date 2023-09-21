@@ -168,7 +168,9 @@ class DoorManager:
 
         if log.get("message") == "denied" and log.get("identity_number"):
             user = models.User.objects(username=log["identity_number"]).first()
-            identity = models.Identity(identifier=log["rfid"], status="active")
+            identity = models.Identity(
+                identifier=log["rfid"], status="active", added_with=device_id
+            )
             if user:
                 if not user.identities.filter(identifier=identity.identifier):
                     user.identities.append(identity)

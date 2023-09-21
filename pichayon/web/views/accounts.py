@@ -181,6 +181,7 @@ def add_or_edit_identity(index):
         identity = user.identities[index]
 
     form.populate_obj(identity)
+    identity.added_by = current_user.id
 
     if index < 0:
         is_found = False
