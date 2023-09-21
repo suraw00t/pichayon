@@ -45,7 +45,9 @@ class DoorManager:
                 response["door"] = dict(
                     is_auto_relock=door.is_auto_relock, door_id=str(door.id)
                 )
-                response["key_types"] = await self.data_resource.get_key_type_access(device_id)
+                response["key_types"] = await self.data_resource.get_key_type_access(
+                    device_id
+                )
 
                 door.device_updated_date = datetime.datetime.now().isoformat()
                 door.save()
@@ -166,22 +168,28 @@ class DoorManager:
 
         if log.get("message") == "denied" and log.get("identity_number"):
             user = models.User.objects(username=log["identity_number"]).first()
-            identity = models.Identity(identifier=log["rfid"], status="disactive")
+            identity = models.Identity(identifier=log["rfid"], status="active")
             if user:
                 if not user.identities.filter(identifier=identity.identifier):
                     user.identities.append(identity)
-                    logger.debug(f"Added New RFID {identity.identifier} to User {user.username}")
+                    logger.debug(
+                        f"Added New RFID {identity.identifier} to User {user.username}"
+                    )
                     user.updated_date = datetime.datetime.now()
 
-                logger.debug(f"User {user.username} must change status RFID {identity.identifier} to 'active' before use")
+                # logger.debug(f"User {user.username} must change status RFID {identity.identifier} to 'active' before use")
 
             else:
-                user = models.User(username=log["identity_number"], first_name="", last_name="")
+                user = models.User(
+                    username=log["identity_number"], first_name="", last_name=""
+                )
                 user.identities.append(identity)
-                logger.debug(f"Created new User {user.username} and added new RFID {identity.identifier}")
+                logger.debug(
+                    f"Created new User {user.username} and added new RFID {identity.identifier}"
+                )
 
             user.save()
-
+            await self.update_member(user)
 
         # logger.debug('4 loop')
 
