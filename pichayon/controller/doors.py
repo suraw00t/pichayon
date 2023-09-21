@@ -183,7 +183,10 @@ class DoorManager:
 
             else:
                 user = models.User(
-                    username=log["identity_number"], first_name="", last_name=""
+                    username=log["identity_number"],
+                    first_name="",
+                    last_name="",
+                    email="",
                 )
                 user.identities.append(identity)
                 logger.debug(

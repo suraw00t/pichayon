@@ -32,7 +32,6 @@ oauth2_client = OAuth()
 
 
 def handle_authorize(remote, token, user_info):
-
     if not user_info:
         return redirect(url_for("accounts.login"))
 
@@ -53,9 +52,15 @@ def handle_authorize(remote, token, user_info):
         if email[: email.find("@")].isdigit():
             user.roles.append("student")
         user.save()
-    elif user and (user.first_name == "" or user.last_name == ""):
+
+    elif not user.resources:
         user.first_name = user_info.get("given_name", "").title()
-        user.last_name = user_info.get("family_name", "").title(),
+        user.last_name = user_info.get("family_name", "").title()
+        user.email = user_info.get("email")
+        user.resources[remote.name] = user_info
+        if email[: email.find("@")].isdigit():
+            user.roles.append("student")
+
         user.save()
 
     login_user(user)
