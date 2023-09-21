@@ -205,6 +205,6 @@ def add_or_edit_identity(index):
 
     user.save()
 
-    pichayon_client.update_member(user)
+    pichayon_client.update_member(user=user)
 
     return redirect(url_for("accounts.index"))

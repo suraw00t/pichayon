@@ -127,7 +127,7 @@ class ControllerServer:
                 )
             elif data["action"] in commands:
                 try:
-                    await commands[data["action"]](data)
+                    await commands[data["action"]](data=data)
                 except Exception as e:
                     logger.exception(e)
             else:
