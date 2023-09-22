@@ -127,9 +127,11 @@ class RS485Reader(vguang_sk330.RS485Reader):
 
                 if await self.verify_data(data_arr):
                     tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
-                    if "key_type_a_sector_0" in self.key_types:
+                    if self.key_types.get("key_type_a_sector_0"):
                         await self.read_sector0()
                         buffer_index = 2
+                    else:
+                        await self.tag_queue.put(tag_dict)
 
             elif (
                 len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5]
