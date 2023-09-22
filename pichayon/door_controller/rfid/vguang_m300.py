@@ -183,7 +183,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
     async def decrypt(self, raw_data):
         pass
 
-    async def get_data(self):
+    async def get_tag(self):
         tag = await self.tag_queue.get()
         return tag
 
@@ -195,7 +195,7 @@ async def run():
     await readerx.connect()
     while True:
         print("wait for tag")
-        data = await readerx.get_id()
+        data = await readerx.get_tag()
         print("got =>", data)
 
 

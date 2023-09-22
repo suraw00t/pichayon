@@ -89,7 +89,7 @@ class WiegandReader(readers.Reader):
         while self.running:
             data = await self.read_queue.get()
             if await self.verify_data(data):
-                tag = await self.decrypt(data)
+                tag = dict(uid=await self.decrypt(data))
                 await self.tag_queue.put(tag)
 
     async def verify_data(self, data):
@@ -118,6 +118,6 @@ class WiegandReader(readers.Reader):
 
         return f"{out:08X}"
 
-    async def get_id(self):
+    async def get_tag(self):
         tag = await self.tag_queue.get()
         return tag

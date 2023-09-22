@@ -149,7 +149,7 @@ class DoorControllerServer:
     async def read_rfid(self):
         await self.device.initial(self.key_types)
         while self.running:
-            rfif_data = await self.device.rfid.get_data()
+            rfif_data = await self.device.rfid.get_tag()
 
             if len(rfif_data) > 0:
                 await self.rfid_queue.put(rfif_data)
