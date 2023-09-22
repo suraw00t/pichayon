@@ -155,9 +155,9 @@ class RS485Reader(vguang_sk330.RS485Reader):
                 await self.tag_queue.put(tag_dict)
                 buffer_index = 1
 
-            elif len(data_buffer[6:-1]) > data_buffer[4] + data_buffer[5]:
-                data_buffer.clear()
-                buffer_index = 1
+            # elif len(data_buffer[6:-1]) > data_buffer[4] + data_buffer[5]:
+            #     data_buffer.clear()
+            #     buffer_index = 1
 
     async def verify_data(self, data):
         # check header
