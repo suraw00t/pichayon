@@ -217,7 +217,7 @@ class RS485Reader(readers.Reader):
         self.writer.write(byte_command)
         await self.writer.drain()
 
-    async def get_id(self):
+    async def get_data(self):
         tag = await self.tag_queue.get()
         return tag
 
@@ -242,7 +242,7 @@ async def run():
     await readerx.connect()
     while True:
         print("wait for tag")
-        data = await readerx.get_id()
+        data = await readerx.get_data()
         print("got =>", data)
 
 
