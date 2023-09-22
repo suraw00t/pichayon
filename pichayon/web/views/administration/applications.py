@@ -102,7 +102,6 @@ def add_or_edit_user_to_user_group(application_id):
         user_group_member = models.UserGroupMember.objects(
             user=application.user,
             group=user_group,
-            application=application,
         ).first()
 
         if not user_group_member:
