@@ -23,8 +23,14 @@ module = Blueprint("applications", __name__, url_prefix="/applications")
 @module.route("")
 @acl.role_required("admin", "lecturer")
 def index():
-    user = current_user._get_current_object()
-    applications = models.Application.objects().order_by("-id")
+    applications = models.Application.objects(status__ne = "approved").order_by("-id")
+
+    if "admin" not in current_user.roles:
+        user = current_user._get_current_object()
+        user_group_members = models.UserGroupMember.objects(user=user, role="admin")
+        if user_group_members:
+            applications.filter(user=user)
+        
     return render_template(
         "/administration/applications/index.html", applications=applications
     )
@@ -33,14 +39,14 @@ def index():
 @module.route("/<application_id>/approve")
 @acl.role_required("admin", "lecturer")
 def approve(application_id):
-    application = models.Application.objects().get(id=application_id)
+    # application = models.Application.objects().get(id=application_id)
 
-    application.approved_by = current_user._get_current_object()
-    application.approved_date = datetime.datetime.now()
-    application.status = "approved"
-    application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    # application.approved_by = current_user._get_current_object()
+    # application.approved_date = datetime.datetime.now()
+    # application.status = "approved"
+    # application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
 
-    application.save()
+    # application.save()
 
     return redirect(
         url_for(
@@ -64,13 +70,13 @@ def add_or_edit_user_to_user_group(application_id):
         user_groups = models.UserGroup.objects(status="active").order_by("name")
     else:
         user_group_members = models.UserGroupMember.objects(
-            status="active", role="admin", user=current_user._get_current_object()
+            role="admin", user=current_user._get_current_object()
         ).order_by("name")
 
         user_groups = [
             user_group_member.group for user_group_member in user_group_members
         ]
-
+        
     form.user_groups.choices = [
         (str(user_group.id), user_group.name) for user_group in user_groups
     ]
@@ -110,6 +116,12 @@ def add_or_edit_user_to_user_group(application_id):
         user_group_member.started_date = form.started_date.data
         user_group_member.expired_date = form.expired_date.data
         user_group_member.save()
+        
+        application.approved_date = datetime.datetime.now()
+        application.status = "approved"
+        application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+        
+        application.save()
 
     return redirect(url_for("administration.applications.index"))
 
