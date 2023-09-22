@@ -23,7 +23,24 @@ module = Blueprint("applications", __name__, url_prefix="/applications")
 @module.route("")
 @acl.role_required("admin", "lecturer")
 def index():
-    applications = models.Application.objects(status__ne = "approved").order_by("-id")
+    applications = models.Application.objects(status__ne="approved").order_by("-id")
+
+    if "admin" not in current_user.roles:
+        user = current_user._get_current_object()
+        user_group_members = models.UserGroupMember.objects(user=user, role="admin")
+        if user_group_members:
+            applications.filter(user=user)
+
+            return redirect(url_for("applications.approve"))
+        
+    return render_template(
+        "/administration/applications/index.html", applications=applications
+    )
+
+@module.route("/approved")
+@acl.role_required("admin", "lecturer")
+def approved():
+    applications = models.Application.objects(status="approved").order_by("-id")
 
     if "admin" not in current_user.roles:
         user = current_user._get_current_object()
@@ -111,13 +128,13 @@ def add_or_edit_user_to_user_group(application_id):
                 started_date=form.started_date.data,
                 expired_date=form.expired_date.data,
                 added_by=current_user._get_current_object(),
-                application=application,
+                # application=application,
             )
-
+        user_group_member.application = application
         user_group_member.started_date = form.started_date.data
         user_group_member.expired_date = form.expired_date.data
         user_group_member.save()
-        
+
         application.approved_date = datetime.datetime.now()
         application.status = "approved"
         application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)

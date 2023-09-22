@@ -17,7 +17,11 @@ Applications Approval
 {% block content %}
 <div class="'ui content">
     <div class='ui segment'>
-
+        <div>
+            <a class="ui primary button" href="{{ url_for('administration.applications.approved')}}">
+                Approved Applications
+            </a>
+        </div>
         <table class="ui celled table">
             <thead>
                 <tr>
@@ -68,6 +72,7 @@ Applications Approval
                         {% endfor %}
                     </td>
                     <td>
+                        {% if application.status != "approved" %}
                         <a class="ui primary icon button"
                             href="{{ url_for('administration.applications.approve', application_id=application.id)}}">
                             <i class="check icon"></i>
@@ -76,6 +81,14 @@ Applications Approval
                             href="{{ url_for('administration.applications.reject', application_id=application.id)}}">
                             <i class="times icon"></i>
                         </a>
+                        {% else %}
+                        <a class="ui gray icon button" style="pointer-events: none;">
+                            <i class="check icon"></i>
+                        </a>
+                        <a class="ui gray icon button" style="pointer-events: none;">
+                            <i class="times icon"></i>
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
             </tbody>
