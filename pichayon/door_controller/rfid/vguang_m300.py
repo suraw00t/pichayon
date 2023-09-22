@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class RS485Reader(vguang_sk330.RS485Reader):
     def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
         super().__init__(key_types, device, baudrate)
-        
+
         # self.read_header = [0x55, 0xAA, 0x02]  # header 0x55 0xAA command word 0x02
         self.read_header = [
             0x55,
@@ -117,26 +117,38 @@ class RS485Reader(vguang_sk330.RS485Reader):
             if len(data_buffer) < 7:
                 continue
 
-            if len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 1:
+            if (
+                len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5]
+                and buffer_index == 1
+            ):
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
                 tag_dict = {}
-                
-                if await self.verify_data(data_arr):
-                    await self.read_sector0()
-                    buffer_index = 2
-                    tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
 
-            elif len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 2:
+                if await self.verify_data(data_arr):
+                    tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
+                    if "key_type_a_sector_0" in self.key_types:
+                        await self.read_sector0()
+                        buffer_index = 2
+
+            elif (
+                len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5]
+                and buffer_index == 2
+            ):
                 data_arr2 = data_buffer.copy()
                 data_buffer.clear()
 
                 if await self.verify_sector0_data(data_arr2):
                     sector0_data = data_arr2[6:-1]
-                    identity_number, expire_date, _ = [ "".join([chr(d) for d in sector0_data[i:i+16] if d]) for i in range(0, len(sector0_data), 16)]
+                    identity_number, expire_date, _ = [
+                        "".join([chr(d) for d in sector0_data[i : i + 16] if d])
+                        for i in range(0, len(sector0_data), 16)
+                    ]
                     tag_dict["identity_number"] = identity_number
                     tag_dict["expire_date"] = expire_date
-                    logger.debug(f"Identity number({len(identity_number)}): {str(identity_number)} expire date({len(expire_date)}): {str(expire_date)}")
+                    logger.debug(
+                        f"Identity number({len(identity_number)}): {str(identity_number)} expire date({len(expire_date)}): {str(expire_date)}"
+                    )
 
                 await self.tag_queue.put(tag_dict)
                 buffer_index = 1
@@ -163,9 +175,9 @@ class RS485Reader(vguang_sk330.RS485Reader):
             return False
 
         return True
-    
+
     async def verify_sector0_data(self, data):
-        data_header = [0x55, 0xAA, 0xA0] 
+        data_header = [0x55, 0xAA, 0xA0]
         if not data_header == data[:3]:
             return False
 
@@ -184,16 +196,18 @@ class RS485Reader(vguang_sk330.RS485Reader):
         return True
 
     async def read_sector0(self):
-        byte_command = b"".join([d.to_bytes(1, "big") for d in self.command_read_sector0])
+        byte_command = b"".join(
+            [d.to_bytes(1, "big") for d in self.command_read_sector0]
+        )
         self.writer.write(byte_command)
         await self.writer.drain()
-
 
     async def read_default_sector0(self):
-        byte_command = b"".join([d.to_bytes(1, "big") for d in self.command_read_default_sector0])
+        byte_command = b"".join(
+            [d.to_bytes(1, "big") for d in self.command_read_default_sector0]
+        )
         self.writer.write(byte_command)
         await self.writer.drain()
-
 
     async def decrypt(self, raw_data):
         pass
@@ -201,6 +215,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
     async def get_data(self):
         tag = await self.tag_queue.get()
         return tag
+
 
 async def run():
     # readerx = RS485Reader("/dev/ttyACM0")
