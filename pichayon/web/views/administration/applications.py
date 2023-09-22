@@ -30,6 +30,8 @@ def index():
         user_group_members = models.UserGroupMember.objects(user=user, role="admin")
         if user_group_members:
             applications.filter(user=user)
+
+            return redirect(url_for("applications.approve"))
         
     return render_template(
         "/administration/applications/index.html", applications=applications
@@ -76,7 +78,7 @@ def add_or_edit_user_to_user_group(application_id):
         user_groups = [
             user_group_member.group for user_group_member in user_group_members
         ]
-        
+
     form.user_groups.choices = [
         (str(user_group.id), user_group.name) for user_group in user_groups
     ]

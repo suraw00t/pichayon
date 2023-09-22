@@ -73,6 +73,7 @@ Room Application
                     </td>
 
                     <td>
+                        {% if application.status != "approved" %}
                         <a class="ui primary icon button"
                             href="{{ url_for('administration.applications.add_or_edit_user_to_user_group', application_id=application.id) }}">
                             <i class="check icon"></i>
@@ -81,6 +82,14 @@ Room Application
                             href="{{ url_for('applications.delete', application_id=application.id) }}">
                             <i class="times icon"></i>
                         </a>
+                        {% else %}
+                        <a class="ui gray icon button" style="pointer-events: none;">
+                            <i class="check icon"></i>
+                        </a>
+                        <a class="ui gray icon button" style="pointer-events: none;">
+                            <i class="times icon"></i>
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
             </tbody>
