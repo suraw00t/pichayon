@@ -17,11 +17,13 @@ Applications Approval
 {% block content %}
 <div class="'ui content">
     <div class='ui segment'>
+        {% if not request.path.endswith("approved") %}
         <div>
             <a class="ui primary button" href="{{ url_for('administration.applications.approved')}}">
                 Approved Applications
             </a>
         </div>
+        {% endif %}
         <table class="ui celled table">
             <thead>
                 <tr>
