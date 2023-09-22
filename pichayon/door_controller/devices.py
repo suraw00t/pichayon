@@ -41,7 +41,7 @@ class Device:
 
     def get_reader_device(self, name, key_types):
         if name == "ASR1200E":
-            return asr1200e.WiegandReader(key_types)
+            return asr1200e.WiegandReader()
         elif name == "VGUANG-M300":
             return vguang_m300.RS485Reader(key_types, "/dev/ttyS0")
         elif name == "VGUANG-SK330":
