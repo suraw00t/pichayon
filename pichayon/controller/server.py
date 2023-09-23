@@ -97,7 +97,7 @@ class ControllerServer:
             commands = {
                 "open-door": self.door_manager.open,
                 "add-member-to-group": self.door_manager.add_member_to_group,
-                "delete-member-from-group": self.door_manager.add_member_to_group,
+                "delete-member-from-group": self.door_manager.delete_member_from_group,
                 "update-member": self.door_manager.update_member,
                 "get-door-state": self.door_manager.get_state,
                 "update-authorization": self.door_manager.update_authorization,
