@@ -51,7 +51,9 @@ def view(user_group_id):
     group = models.UserGroup.objects.get(id=user_group_id)
 
     form = forms.admin.groups.UserGroupMemberForm()
-    users = models.User.objects.order_by("-username")
+    user_group_members = models.UserGroupMember.objects(group=group)
+    group_member_ids = [ugm.user.id for ugm in user_group_members]
+    users = models.User.objects(id__nin=group_member_ids).order_by("-username")
 
     form.users.choices = [
         (str(u.id), f"{u.username} - {u.first_name} {u.last_name}") for u in users
@@ -85,7 +87,7 @@ def add_member(user_group_id):
     form = forms.admin.groups.UserGroupMemberForm()
 
     group = models.UserGroup.objects(id=user_group_id).first()
-    users = models.User.objects.order_by("-username")
+    users = models.User.objects().order_by("-username")
 
     form.users.choices = [
         (str(u.id), f"{u.username} - {u.first_name} {u.last_name}") for u in users
