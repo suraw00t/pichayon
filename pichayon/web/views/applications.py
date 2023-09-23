@@ -33,6 +33,27 @@ def apply():
     lecturers = models.User.objects(roles="lecturer")
     form = forms.applications.ApplicationForm()
     form.advisor.queryset = lecturers
+
+    user_group_members = models.UserGroupMember.objects(user=current_user)
+    user_groups = []
+    [
+        user_groups.append(ugm.group)
+        for ugm in user_group_members
+        if ugm not in user_groups
+    ]
+    group_authorizations = models.GroupAuthorization.objects(
+        status="active", user_group__in=user_groups
+    )
+    door_groups = [ga.door_group for ga in group_authorizations]
+
+    door_id_list = []
+    [
+        [door_id_list.append(d.id) for d in dg.doors if d not in door_id_list]
+        for dg in door_groups
+    ]
+    doors = models.Door.objects(id__nin=door_id_list)
+    form.room.queryset = doors
+
     if not form.validate_on_submit():
         if request.method == "GET":
             form.ended_date.data = form.started_date.data + datetime.timedelta(
