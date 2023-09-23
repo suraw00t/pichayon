@@ -77,7 +77,6 @@ def add_door(door_group_id):
         )
 
     for door_id in form.doors.data:
-        print("door_id", door_id)
         door = models.Door.objects.get(id=door_id)
         if door not in door_group.doors:
             door_group.doors.append(door)
