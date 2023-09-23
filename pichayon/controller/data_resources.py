@@ -77,6 +77,7 @@ class DataResourceManager:
 
         data = {
             "id": str(user.id),
+            "roles": user.roles,
             "identifiers": [
                 dict(
                     identifier=identity.identifier,
