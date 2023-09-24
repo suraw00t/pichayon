@@ -9,3 +9,4 @@ venv-door
 logs
 *.egg-*
 test.py
+.vscode
