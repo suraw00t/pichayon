@@ -1,0 +1,16 @@
+- name: First deploy pichayon door controller 
+  hosts: all
+  tasks:
+    - name: login for internet access
+      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64
+
+    - name: Pulling source code from gitlab
+      ansible.builtin.git:
+        repo: 'https://gitlab.com/r202-coe-psu/pichayon.git'
+        dest: /home/pcy/pichayon
+        clone: yes
+        update: yes
+          
+    - name: Installing pichayon
+      ansible.builtin.shell:
+        cmd: curl -sSf https://gitlab.com/r202-coe-psu/pichayon/-/raw/master/scripts/install.sh | bash -s -- -y
