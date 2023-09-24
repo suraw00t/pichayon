@@ -1,5 +1,16 @@
 #!/usr/bin/bash
+echo "install package"
+sudo apt install -y rustc libssl-dev libffi-dev python3 python3-venv python3-dev git
 
+if [ ! -d /home/$USER/pichayon ]
+then
+    echo "cd pichayon dir"
+    cd /home/$USER/pichayon
+else
+    echo "pichayon not found"
+    echo "cloning pichayon project virtual env"
+    git -C /home/$USER clone https://gitlab.com/r202-coe-psu/pichayon.git
+fi
 
 if [ ! -d venv ]
 then
@@ -10,12 +21,10 @@ else
 fi
 
 
-echo "install package"
-sudo apt install -y rustc libssl-dev libffi-dev
 
 export CFLAGS="-fcommon"
 
-source $(pwd)/venv/bin/activate
+source /home/$USER/pichayon/venv/bin/activate
 # export PYTHON=$(pwd)/venv/bin/python
 
 echo "install poetry"
@@ -30,7 +39,7 @@ cd ..
 
 
 echo "copy service file"
-sudo cp scripts/pichayon-door.service /lib/systemd/system
+sudo cp /home/$USER/pichayon/scripts/pichayon-door.service /lib/systemd/system
 
 if [ ! -d /var/log/pichayon ]
 then
