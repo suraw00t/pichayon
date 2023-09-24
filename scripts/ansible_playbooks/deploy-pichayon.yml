@@ -17,7 +17,7 @@
         name: pichayon-door
         enabled: true
 
-    - name: Make sure a service unit is running
+    - name: Make sure a service pichayon-door unit is running
       become: true
       ansible.builtin.service:
         state: started
