@@ -1,6 +1,7 @@
 from wtforms import Form
 from wtforms import fields
 from wtforms import validators
+import datetime
 
 from flask_wtf import FlaskForm
 from flask_mongoengine.wtf import model_form
@@ -17,7 +18,9 @@ BaseDoorForm = model_form(
         "camera_url",
         "is_passcode",
         "status",
-        "ipv4"
+        "ipv4",
+        "begin_access_time",
+        "end_access_time",
     ],
     field_args={
         "name": {"label": "Name"},
@@ -32,6 +35,8 @@ class DoorForm(BaseDoorForm):
     device_type = fields.SelectField("Device Type")
     is_web_open = fields.BooleanField("Allow web open", default=False)
     is_auto_relock = fields.BooleanField("Allow auto relock", default=True)
+    begin_access_time = fields.TimeField("Begin Access Time")
+    end_access_time = fields.TimeField("End Access Time")
 
 
 # class DoorForm(FlaskForm):
