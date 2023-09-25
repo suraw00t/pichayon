@@ -39,6 +39,7 @@
         <th>Device ID</th>
         <th>Groups</th>
         <th>IP Address</th>
+        <th>Acccess time</th>
         <th>Updated Date</th>
         <th>Operation</th>
       </tr>
@@ -56,6 +57,7 @@
             {% endfor %}
           </td>
           <td>{{ door.ipv4 }}</td>
+          <td>{{ door.begin_access_time.strftime("%H:%M") }} - {{ door.end_access_time.strftime("%H:%M") }}</td>
           <td>{{ door.updated_date.ctime() }}</td>
           <td class="ui single line">
           
