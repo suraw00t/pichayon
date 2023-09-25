@@ -233,6 +233,18 @@ class DoorControllerServer:
                 else:
                     await self.device.force_unlock()
 
+            current_time = datetime.datetime.now().time()
+            if (
+                not (
+                    current_time >= self.device.access_time["begin"]
+                    and current_time <= self.device.access_time["end"]
+                )
+                and self.device.is_force_unlock
+            ):
+                self.device.is_force_unlock = False
+                await self.device.lock_door()
+                await self.device.play_success_access_sound(0.5)
+
             await asyncio.sleep(0.1)
 
     async def listen_door_closed(self):
