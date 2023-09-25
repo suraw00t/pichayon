@@ -10,7 +10,9 @@
       <div class="content">
         {% set door_state = door_states[door.id] %}
         {% set can_access_door = current_time >= door.begin_access_time.time() 
-                            and current_time <= door.end_access_time.time() %}
+                            and current_time <= door.end_access_time.time()
+                            or door.end_access_time.time() == door.begin_access_time.time()
+                            %}
 
           <div class="header">
             {% if 'closed' == door_state %}
