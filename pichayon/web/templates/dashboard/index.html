@@ -56,7 +56,7 @@
             <div class="opendoor ui two buttons">
               <div class="ui basic disabled button">Opening via Web was disabled</div>
             </div>
-          {% elif not can_access_door %}
+          {% elif not can_access_door and not current_user.has_roles('admin', 'lecturer', 'staff') %}
             <div class="opendoor ui two buttons">
               <div class="ui gray button">Opening via Web was disabled in this time</div>
             </div>
