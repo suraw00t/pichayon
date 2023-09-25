@@ -147,6 +147,7 @@ class Device:
             and self.access_time["begin"] != self.access_time["end"]
         ):
             logger.debug(f"Not in range of access time force unlock is disable")
+            await self.play_denied_access_sound()
             if self.is_force_unlock:
                 self.is_force_unlock = False
                 await self.lock_door()
