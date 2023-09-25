@@ -147,6 +147,7 @@ class Device:
             and self.access_time["begin"] != self.access_time["end"]
         ):
             logger.debug(f"Not in range of access time force unlock is disable")
+            self.is_force_unlock = False
             return
 
         beeb_task = asyncio.create_task(self.rfid.play_success_action(0.3))
