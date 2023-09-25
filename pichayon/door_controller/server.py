@@ -330,7 +330,7 @@ class DoorControllerServer:
         ):
             return True
 
-        logger.debug(f"User {user['id']} cannot open door at this time")
+        logger.debug(f"User {user['id']} cannot open door in this time")
         return False
 
     async def set_up(self):
