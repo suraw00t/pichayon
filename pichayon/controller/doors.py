@@ -43,16 +43,13 @@ class DoorManager:
                 response["status"] = "registed"
                 response["completed_date"] = datetime.datetime.now().isoformat()
                 response["door"] = dict(
-                    is_auto_relock=door.is_auto_relock, door_id=str(door.id)
+                    is_auto_relock=door.is_auto_relock,
+                    door_id=str(door.id),
+                    begin_access_time=door.begin_access_time.time().strftime("%H:%M"),
+                    end_access_time=door.end_access_time.time().strftime("%H:%M"),
                 )
                 response["key_types"] = await self.data_resource.get_key_type_access(
                     device_id
-                )
-                response["begin_access_time"] = door.begin_access_time.time().strftime(
-                    "%H:%M"
-                )
-                response["end_access_time"] = door.end_access_time.time().strftime(
-                    "%H:%M"
                 )
 
                 door.device_updated_date = datetime.datetime.now().isoformat()
