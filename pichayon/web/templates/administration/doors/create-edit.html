@@ -39,10 +39,10 @@
           {{ renderer.render_field(form.device_id) }}
       </div>
       <div class="twelve wide field">
-        {{ renderer.render_field(form.begin_access_time) }}
+        {{ renderer.render_calendar(form.begin_access_time, calendar_id='begin_access_time') }}
       </div>
       <div class="twelve wide field">
-        {{ renderer.render_field(form.end_access_time) }}
+        {{ renderer.render_calendar(form.end_access_time, calendar_id='end_access_time') }}
       </div>
   {#
   <div class="twelve wide field">
@@ -74,6 +74,24 @@
   {{ super() }}
   <script type="text/javascript">
   $('.selection.dropdown').dropdown();
-  </script>
+
+  $('#begin_access_time')
+  .calendar({
+    type: 'time',
+    formatter: {
+      time: 'HH:mm',
+      cellTime: 'HH:mm'
+    } 
+  });
+
+  $('#end_access_time')
+  .calendar({
+    type: 'time',
+    formatter: {
+      time: 'HH:mm',
+      cellTime: 'HH:mm'
+    }
+  });
+</script>
 {% endblock %}
 

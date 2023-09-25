@@ -1,7 +1,4 @@
-from wtforms import Form
-from wtforms import fields
-from wtforms import validators
-import datetime
+from wtforms import fields, widgets
 
 from flask_wtf import FlaskForm
 from flask_mongoengine.wtf import model_form
@@ -35,8 +32,16 @@ class DoorForm(BaseDoorForm):
     device_type = fields.SelectField("Device Type")
     is_web_open = fields.BooleanField("Allow web open", default=False)
     is_auto_relock = fields.BooleanField("Allow auto relock", default=True)
-    begin_access_time = fields.TimeField("Begin Access Time")
-    end_access_time = fields.TimeField("End Access Time")
+    begin_access_time = fields.TimeField(
+        "Begin access time",
+        format="%H:%M",
+        widget=widgets.TextInput(),
+    )
+    end_access_time = fields.TimeField(
+        "End access time",
+        format="%H:%M",
+        widget=widgets.TextInput(),
+    )
 
 
 # class DoorForm(FlaskForm):
