@@ -26,7 +26,6 @@ class DataResourceManager:
         door_auths = door.get_authorizations()
 
         users = dict()
-
         for door_auth in door_auths:
             user_group = door_auth.user_group
 
@@ -41,6 +40,8 @@ class DataResourceManager:
                 if str(member.id) not in users[member.user.id]["groups"]:
                     users[member.user.id]["groups"].append(str(member.id))
 
+        response["begin_access_time"] = door.begin_access_time.time().strftime("%H:%M")
+        response["end_access_time"] = door.end_access_time.time().strftime("%H:%M")
         response["action"] = "initial"
         response["users"] = list(users.values())
         return response
