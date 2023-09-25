@@ -38,10 +38,8 @@
       <div class="twelve wide field">
           {{ renderer.render_field(form.device_id) }}
       </div>
-      <div class="twelve wide field">
+      <div class="two fields">
         {{ renderer.render_calendar(form.begin_access_time, calendar_id='begin_access_time') }}
-      </div>
-      <div class="twelve wide field">
         {{ renderer.render_calendar(form.end_access_time, calendar_id='end_access_time') }}
       </div>
   {#
@@ -49,9 +47,10 @@
       {{ renderer.render_field(form.camera_url) }}
   </div>
   #}
-  <div class="two fields">
+  <div class="three fields">
     {{ renderer.render_checkbox(form.is_web_open) }}
     {{ renderer.render_checkbox(form.is_auto_relock) }}
+    {{ renderer.render_checkbox(form.read_sector0) }}
   </div>
 
   {% if device_id_error == 'True' %}
