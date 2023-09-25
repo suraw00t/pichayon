@@ -54,7 +54,10 @@ def login():
 
     if "next" in request.args:
         session["next"] = request.args.get("next", None)
-    return render_template("/accounts/login.html")
+
+    oauth_clients = current_app.extensions["authlib.integrations.flask_client"]._clients
+
+    return render_template("/accounts/login.html", oauth_clients=oauth_clients)
 
 
 @module.route("/login/<name>")

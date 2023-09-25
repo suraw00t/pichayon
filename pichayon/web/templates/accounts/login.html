@@ -14,7 +14,7 @@
     </h2>
     <div>
       <div class="ui large vertical buttons" >
-  {% if 'PSU' in config.LOGIN_PROVIDERS %}
+{% if 'psu' in oauth_clients %}
     	  <div class="row" style="padding: 10px;">
           <div class="column header" style="text-align: left;">
             <h3>{{ "For PSU" }}</h3>
@@ -26,8 +26,8 @@
             {{ "PSU Passport" }}
           </a>
         </div>
-	{% endif %}
-        {% if 'ENGPSU' in config.LOGIN_PROVIDERS %}
+{% endif %}
+{% if 'engpsu' in oauth_clients %}
         <div class="row" style="padding: 10px;">
           <div class="column header" style="text-align: left;">
             <h3>{{ "For PSU Engineering Faculty Member" }}</h3>
@@ -39,8 +39,8 @@
             {{ "PSU Passport by Eng" }}
           </a>
 	      </div>
-	{% endif %}
-        {% if 'GOOGLE' in config.LOGIN_PROVIDERS %}
+{% endif %}
+{% if 'google' in oauth_clients %}
         <div class="row" style="padding: 10px;">
           <div class="column header" style="text-align: left;">
             <h3>{{ "For Participant" }}</h3>
