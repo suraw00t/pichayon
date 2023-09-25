@@ -18,8 +18,6 @@ class Device:
         self.device_id = "0000000000000000"
         self.door_id = None
         self.log_manager = None
-        self.key_types = {}
-        self.access_time = {}
 
         self.door_closed_pin = 15
         self.switch_pin = 16
@@ -38,6 +36,9 @@ class Device:
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
         self.rfid = None
 
+        self.key_types = {}
+        self.access_time = {}
+        self.allow_read_sector0 = False
         self.is_auto_relock = True
         self.is_force_unlock = False
 
@@ -83,6 +84,7 @@ class Device:
         self.access_time["end"] = datetime.datetime.strptime(
             data.get("end_access_time"), "%H:%M"
         ).time()
+        self.allow_read_sector0 = data.get("allow_read_sector0", False)
 
         if self.is_auto_relock:
             self.is_force_unlock = False

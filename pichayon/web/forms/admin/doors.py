@@ -32,7 +32,7 @@ class DoorForm(BaseDoorForm):
     device_type = fields.SelectField("Device Type")
     is_web_open = fields.BooleanField("Allow web open", default=False)
     is_auto_relock = fields.BooleanField("Allow auto relock", default=True)
-    read_sector0 = fields.BooleanField("Allow read sector 0", default=True)
+    allow_read_sector0 = fields.BooleanField("Allow read sector 0", default=True)
     begin_access_time = fields.TimeField(
         "Begin allow access time",
         format="%H:%M",

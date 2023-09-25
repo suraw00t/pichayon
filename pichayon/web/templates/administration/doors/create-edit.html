@@ -50,7 +50,7 @@
   <div class="three fields">
     {{ renderer.render_checkbox(form.is_web_open) }}
     {{ renderer.render_checkbox(form.is_auto_relock) }}
-    {{ renderer.render_checkbox(form.read_sector0) }}
+    {{ renderer.render_checkbox(form.allow_read_sector0) }}
   </div>
 
   {% if device_id_error == 'True' %}

@@ -25,7 +25,7 @@ class Door(me.Document):
             hour=0, minute=0, second=0, microsecond=0
         )
     )
-    read_sector0 = me.BooleanField(required=True, default=False)
+    allow_read_sector0 = me.BooleanField(required=True, default=False)
     status = me.StringField(required=True, default="active")
 
     device_type = me.StringField(required=True, default="pichayon")
