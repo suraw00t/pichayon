@@ -184,3 +184,14 @@ class Device:
 
     async def is_door_opened(self):
         return GPIO.input(self.door_closed_pin)
+
+    async def check_access_time(self):
+        current_time = datetime.datetime.now().time()
+        if (
+            current_time >= self.access_time["begin"]
+            and current_time <= self.access_time["end"]
+            or self.access_time["begin"] == self.access_time["end"]
+        ):
+            return True
+
+        return False

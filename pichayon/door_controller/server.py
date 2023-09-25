@@ -233,14 +233,8 @@ class DoorControllerServer:
                 else:
                     await self.device.force_unlock()
 
-            current_time = datetime.datetime.now().time()
             if (
-                not (
-                    current_time >= self.device.access_time["begin"]
-                    and current_time <= self.device.access_time["end"]
-                    or self.device.access_time["begin"]
-                    == self.device.access_time["end"]
-                )
+                not (await self.device.check_access_time())
                 and self.device.is_force_unlock
             ):
                 self.device.is_force_unlock = False
