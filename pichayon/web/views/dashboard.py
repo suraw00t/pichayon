@@ -61,6 +61,7 @@ def index():
         user_groups=user_groups,
         doors=doors,
         door_states=door_states,
+        datetime=datetime,
     )
 
 

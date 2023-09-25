@@ -1,15 +1,18 @@
 {% extends '/base/default-dashboard.html' %}
 
 {% block content %}
+{% set current_time = datetime.datetime.now().time() %}
 
 <div class="ui grid">
   <div class="ui cards">
     {% for door in doors %}
-      <div class="card">
-        <div class="content">
-          {% set door_state = door_states[door.id] %}
-          <div class="header">
+    <div class="card">
+      <div class="content">
+        {% set door_state = door_states[door.id] %}
+        {% set can_access_door = current_time >= door.begin_access_time.time() 
+                            and current_time <= door.end_access_time.time() %}
 
+          <div class="header">
             {% if 'closed' == door_state %}
               <i class="door closed icon green"></i>
             {% elif 'opened' == door_state %}
@@ -49,10 +52,13 @@
               {% endif %#}
             </div>
           {% endif %}
-
           {% if not door.is_web_open %}
             <div class="opendoor ui two buttons">
-              <div id="{{ door.id }}" class="ui basic disabled button">Opening via Web was disabled</div>
+              <div class="ui basic disabled button">Opening via Web was disabled</div>
+            </div>
+          {% elif not can_access_door %}
+            <div class="opendoor ui two buttons">
+              <div class="ui gray button">Opening via Web was disabled in this time</div>
             </div>
           {% else%}
             <div class="opendoor ui two buttons">
