@@ -3,6 +3,7 @@
 
 {% block breadcrumbs %}
   {{ super() }}
+  <i class="right angle icon divider"></i>
   {% if request.path == url_for('administration.users.add_or_edit') %}
     <div class="section active">Add User</div>
   {% else %}
