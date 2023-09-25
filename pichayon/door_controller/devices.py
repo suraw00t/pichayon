@@ -44,9 +44,9 @@ class Device:
         if name == "ASR1200E":
             return asr1200e.WiegandReader()
         elif name == "VGUANG-M300":
-            return vguang_m300.RS485Reader(key_types, "/dev/ttyS0")
+            return vguang_m300.RS485Reader(key_types, self.door_config, "/dev/ttyS0")
         elif name == "VGUANG-SK330":
-            return vguang_sk330.RS485Reader(key_types, "/dev/ttyS0")
+            return vguang_sk330.RS485Reader(key_types, self.door_config, "/dev/ttyS0")
 
         return None
 

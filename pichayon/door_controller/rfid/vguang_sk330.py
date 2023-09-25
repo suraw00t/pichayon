@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class RS485Reader(readers.Reader):
-    def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
+    def __init__(
+        self, key_types={}, door_config={}, device="/dev/ttyACM0", baudrate=115200
+    ):
         super().__init__()
 
         # Pin Definitons:
@@ -27,6 +29,7 @@ class RS485Reader(readers.Reader):
         self.timeout = 0.5
 
         self.key_types = key_types
+        self.door_config = door_config
         self.command_read_sector0 = self.get_command_read_sector0()
         self.command_read_default_sector0 = self.get_command_read_default_sector0()
         self.data = []
@@ -37,7 +40,6 @@ class RS485Reader(readers.Reader):
         self.read_header = [0x55, 0xAA, 0x00]  # header 0x55 0xAA command word 0x00
 
     async def connect(self):
-
         self.reader, self.writer = await serial_asyncio.open_serial_connection(
             url=self.device, baudrate=self.baudrate
         )
@@ -78,7 +80,6 @@ class RS485Reader(readers.Reader):
         await self.writer.drain()
 
     async def play_denied_action(self, seconds=1, times=1):
-
         command = [0x55, 0xAA, 0x04, 0x01, 0x00]
         control = 0
         # red_light = 0b10
@@ -129,19 +130,23 @@ class RS485Reader(readers.Reader):
                 continue
 
             # print(data_buffer)
-            if len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5] and buffer_index == 1:
+            if (
+                len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5]
+                and buffer_index == 1
+            ):
                 data_arr = data_buffer.copy()
                 data_buffer.clear()
                 tag_dict = {}
 
                 if await self.verify_data(data_arr):
                     tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[8:-1]])
-                    if self.key_types.get("key_type_a_sector_0"):
+                    if self.key_types.get(
+                        "key_type_a_sector_0"
+                    ) and self.door_config.get("allow_read_sector0"):
                         await self.read_sector0()
                         buffer_index = 2
                     else:
                         await self.tag_queue.put(tag_dict)
-
 
             elif (
                 len(data_buffer[6:-1]) >= data_buffer[4] + data_buffer[5]
@@ -183,7 +188,7 @@ class RS485Reader(readers.Reader):
             return False
 
         return True
-    
+
     async def verify_sector0_data(self, data):
         data_header = [0x55, 0xAA, 0xA0]
         if not data_header == data[:3]:
@@ -223,19 +228,47 @@ class RS485Reader(readers.Reader):
 
     def get_command_read_sector0(self):
         key_type_a = self.key_types.get("key_type_a_sector_0")
-        command_read_sector0 = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
-        key_type_a_list = [int(key_type_a[i:i+2], 16) for i in range(0, len(key_type_a), 2)]
+        command_read_sector0 = [
+            0x55,
+            0xAA,
+            0xA0,
+            0x0B,
+            0x00,
+            0x00,
+            0x60,
+            0x00,
+            0x01,
+            0x03,
+        ]
+        key_type_a_list = [
+            int(key_type_a[i : i + 2], 16) for i in range(0, len(key_type_a), 2)
+        ]
         command_read_sector0.extend(key_type_a_list + [0x37])
 
         return command_read_sector0
-    
+
     def get_command_read_default_sector0(self):
         default_key_type_a = self.key_types.get("default_key_type_a")
-        command_read_default_sector0 = [0x55, 0xAA, 0xA0, 0x0B, 0x00, 0x00, 0x60, 0x00, 0x01, 0x03]
-        key_type_a_list = [int(default_key_type_a[i:i+2], 16) for i in range(0, len(default_key_type_a), 2)]
+        command_read_default_sector0 = [
+            0x55,
+            0xAA,
+            0xA0,
+            0x0B,
+            0x00,
+            0x00,
+            0x60,
+            0x00,
+            0x01,
+            0x03,
+        ]
+        key_type_a_list = [
+            int(default_key_type_a[i : i + 2], 16)
+            for i in range(0, len(default_key_type_a), 2)
+        ]
         command_read_default_sector0.extend(key_type_a_list + [0x36])
 
         return command_read_default_sector0
+
 
 async def run():
     readerx = RS485Reader("/dev/ttyS0")

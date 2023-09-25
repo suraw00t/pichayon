@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 class RS485Reader(vguang_sk330.RS485Reader):
-    def __init__(self, key_types={}, device="/dev/ttyACM0", baudrate=115200):
-        super().__init__(key_types, device, baudrate)
+    def __init__(
+        self, key_types={}, door_config={}, device="/dev/ttyACM0", baudrate=115200
+    ):
+        super().__init__(key_types, door_config, device, baudrate)
 
         # self.read_header = [0x55, 0xAA, 0x02]  # header 0x55 0xAA command word 0x02
         self.read_header = [
@@ -127,7 +129,9 @@ class RS485Reader(vguang_sk330.RS485Reader):
 
                 if await self.verify_data(data_arr):
                     tag_dict["uid"] = "".join([f"{d:02X}" for d in data_arr[6:-1]])
-                    if self.key_types.get("key_type_a_sector_0"):
+                    if self.key_types.get(
+                        "key_type_a_sector_0"
+                    ) and self.door_config.get("allow_read_sector0"):
                         await self.read_sector0()
                         buffer_index = 2
                     else:
@@ -177,8 +181,6 @@ class RS485Reader(vguang_sk330.RS485Reader):
             return False
 
         return True
-
-    
 
     async def decrypt(self, raw_data):
         pass
