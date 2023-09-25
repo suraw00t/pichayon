@@ -283,13 +283,6 @@ class DoorControllerServer:
                     ciphertext = data.get("key_types")
                     del data["key_types"]
 
-                self.device.access_time["begin"] = datetime.datetime.strptime(
-                    data.get("begin_access_time"), "%H:%M"
-                ).time()
-                self.device.access_time["end"] = datetime.datetime.strptime(
-                    data.get("end_access_time"), "%H:%M"
-                ).time()
-
                 logger.debug(f"-> {data}")
                 if (
                     data["action"] == "register"
