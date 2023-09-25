@@ -15,8 +15,12 @@ class Door(me.Document):
     is_auto_relock = me.BooleanField(default=True, required=True)
     ipv4 = me.StringField(required=True, default="0.0.0.0")
 
-    begin_access_time = me.DateTimeField(default=datetime.datetime.today())
-    end_access_time = me.DateTimeField(default=datetime.datetime.today())
+    begin_access_time = me.DateTimeField(
+        default=datetime.datetime.today().replace(hour=7, minute=0)
+    )
+    end_access_time = me.DateTimeField(
+        default=datetime.datetime.today().replace(hour=23, minute=59)
+    )
     status = me.StringField(required=True, default="active")
 
     device_type = me.StringField(required=True, default="pichayon")
