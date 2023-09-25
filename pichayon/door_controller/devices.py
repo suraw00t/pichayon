@@ -134,8 +134,16 @@ class Device:
     async def force_unlock(self):
         logger.debug(f"unlock door until")
 
+        current_time = datetime.datetime.now().time()
         if self.is_auto_relock:
             logger.debug(f"auto_relock is on force unlock is disable")
+            return
+
+        if (
+            current_time >= self.access_time["begin"]
+            and current_time <= self.access_time["end"]
+        ):
+            logger.debug(f"Not in range of access time force unlock is disable")
             return
 
         beeb_task = asyncio.create_task(self.rfid.play_success_action(0.3))
