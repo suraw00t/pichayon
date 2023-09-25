@@ -35,10 +35,8 @@ class Device:
 
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
         self.rfid = None
-
+        self.door_config = {}
         self.key_types = {}
-        self.access_time = {}
-        self.allow_read_sector0 = False
         self.is_auto_relock = True
         self.is_force_unlock = False
 
@@ -78,13 +76,14 @@ class Device:
     async def update_information(self, data):
         self.is_auto_relock = data.get("is_auto_relock", True)
         self.door_id = data.get("door_id", "")
-        self.access_time["begin"] = datetime.datetime.strptime(
+
+        self.door_config["begin_access_time"] = datetime.datetime.strptime(
             data.get("begin_access_time"), "%H:%M"
         ).time()
-        self.access_time["end"] = datetime.datetime.strptime(
+        self.door_config["end_access_time"] = datetime.datetime.strptime(
             data.get("end_access_time"), "%H:%M"
         ).time()
-        self.allow_read_sector0 = data.get("allow_read_sector0", False)
+        self.door_config["allow_read_sector0"] = data.get("allow_read_sector0", False)
 
         if self.is_auto_relock:
             self.is_force_unlock = False
@@ -136,18 +135,11 @@ class Device:
     async def force_unlock(self):
         logger.debug(f"unlock door until")
 
-        current_time = datetime.datetime.now().time()
         if self.is_auto_relock:
             logger.debug(f"auto_relock is on force unlock is disable")
             return
 
-        if (
-            not (
-                current_time >= self.access_time["begin"]
-                and current_time <= self.access_time["end"]
-            )
-            and self.access_time["begin"] != self.access_time["end"]
-        ):
+        if not await self.check_access_time():
             logger.debug(f"Not in range of access time force unlock is disable")
             await self.play_denied_access_sound()
             if self.is_force_unlock:
@@ -190,9 +182,10 @@ class Device:
     async def check_access_time(self):
         current_time = datetime.datetime.now().time()
         if (
-            current_time >= self.access_time["begin"]
-            and current_time <= self.access_time["end"]
-            or self.access_time["begin"] == self.access_time["end"]
+            current_time >= self.door_config["begin_access_time"]
+            and current_time <= self.door_config["end_access_time"]
+            or self.door_config["begin_access_time"]
+            == self.door_config["end_access_time"]
         ):
             return True
 

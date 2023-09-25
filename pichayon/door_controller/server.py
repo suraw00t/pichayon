@@ -330,13 +330,7 @@ class DoorControllerServer:
             return False
 
         can_access_role = await self.check_roles(user, roles)
-        current_time = datetime.datetime.now().time()
-        if (
-            current_time > self.device.access_time["begin"]
-            and current_time < self.device.access_time["end"]
-            or self.device.access_time["begin"] == self.device.access_time["end"]
-            or can_access_role
-        ):
+        if await self.device.check_access_time() or can_access_role:
             return True
 
         logger.debug(f"User {user['id']} cannot open door in this time")
