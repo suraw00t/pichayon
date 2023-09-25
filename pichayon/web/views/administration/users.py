@@ -143,6 +143,7 @@ def add_or_edit(user_id):
     form.populate_obj(user)
 
     user.save()
+    pichayon_client.update_member(user)
 
     return redirect(url_for("administration.users.index"))
 
