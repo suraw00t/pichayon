@@ -67,7 +67,8 @@ def delete(door_group_id):
 @acl.role_required("admin")
 def add_door(door_group_id):
     door_group = models.DoorGroup.objects.get(id=door_group_id)
-    doors = models.Door.objects(status="active").all()
+    door_ids = [d.id for d in door_group.doors]
+    doors = models.Door.objects(status="active", id__nin=door_ids).all()
     form = forms.admin.groups.DoorGroupMemberForm()
     form.doors.choices = [(str(door.id), door.name) for door in doors]
 
