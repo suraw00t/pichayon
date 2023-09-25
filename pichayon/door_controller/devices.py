@@ -19,6 +19,8 @@ class Device:
         self.door_id = None
         self.log_manager = None
         self.key_types = {}
+        self.access_time = {}
+
         self.door_closed_pin = 15
         self.switch_pin = 16
         self.relay_pin = 18
@@ -75,6 +77,13 @@ class Device:
     async def update_information(self, data):
         self.is_auto_relock = data.get("is_auto_relock", True)
         self.door_id = data.get("door_id", "")
+        self.access_time["begin"] = datetime.datetime.strptime(
+            data.get("begin_access_time"), "%H:%M"
+        ).time()
+        self.access_time["end"] = datetime.datetime.strptime(
+            data.get("end_access_time"), "%H:%M"
+        ).time()
+
         if self.is_auto_relock:
             self.is_force_unlock = False
             await self.lock_door()
