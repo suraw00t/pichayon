@@ -320,12 +320,13 @@ class DoorControllerServer:
         if not user:
             return False
 
-        can_access = await self.check_roles(user, roles)
+        can_access_role = await self.check_roles(user, roles)
         current_time = datetime.datetime.now().time()
         if (
             current_time > self.device.access_time["begin"]
             and current_time < self.device.access_time["end"]
-            or can_access
+            or self.device.access_time["begin"] == self.device.access_time["end"]
+            or can_access_role
         ):
             return True
 

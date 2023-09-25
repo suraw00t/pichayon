@@ -139,9 +139,12 @@ class Device:
             logger.debug(f"auto_relock is on force unlock is disable")
             return
 
-        if not (
-            current_time >= self.access_time["begin"]
-            and current_time <= self.access_time["end"]
+        if (
+            not (
+                current_time >= self.access_time["begin"]
+                and current_time <= self.access_time["end"]
+            )
+            or not self.access_time["begin"] == self.access_time["end"]
         ):
             logger.debug(f"Not in range of access time force unlock is disable")
             return
