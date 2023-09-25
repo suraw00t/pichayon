@@ -43,6 +43,7 @@ class DoorControllerServer:
 
     async def get_ipv4(self):
         import subprocess
+
         output = subprocess.getoutput("hostname -I")
 
         return output.split(" ")[0]
@@ -59,7 +60,7 @@ class DoorControllerServer:
         data = dict(
             action="request_initial_data",
             device_id=self.device_id,
-            ipv4=await self.get_ipv4()
+            ipv4=await self.get_ipv4(),
         )
         await self.nc.publish(
             "pichayon.controller.command",
@@ -174,7 +175,8 @@ class DoorControllerServer:
                 )
 
                 message = "success"
-                if user:
+                grant_access = await self.granting_access(user)
+                if user and grant_access:
                     await self.device.open_door()
                 else:
                     await self.device.play_denied_access_sound()
@@ -185,7 +187,7 @@ class DoorControllerServer:
                 if "identity_number" in rfif_data:
                     identity_number["identity_number"] = rfif_data["identity_number"]
                     identity_number["expire_date"] = rfif_data["expire_date"]
-                
+
                 await self.log_manager.put_log(
                     user,
                     type="rfid",
@@ -194,7 +196,7 @@ class DoorControllerServer:
                     message=message,
                     **identity_number,
                 )
-                
+
                 while not self.rfid_queue.empty():
                     await self.rfid_queue.get()
 
@@ -278,8 +280,15 @@ class DoorControllerServer:
                 data = json.loads(response.data.decode())
 
                 if "key_types" in data:
-                    ciphertext = data.get("key_types", "{}")
+                    ciphertext = data.get("key_types")
                     del data["key_types"]
+
+                self.device.access_time["begin"] = datetime.datetime.strptime(
+                    data.get("begin_access_time"), "%H:%M"
+                ).time()
+                self.device.access_time["end"] = datetime.datetime.strptime(
+                    data.get("end_access_time"), "%H:%M"
+                ).time()
 
                 logger.debug(f"-> {data}")
                 if (
@@ -306,6 +315,29 @@ class DoorControllerServer:
             if not self.is_register:
                 await asyncio.sleep(1)
             logger.debug("Register success")
+
+    async def check_roles(self, user, roles=[]):
+        for role in roles:
+            if role in user["roles"]:
+                return True
+
+        return False
+
+    async def granting_access(self, user, roles=["admin", "lecturer", "staff"]):
+        if not user:
+            return False
+
+        can_access = await self.check_roles(user, roles)
+        current_time = datetime.datetime.now().time()
+        if (
+            current_time > self.device.access_time["begin"]
+            and current_time < self.device.access_time["end"]
+            or can_access
+        ):
+            return True
+
+        logger.debug(f"User {user['id']} cannot open door at this time")
+        return False
 
     async def set_up(self):
         # self.read_rfid_thread = threading.Thread(target=self.read_rfid)
@@ -340,8 +372,8 @@ class DoorControllerServer:
         process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
-
         controller_command_task = loop.create_task(self.process_controller_command())
+        # process_access_time_task = loop.create_task(self.process_access_time())
 
         # process_keypad_task = loop.create_task(self.process_keypad())
         try:
