@@ -46,12 +46,12 @@ def apply():
     )
     door_groups = [ga.door_group for ga in group_authorizations]
 
-    door_id_list = []
+    door_ids = []
     [
-        [door_id_list.append(d.id) for d in dg.doors if d not in door_id_list]
+        [door_ids.append(d.id) for d in dg.doors if d not in door_ids]
         for dg in door_groups
     ]
-    doors = models.Door.objects(id__nin=door_id_list)
+    doors = models.Door.objects(id__nin=door_ids)
     form.room.queryset = doors
 
     if not form.validate_on_submit():
