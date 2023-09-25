@@ -238,6 +238,8 @@ class DoorControllerServer:
                 not (
                     current_time >= self.device.access_time["begin"]
                     and current_time <= self.device.access_time["end"]
+                    or self.device.access_time["begin"]
+                    == self.device.access_time["end"]
                 )
                 and self.device.is_force_unlock
             ):
