@@ -347,6 +347,7 @@ class DoorManager:
             is_auto_relock=door.is_auto_relock,
             begin_access_time=door.begin_access_time.time().strftime("%H:%M"),
             end_access_time=door.end_access_time.time().strftime("%H:%M"),
+            allow_read_sector0=door.allow_read_sector0,
         )
 
         topic = f"pichayon.door_controller.{door.device_id}"

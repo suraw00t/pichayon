@@ -40,8 +40,6 @@ class DataResourceManager:
                 if str(member.id) not in users[member.user.id]["groups"]:
                     users[member.user.id]["groups"].append(str(member.id))
 
-        response["begin_access_time"] = door.begin_access_time.time().strftime("%H:%M")
-        response["end_access_time"] = door.end_access_time.time().strftime("%H:%M")
         response["allow_read_sector0"] = door.allow_read_sector0
         response["action"] = "initial"
         response["users"] = list(users.values())
