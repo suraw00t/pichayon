@@ -244,6 +244,7 @@ class DoorControllerServer:
                 self.device.is_force_unlock = False
                 await self.device.lock_door()
                 await self.device.play_success_access_sound(0.5)
+                logger.debug("Force unlock is turned off")
 
             await asyncio.sleep(0.1)
 
