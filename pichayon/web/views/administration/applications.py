@@ -11,6 +11,7 @@ from flask import (
 )
 
 from flask_login import login_user, logout_user, login_required, current_user
+from pichayon.web.client.pichayon_client import pichayon_client
 
 
 from pichayon import models
@@ -32,10 +33,11 @@ def index():
             applications.filter(user=user)
 
             return redirect(url_for("applications.approve"))
-        
+
     return render_template(
         "/administration/applications/index.html", applications=applications
     )
+
 
 @module.route("/approved")
 @acl.role_required("admin", "lecturer")
@@ -49,7 +51,7 @@ def approved():
             applications.filter(user=user)
 
             return redirect(url_for("applications.approve"))
-        
+
     return render_template(
         "/administration/applications/index.html", applications=applications
     )
@@ -137,9 +139,13 @@ def add_or_edit_user_to_user_group(application_id):
 
         application.approved_date = datetime.datetime.now()
         application.status = "approved"
-        application.ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-        
+        application.ip_address = request.headers.get(
+            "X-Forwarded-For", request.remote_addr
+        )
+
         application.save()
+
+        pichayon_client.update_member(application.user)
 
     return redirect(url_for("administration.applications.index"))
 
