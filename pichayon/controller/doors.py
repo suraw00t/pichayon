@@ -47,6 +47,7 @@ class DoorManager:
                     door_id=str(door.id),
                     begin_access_time=door.begin_access_time.time().strftime("%H:%M"),
                     end_access_time=door.end_access_time.time().strftime("%H:%M"),
+                    allow_read_sector0=door.allow_read_sector0,
                 )
                 response["key_types"] = await self.data_resource.get_key_type_access(
                     device_id
