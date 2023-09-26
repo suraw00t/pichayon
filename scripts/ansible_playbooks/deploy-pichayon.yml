@@ -3,7 +3,7 @@
     pichayon_path_dest: '/home/pcy/pichayon',
     }
 
-  hosts: test
+  hosts: all
   tasks:
     - name: login for internet access
       ansible.builtin.script: '/home/surawut/Codes/login/exec_login_aarch64'
