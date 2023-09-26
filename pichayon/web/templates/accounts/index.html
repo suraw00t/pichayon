@@ -72,7 +72,7 @@ Profile
           <td>{{ identity.created_date }}</td>
           <td>{{ identity.updated_date }}</td>
           <td>
-            <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">edit</a>
+            <a class="ui button primary" href="{{ url_for('accounts.add_or_edit_identity', user_id=user.id, index=loop.index-1 ) }}">Edit</a>
           </td>
         </tr>
       {% endfor %}

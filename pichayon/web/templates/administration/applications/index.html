@@ -42,9 +42,11 @@ Applications Approval
             <tbody>
                 <tr>
                     {% for application in applications %}
-                    <td data-label="Name - ID Number">
-                        {{ application.user.first_name }} {{ application.user.last_name }} <br />
-                        {{ application.user.username }}
+                      <td data-label="Name - ID Number">
+                        <a href="{{ url_for('accounts.index', user_id=application.user.id) }}">
+                          {{ application.user.first_name }} {{ application.user.last_name }} <br/>
+                          {{ application.user.username }}
+                        </a>
                     </td>
                     <td data-label="Degree">
                         {{ application.degree }}
@@ -73,7 +75,7 @@ Applications Approval
                             {{ member.group.name }}</a>
                         {% endfor %}
                     </td>
-                    <td>
+                    <td class="ui single line">
                         {% if application.status != "approved" %}
                         <a class="ui primary icon button"
                             href="{{ url_for('administration.applications.approve', application_id=application.id)}}">
