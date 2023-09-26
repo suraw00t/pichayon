@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 class WiegandReader(readers.Reader):
     def __init__(self, d0_pin=11, d1_pin=12, beep_pin=37, timeout=0.05):
-
         super().__init__()
 
         # Pin Definitons:
@@ -66,6 +65,13 @@ class WiegandReader(readers.Reader):
             self.data.append(1)
 
     async def play_success_action(self, seconds=1, times=1):
+        await asyncio.sleep(0.2)
+        for i in range(times):
+            GPIO.output(self.beep_pin, GPIO.LOW)
+            await asyncio.sleep(seconds)
+            GPIO.output(self.beep_pin, GPIO.HIGH)
+
+    async def play_denied_action(self, seconds=1, times=1):
         await asyncio.sleep(0.2)
         for i in range(times):
             GPIO.output(self.beep_pin, GPIO.LOW)
