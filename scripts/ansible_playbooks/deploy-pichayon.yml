@@ -1,5 +1,5 @@
 - name: Deploy pichayon door controller 
-  hosts: pcy-test
+  hosts: all
   tasks:
     - name: login for internet access
       ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64
@@ -13,7 +13,9 @@
 
     - name: Installing or updating packages using poetry
       ansible.builtin.shell:
-        cmd: cd /home/pcy/pichayon && ./venv/bin/poetry config virtualenvs.create false && ./venv/bin/poetry install --no-interaction --only main
+        cmd: "cd /home/pcy/pichayon \
+        && ./venv/bin/poetry config virtualenvs.create false \
+        && ./venv/bin/poetry install --no-interaction --only main"
         
 
     - name: Enable service pichayon-door
