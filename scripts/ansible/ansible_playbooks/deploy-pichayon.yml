@@ -18,7 +18,6 @@
     - name: Installing or updating packages using poetry
       ansible.builtin.shell:
         cmd: 'cd {{ pichayon_path_dest }} && ./venv/bin/poetry config virtualenvs.create false && ./venv/bin/poetry install --no-interaction --only main'
-        
 
     - name: Enable service pichayon-door
       become: true
