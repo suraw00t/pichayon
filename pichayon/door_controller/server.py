@@ -325,7 +325,9 @@ class DoorControllerServer:
 
         return False
 
-    async def granting_access(self, user, roles=["admin", "lecturer", "staff"]):
+    async def granting_access(
+        self, user, roles=["admin", "lecturer", "staff", "supervisor"]
+    ):
         if not user:
             return False
 
