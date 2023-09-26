@@ -31,7 +31,7 @@ def generate_passcode():
 @module.route("/")
 @acl.role_required("admin")
 def index():
-    users = models.User.objects().order_by("username", "role")
+    users = models.User.objects().order_by("-username", "role")
     return render_template("/administration/users/index.html", users=users)
 
 
