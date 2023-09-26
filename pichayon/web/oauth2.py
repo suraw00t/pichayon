@@ -42,7 +42,7 @@ def create_user_google(user_info, user=None):
             last_name=user_info.get("family_name"),
             status="active",
         )
-    elif not user.resources:
+    elif "google" not in user.resources:
         user.username = user_info.get("email")
         user.first_name = user_info.get("given_name", "").title()
         user.last_name = user_info.get("family_name", "").title()
@@ -62,7 +62,7 @@ def create_user_engpsu(user_info, user=None):
             last_name=user_info.get("last_name").title(),
             status="active",
         )
-    elif not user.resources:
+    elif "engpsu" not in user.resources:
         user.first_name = user_info.get("given_name", "").title()
         user.last_name = user_info.get("family_name", "").title()
         user.email = user_info.get("email")
@@ -90,7 +90,7 @@ def create_user_psu(user_info, user=None):
             last_name=user_info.get("last_name").title(),
             status="active",
         )
-    elif not user.resources:
+    elif "psu" not in user.resources:
         user.first_name = user_info.get("first_name", "").title()
         user.last_name = user_info.get("last_name", "").title()
         user.email = user_info.get("email")
@@ -147,7 +147,7 @@ def create_user_line(user_info, user=None):
             last_name=names[1],
             status="active",
         )
-    elif not user.resources:
+    elif "line" not in user.resources:
         user.username = user_info.get("email", name)
         user.subid.get("sub")
         user.picture_url = user_info.get("picture")
@@ -169,7 +169,7 @@ def create_user_facebook(user_info, user=None):
             last_name=user_info.get("last_name"),
             status="active",
         )
-    elif not user.resources:
+    elif "facebook" not in user.resources:
         user.picture_url = (
             f"http://graph.facebook.com/{user_info.get('sub')}/picture?type=large"
         )
