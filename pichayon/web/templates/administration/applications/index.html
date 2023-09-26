@@ -43,7 +43,7 @@ Applications Approval
                 <tr>
                     {% for application in applications %}
                       <td data-label="Name - ID Number">
-                        <a href="{{ url_for('accounts.index', user_id=application.user.id) }}">
+                        <a href="{{ url_for('accounts.index', user=application.user.id) }}">
                           {{ application.user.first_name }} {{ application.user.last_name }} <br/>
                           {{ application.user.username }}
                         </a>
