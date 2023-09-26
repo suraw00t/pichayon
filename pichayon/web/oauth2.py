@@ -123,7 +123,7 @@ def create_user_psu(user_info, user=None):
 
     user.title_th = user_info.get("title_th")
     user.title = user_info.get("title")
-    user.other_ids.append(user_info.get("username"))
+    # user.other_ids.append(user_info.get("username"))
 
     user.save()
     return user
