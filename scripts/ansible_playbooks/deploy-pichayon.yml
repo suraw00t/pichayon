@@ -1,21 +1,25 @@
-- name: Deploy pichayon door controller 
-  hosts: all
+- name: Deploy pichayon door controller
+  vars: {
+    pichayon_path_dest: '/home/pcy/pichayon',
+    }
+
+  hosts: test
   tasks:
     - name: login for internet access
-      ansible.builtin.script: /home/surawut/Codes/login/exec_login_aarch64
+      ansible.builtin.script: '/home/surawut/Codes/login/exec_login_aarch64'
 
     - name: Pulling source code from gitlab
       ansible.builtin.git:
         repo: 'https://gitlab.com/r202-coe-psu/pichayon.git'
-        dest: /home/pcy/pichayon
+        dest: '{{ pichayon_path_dest }}'
         clone: yes
         update: yes
 
     - name: Installing or updating packages using poetry
       ansible.builtin.shell:
-        cmd: "cd /home/pcy/pichayon \
+        cmd: 'cd {{ pichayon_path_dest }} \
         && ./venv/bin/poetry config virtualenvs.create false \
-        && ./venv/bin/poetry install --no-interaction --only main"
+        && ./venv/bin/poetry install --no-interaction --only main'
         
 
     - name: Enable service pichayon-door
