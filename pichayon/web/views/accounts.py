@@ -129,6 +129,8 @@ def logout():
     elif name == "psu":
         remote = client.psu
         logout_url = f"{ remote.server_metadata.get('end_session_endpoint') }"
+        if not logout_url:
+            logout_url = current_app.config.get("PSU_END_SESSION")
     elif name == "engpsu":
         remote = client.engpsu
 
