@@ -97,7 +97,9 @@ def create_user_psu(user_info, user=None):
     elif "psu" not in user.resources:
         user.first_name = user_info.get("first_name", "").title()
         user.last_name = user_info.get("last_name", "").title()
-        user.email = user_info.get("email")
+        user.first_name_th = user_info.get("first_name_th", "")
+        user.last_name_th = user_info.get("last_name_th", "")
+        user.email = user_info.get("email", "")
         user.username = user_info.get("username")
 
     user.save()
