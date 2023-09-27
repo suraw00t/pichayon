@@ -72,7 +72,7 @@ Room Application
                         {{ application.status }}
                     </td>
 
-                    <td>
+                    <td class="single line">
                         {% if application.status != "approved" %}
                         <a class="ui primary icon button"
                             href="{{ url_for('administration.applications.add_or_edit_user_to_user_group', application_id=application.id) }}">
