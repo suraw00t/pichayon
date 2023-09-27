@@ -73,6 +73,9 @@ Applications Approval
                     </td>
                     <td data-label="Status">
                         {{ application.status }}
+                        {% if application.status == "rejected" %}
+                        <br>({{ application.remark if application.remark }})
+                        {% endif %}
                     </td>
                     <td data-label="Group">
                         {% for member in application.get_user_group_members() %}
