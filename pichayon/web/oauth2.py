@@ -99,29 +99,31 @@ def create_user_psu(user_info, user=None):
         user.last_name = user_info.get("last_name", "").title()
         user.first_name_th = user_info.get("first_name_th", "")
         user.last_name_th = user_info.get("last_name_th", "")
-        user.email = user_info.get("email", "")
+        user.email = user_info.get("email")
         user.username = user_info.get("username")
 
     user.save()
 
     if user_info["username"].isdigit():
-        user.roles.append("student")
+        if "student" not in user.roles:
+            user.roles.append("student")
     else:
-        user.roles.append("staff")
+        if "staff" not in user.roles:
+            user.roles.append("staff")
 
-    if user_info.get("office_name"):
-        organization_name = user_info.get("office_name").split(" ")[-1].strip()
-        organization = models.Organization.objects(name=organization_name).first()
-        if organization and organization not in user.organizations:
-            # user.organizations.append(organization)
-            organization_user_role = models.OrganizationUerRole(
-                organization=organization,
-                user=user,
-            )
-            organization_user_role.save()
+    # if user_info.get("office_name"):
+    #     organization_name = user_info.get("office_name").split(" ")[-1].strip()
+    #     organization = models.Organization.objects(name=organization_name).first()
+    #     if organization and organization not in user.organizations:
+    #         # user.organizations.append(organization)
+    #         organization_user_role = models.OrganizationUerRole(
+    #             organization=organization,
+    #             user=user,
+    #         )
+    #         organization_user_role.save()
 
-        if not user.user_setting.current_organization:
-            user.user_setting.current_organization = organization
+    #     if not user.user_setting.current_organization:
+    #         user.user_setting.current_organization = organization
 
     # user.other_ids.append(user_info.get("username"))
 
