@@ -1,4 +1,5 @@
 {% extends '/administration/index.html'%}
+{% import '/base/html-renderer.html' as renderer %}
 
 {% block dashboard_title%}
 Applications Approval
@@ -40,8 +41,8 @@ Applications Approval
                 </tr>
             </thead>
             <tbody>
+                {% for application in paginated_applications.items %}
                 <tr>
-                    {% for application in applications %}
                       <td data-label="Name - ID Number">
                         <a href="{{ url_for('accounts.index', user=application.user.id) }}">
                           {{ application.user.first_name }} {{ application.user.last_name }} <br/>
@@ -58,10 +59,10 @@ Applications Approval
                         {{ application.room.name }}
                     </td>
                     <td data-label="Start Date">
-                        {{ application.started_date }}
+                        {{ application.started_date.strftime("%Y-%m-%d %H:%M") }}
                     </td>
                     <td data-label="End Date">
-                        {{ application.ended_date }}
+                        {{ application.ended_date.strftime("%Y-%m-%d %H:%M") }}
                     </td>
                     <td data-label="Purpose">
                         {{ application.purpose }}
@@ -76,7 +77,7 @@ Applications Approval
                         {% endfor %}
                     </td>
                     <td class="ui single line">
-                        {% if application.status != "approved" %}
+                        {% if application.status == "pending" %}
                         <a class="ui primary icon button"
                             href="{{ url_for('administration.applications.approve', application_id=application.id)}}">
                             <i class="check icon"></i>
@@ -95,9 +96,16 @@ Applications Approval
                         {% endif %}
                     </td>
                 </tr>
+                {% endfor %}
             </tbody>
-            {% endfor %}
         </table>
+        <div class="ui grid">
+            <div class="column row">
+                <div class="center aligned column">
+                    {{ renderer.render_pagination(paginated_applications, 'administration.applications.index' if "approved" not in request.path else 'administration.applications.approved') }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
