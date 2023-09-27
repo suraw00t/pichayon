@@ -19,7 +19,7 @@ BaseApplicationForm = model_form(
         },
         "started_date": {"label": "Start Date", "format": "%Y-%m-%d %H:%M"},
         "ended_date": {"label": "End Date", "format": "%Y-%m-%d %H:%M"},
-        "room": {"label": "Room", "label_modifier": lambda r: r.name, "queryset": None},
+        "room": {"label": "Room", "label_modifier": lambda r: r.name},
         "purpose": {"label": "Purpose"},
         "request_checkbox": {"label": "ยอมรับนโยบายการเข้าใช้งานสถานที่"},
     },

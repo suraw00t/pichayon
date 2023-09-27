@@ -73,9 +73,10 @@ class Manager:
         User = Query()
         user = user_table.get(User.id == member["id"])
         if not user:
-            return
-
-        user_table.update(member, User.id == member["id"])
+            logger.debug(f"insert {member['id']}")
+            user_table.insert(member)
+        else:
+            user_table.update(user, User.id == member["id"])
 
     async def delete_user(self, data):
         user_table = self.db.table("users")
