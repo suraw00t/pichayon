@@ -12,6 +12,10 @@ Applications Approval
 <div class="active section">Applications Approval</div>
 {% else %}
 <a href="{{ url_for('administration.applications.index') }}" class="section">Applications Approval</a>
+{% if request.path.endswith("approved") %}
+<i class="right angle icon divider"></i>
+<div class="active section">Applications Approved</div>
+{% endif %}
 {% endif %}
 {%- endblock %}
 
