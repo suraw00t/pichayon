@@ -242,7 +242,7 @@ def handle_authorized_oauth2(remote, token):
     elif "sub" in user_info:
         user = models.User.objects(subid=user_info.get("sub")).first()
 
-    if not user:
+    if not user or (user and user.first_name_th == "" or user.last_name_th == ""):
         if remote.name == "google":
             user = create_user_google(user_info)
         elif remote.name == "facebook":
@@ -252,7 +252,7 @@ def handle_authorized_oauth2(remote, token):
         elif remote.name == "engpsu":
             user = create_user_engpsu(user_info, user)
         elif remote.name == "psu":
-            user = create_user_psu(user_info)
+            user = create_user_psu(user_info, user)
 
     login_user(user)
     user.resources[remote.name] = user_info
