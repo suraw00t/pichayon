@@ -77,3 +77,31 @@
   </div>
 </div>
 {%- endmacro %}
+
+
+{% macro render_pagination(pagination, endpoint, left_edge=2, left_current=1,right_current=1, right_edge=2) %}
+{% if pagination.pages > 1 %}
+<div class="ui pagination menu">
+  <a class="{{ 'disabled' if not pagination.has_prev }} item"
+    href="{{ url_for(endpoint, page=pagination.prev_num) }}"
+  ><i class="angle left icon"></i></a>
+  {% for page in pagination.iter_pages(left_edge=left_edge, left_current=left_current, right_current=right_current, right_edge=right_edge) %}
+  {% if page %}
+  {% if page != pagination.page %}
+    <a class="item"
+    href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+  {% else %}
+    <strong class="active item">
+      {{ page }}
+    </strong>
+  {% endif %}
+  {% else %}
+    <div class="disabled item">…</div>
+  {% endif %}
+  {% endfor %}
+  <a class="{{ 'disabled' if not pagination.has_next }} item"
+  href="{{ url_for(endpoint, page=pagination.next_num) }}"
+  ><i class="angle right icon"></i></a>
+  </div>
+{% endif %}
+{% endmacro %}
