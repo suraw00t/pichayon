@@ -83,6 +83,12 @@ class Device:
         self.door_config["end_access_time"] = datetime.datetime.strptime(
             data.get("end_access_time"), "%H:%M"
         ).time()
+
+        if data.get("end_access_time") != "00:00":
+            self.door_config["end_access_time"] = self.door_config[
+                "end_access_time"
+            ].replace(second=59, microsecond=999999)
+
         self.door_config["allow_read_sector0"] = data.get("allow_read_sector0", False)
 
         if self.is_auto_relock:
