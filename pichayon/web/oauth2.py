@@ -66,6 +66,7 @@ def create_user_engpsu(user_info, user=None):
         user.first_name = user_info.get("given_name", "").title()
         user.last_name = user_info.get("family_name", "").title()
         user.email = user_info.get("email")
+        user.username = user_info.get("username")
 
     if "staff_id" in user_info.keys():
         user.roles.append("staff")
@@ -88,12 +89,16 @@ def create_user_psu(user_info, user=None):
             email=user_info.get("email"),
             first_name=user_info.get("first_name").title(),
             last_name=user_info.get("last_name").title(),
+            first_name_th=user_info.get("first_name_th", ""),
+            last_name_th=user_info.get("last_name_th", ""),
+            system_id=user_info.get("psu_id", user_info.get("username")),
             status="active",
         )
     elif "psu" not in user.resources:
         user.first_name = user_info.get("first_name", "").title()
         user.last_name = user_info.get("last_name", "").title()
         user.email = user_info.get("email")
+        user.username = user_info.get("username")
 
     user.save()
 
@@ -116,13 +121,6 @@ def create_user_psu(user_info, user=None):
         if not user.user_setting.current_organization:
             user.user_setting.current_organization = organization
 
-    if user_info.get("full_name_th"):
-        name_th = user_info.get("full_name_th").split(" ")
-        user.first_name_th = name_th[0]
-        user.last_name_th = name_th[-1]
-
-    user.title_th = user_info.get("title_th")
-    user.title = user_info.get("title")
     # user.other_ids.append(user_info.get("username"))
 
     user.save()
