@@ -70,7 +70,7 @@ Room Application
                     <td data-label="Status">
                         {{ application.status }}
                     </td>
-                    <td>
+                    <td class="single line">
                         {% if application.status != "approved" %}
                         <a class="ui red icon button"
                             href="{{ url_for('applications.delete', application_id=application.id) }}">
