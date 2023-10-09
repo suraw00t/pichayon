@@ -235,7 +235,7 @@ def handle_authorized_oauth2(remote, token):
     user_info = get_user_info(remote, token)
 
     user = None
-    if remote.name == "psu":
+    if remote.name == "psu" or remote.name == "engpsu":
         user = models.User.objects(username=user_info.get("username")).first()
     elif "email" in user_info and user_info["email"]:
         user = models.User.objects(me.Q(email=user_info.get("email"))).first()
@@ -280,7 +280,7 @@ def handle_authorized_oauth2(remote, token):
 def init_oauth(app):
     oauth2_client.init_app(app, fetch_token=fetch_token, update_token=update_token)
 
-    # oauth2_client.register("engpsu")
+    oauth2_client.register("engpsu")
     oauth2_client.register("psu")
     # oauth2_client.register(
     #     "google",
