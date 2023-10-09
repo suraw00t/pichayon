@@ -13,7 +13,7 @@ import time
 
 import serial_asyncio
 
-from . import vguang_sk330
+from pichayon.door_controller.rfid import vguang_sk330
 
 # import vguang_sk330
 
@@ -193,7 +193,7 @@ class RS485Reader(vguang_sk330.RS485Reader):
 async def run():
     # readerx = RS485Reader("/dev/ttyACM0")
     # readerx = RS485Reader("/dev/ttyS0")
-    readerx = RS485Reader("/dev/ttyS0")
+    readerx = RS485Reader(device="/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")

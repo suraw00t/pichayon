@@ -227,7 +227,7 @@ class RS485Reader(readers.Reader):
         return tag
 
     def get_command_read_sector0(self):
-        key_type_a = self.key_types.get("key_type_a_sector_0")
+        key_type_a = self.key_types.get("key_type_a_sector_0", {})
         command_read_sector0 = [
             0x55,
             0xAA,
@@ -248,7 +248,7 @@ class RS485Reader(readers.Reader):
         return command_read_sector0
 
     def get_command_read_default_sector0(self):
-        default_key_type_a = self.key_types.get("default_key_type_a")
+        default_key_type_a = self.key_types.get("default_key_type_a", {})
         command_read_default_sector0 = [
             0x55,
             0xAA,
@@ -271,7 +271,7 @@ class RS485Reader(readers.Reader):
 
 
 async def run():
-    readerx = RS485Reader("/dev/ttyS0")
+    readerx = RS485Reader(device="/dev/ttyS0")
     await readerx.connect()
     while True:
         print("wait for tag")
