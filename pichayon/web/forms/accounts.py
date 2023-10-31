@@ -22,5 +22,5 @@ class AccountForm(FlaskForm):
     )
     id_card_number = fields.StringField(
         "ID Card Number",
-        validators=[validators.Length(min=3)],
+        validators=[validators.Optional()],
     )
