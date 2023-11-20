@@ -69,7 +69,7 @@ class Manager:
 
         member["started_date"] = datetime.datetime.fromisoformat(member["started_date"])
         member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
-        member["roles"] = member["roles"]
+        # member["roles"] = member["roles"]
 
         User = Query()
         user = user_table.get(User.id == member["id"])
@@ -101,7 +101,7 @@ class Manager:
         for user in users:
             user["started_date"] = datetime.datetime.fromisoformat(user["started_date"])
             user["expired_date"] = datetime.datetime.fromisoformat(user["expired_date"])
-            user["roles"] = user["roles"]
+            # user["roles"] = user["roles"]
             user = user_table.get(User.id == user["id"])
             if user:
                 user_table.update(user, User.id == user["id"])
@@ -119,7 +119,7 @@ class Manager:
         for user in users:
             user["started_date"] = datetime.datetime.fromisoformat(user["started_date"])
             user["expired_date"] = datetime.datetime.fromisoformat(user["expired_date"])
-            user["roles"] = user["roles"]
+            # user["roles"] = user["roles"]
             user_table.insert(user)
 
         logger.debug("end initial data")
