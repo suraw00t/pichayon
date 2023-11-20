@@ -48,7 +48,7 @@ class Manager:
 
         member["started_date"] = datetime.datetime.fromisoformat(member["started_date"])
         member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
-        member["roles"] = member["roles"]
+        # member["roles"] = member["roles"]
 
         User = Query()
         user = user_table.get(User.id == member["id"])
