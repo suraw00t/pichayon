@@ -57,7 +57,7 @@ class Manager:
             user_table.insert(member)
             logger.debug(f"insert {member['id']}")
         else:
-            user_table.update(user, User.id == member["id"])
+            user_table.update(member, User.id == member["id"])
             logger.debug(f"update {member['id']}")
 
     async def update_user(self, data):
@@ -78,7 +78,7 @@ class Manager:
             user_table.insert(member)
             logger.debug(f"insert {member['id']}")
         else:
-            update = user_table.update(user, User.id == member["id"])
+            update = user_table.update(member, User.id == member["id"])
             logger.debug(update)
             logger.debug(f"update {member['id']}")
 
