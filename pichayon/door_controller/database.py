@@ -54,11 +54,11 @@ class Manager:
         User = Query()
         user = user_table.get(User.id == member["id"])
         if not user:
-            user_table.insert(member)
-            logger.debug(f"insert {member['id']}")
+            status = user_table.insert(member)
+            logger.debug(f"insert {member['id']}, status = {status}")
         else:
-            user_table.update(member, User.id == member["id"])
-            logger.debug(f"update {member['id']}")
+            status = user_table.update(member, User.id == member["id"])
+            logger.debug(f"update {member['id']}, status: {status}")
 
     async def update_user(self, data):
         user_table = self.db.table("users")
@@ -75,12 +75,11 @@ class Manager:
         User = Query()
         user = user_table.get(User.id == member["id"])
         if not user:
-            user_table.insert(member)
-            logger.debug(f"insert {member['id']}")
+            status = user_table.insert(member)
+            logger.debug(f"insert {member['id']}, status = {status}")
         else:
-            update = user_table.update(member, User.id == member["id"])
-            logger.debug(update)
-            logger.debug(f"update {member['id']}")
+            status = user_table.update(member, User.id == member["id"])
+            logger.debug(f"update {member['id']}, status: {status}")
 
     async def delete_user(self, data):
         user_table = self.db.table("users")
@@ -90,7 +89,8 @@ class Manager:
             return
 
         User = Query()
-        user_table.remove(User.id == member["id"])
+        status = user_table.remove(User.id == member["id"])
+        logger.debug(f"Deleted {member['id']}, status: {status}")
 
     async def update_data(self, data):
         user_table = self.db.table("users")
