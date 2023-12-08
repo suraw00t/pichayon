@@ -44,6 +44,7 @@ class Manager:
 
         member = data.get("user")
         if not member:
+            logger.debug("No user to update.")
             return
 
         member["started_date"] = datetime.datetime.fromisoformat(member["started_date"])
@@ -60,26 +61,26 @@ class Manager:
             logger.debug(f"update {member['id']}")
 
     async def update_user(self, data):
-        await self.add_user(data)
-        # user_table = self.db.table("users")
-        # logger.debug(f"update user -> {data}")
+        user_table = self.db.table("users")
+        logger.debug(f"update user -> {data}")
 
-        # member = data.get("user")
-        # if not member:
-        #     return
+        member = data.get("user")
+        if not member:
+            return
 
-        # member["started_date"] = datetime.datetime.fromisoformat(member["started_date"])
-        # member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
-        # # member["roles"] = member["roles"]
+        member["started_date"] = datetime.datetime.fromisoformat(member["started_date"])
+        member["expired_date"] = datetime.datetime.fromisoformat(member["expired_date"])
+        # member["roles"] = member["roles"]
 
-        # User = Query()
-        # user = user_table.get(User.id == member["id"])
-        # if not user:
-        #     user_table.insert(member)
-        #     logger.debug(f"insert {member['id']}")
-        # else:
-        #     user_table.update(user, User.id == member["id"])
-        #     logger.debug(f"update {member['id']}")
+        User = Query()
+        user = user_table.get(User.id == member["id"])
+        if not user:
+            user_table.insert(member)
+            logger.debug(f"insert {member['id']}")
+        else:
+            update = user_table.update(user, User.id == member["id"])
+            logger.debug(update)
+            logger.debug(f"update {member['id']}")
 
     async def delete_user(self, data):
         user_table = self.db.table("users")
