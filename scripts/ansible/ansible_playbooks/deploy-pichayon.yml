@@ -3,12 +3,13 @@
     pichayon_path_dest: '/home/pcy/pichayon',
     }
 
-  hosts: all
+  hosts: pcy-r100-door
   tasks:
     - name: login for internet access
-      ansible.builtin.script: '/home/surawut/Codes/login/exec_login_aarch64'
+      script: '/home/surawut/Codes/login/exec_login_aarch64'
 
     - name: Pulling source code from gitlab
+      register: git_pull_result
       ansible.builtin.git:
         repo: 'https://gitlab.com/r202-coe-psu/pichayon.git'
         dest: '{{ pichayon_path_dest }}'
@@ -16,29 +17,27 @@
         update: yes
 
     - name: Installing or updating packages using poetry
+      when: git_pull_result.changed
       ansible.builtin.shell:
         cmd: 'cd {{ pichayon_path_dest }} && ./venv/bin/poetry config virtualenvs.create false && ./venv/bin/poetry install --no-interaction --only main'
 
     - name: Enable service pichayon-door
       become: true
+      when: git_pull_result.changed
       ansible.builtin.service:
         name: pichayon-door
         enabled: true
 
     - name: Make sure a service pichayon-door unit is running before restart
       become: true
+      when: git_pull_result.changed
       ansible.builtin.service:
         state: started
         name: pichayon-door
 
     - name: Restart service pichayon-door
       become: true
+      when: git_pull_result.changed
       ansible.builtin.service:
         name: pichayon-door
         state: restarted
-
-    - name: Make sure a service pichayon-door unit is running after restart
-      become: true
-      ansible.builtin.service:
-        state: started
-        name: pichayon-door
