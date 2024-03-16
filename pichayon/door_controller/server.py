@@ -233,10 +233,7 @@ class DoorControllerServer:
                 else:
                     await self.device.force_unlock()
 
-            if (
-                not (await self.device.check_access_time())
-                and self.device.is_force_unlock
-            ):
+            if not (await self.device.is_access_time()) and self.device.is_force_unlock:
                 self.device.is_force_unlock = False
                 await self.device.lock_door()
                 await self.device.play_success_access_sound(1)
@@ -332,7 +329,7 @@ class DoorControllerServer:
             return False
 
         can_access_role = await self.check_roles(user, roles)
-        if await self.device.check_access_time() or can_access_role:
+        if await self.device.is_access_time() or can_access_role:
             return True
 
         logger.debug(f"User {user['id']} cannot open door in this time")

@@ -145,7 +145,7 @@ class Device:
             logger.debug(f"auto_relock is on force unlock is disable")
             return
 
-        if not await self.check_access_time():
+        if not await self.is_access_time():
             logger.debug(f"Not in range of access time force unlock is disable")
             await self.play_denied_access_sound()
             if self.is_force_unlock:
@@ -185,7 +185,7 @@ class Device:
     async def is_door_opened(self):
         return GPIO.input(self.door_closed_pin)
 
-    async def check_access_time(self):
+    async def is_access_time(self):
         current_time = datetime.datetime.now().time()
         if (
             current_time >= self.door_config["begin_access_time"]
