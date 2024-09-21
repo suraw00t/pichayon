@@ -36,8 +36,12 @@ def create_or_edit(door_id):
 
     if not form.validate_on_submit():
         if request.method == "GET":
-            form.begin_access_time.data = door.begin_access_time.time()
-            form.end_access_time.data = door.end_access_time.time()
+            if door:
+                form.begin_access_time.data = door.begin_access_time.time()
+                form.end_access_time.data = door.end_access_time.time()
+            else:
+                form.begin_access_time.data = "00:00"
+                form.end_access_time.data = "00:00"
 
         return render_template(
             "/administration/doors/create-edit.html",
@@ -49,13 +53,15 @@ def create_or_edit(door_id):
         door = models.Door()
         door.creator = current_user._get_current_object()
 
-    form.begin_access_time.data = datetime.datetime.combine(
-        door.begin_access_time.date(), form.begin_access_time.data
-    )
+    if form.begin_access_time.data:
+        form.begin_access_time.data = datetime.datetime.combine(
+            door.begin_access_time.date(), form.begin_access_time.data
+        )
 
-    form.end_access_time.data = datetime.datetime.combine(
-        door.begin_access_time.date(), form.end_access_time.data
-    )
+    if form.end_access_time.data:
+        form.end_access_time.data = datetime.datetime.combine(
+            door.begin_access_time.date(), form.end_access_time.data
+        )
 
     form.populate_obj(door)
     door.updater = current_user._get_current_object()
