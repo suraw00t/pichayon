@@ -56,7 +56,8 @@ class Device:
     async def initial(self, key_types):
         self.rfid = self.get_reader_device(self.reader_name, key_types)
         await self.lock_door()
-        await self.rfid.connect()
+        if self.rfid:
+            await self.rfid.connect()
 
     def get_device_id(self):
         try:
@@ -114,7 +115,8 @@ class Device:
             return
 
         logger.debug("Open door")
-        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.1))
+        if self.rfid:
+            beeb_task = asyncio.create_task(self.rfid.play_success_action(0.1))
 
         self.last_opened_date = current_date
 
@@ -122,7 +124,8 @@ class Device:
         await asyncio.sleep(open_door_duration)
         await self.lock_door()
 
-        await beeb_task
+        if self.rfid:
+            await beeb_task
 
     async def unlock_door(self):
         # logger.debug("unlock door")
@@ -154,7 +157,8 @@ class Device:
 
             return
 
-        beeb_task = asyncio.create_task(self.rfid.play_success_action(0.3))
+        if self.rfid:
+            beeb_task = asyncio.create_task(self.rfid.play_success_action(0.3))
         if not self.is_force_unlock:
             logger.debug(f"force unlock is on")
             await self.unlock_door()
@@ -165,19 +169,23 @@ class Device:
             await self.lock_door()
             await self.put_log(None, type="switch", action="relock")
             self.is_force_unlock = False
-        await beeb_task
+
+        if self.rfid:
+            await beeb_task
 
     async def put_log(self, user, type="switch", action=""):
         if self.log_manager:
             await self.log_manager.put_log(user, type=type, action=action)
 
     async def play_denied_access_sound(self, duration=0.1):
-        beeb_task = asyncio.create_task(self.rfid.play_denied_action(duration))
-        await beeb_task
+        if self.rfid:
+            beeb_task = asyncio.create_task(self.rfid.play_denied_action(duration))
+            await beeb_task
 
     async def play_success_access_sound(self, duration=0.1):
-        beeb_task = asyncio.create_task(self.rfid.play_success_action(duration))
-        await beeb_task
+        if self.rfid:
+            beeb_task = asyncio.create_task(self.rfid.play_success_action(duration))
+            await beeb_task
 
     async def is_turn_on_switch(self):
         return not GPIO.input(self.switch_pin)
