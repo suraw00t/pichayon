@@ -104,8 +104,11 @@ class WiegandReader(readers.Reader):
 
         even_parity_bit = data[0]
         odd_parity_bit = data[-1]
+
         if data[1:17].count(1) % 2 == 0:
-            if not even_parity_bit:
+            # new version
+            # if not even_parity_bit:
+            if even_parity_bit:
                 return False
 
         if data[17:-1].count(1) % 2 == 1:
@@ -119,9 +122,12 @@ class WiegandReader(readers.Reader):
 
         out = 0
         for bit in data:
-            nbit = bit ^ 1
-            out = (out << 1) | nbit
+            # for new rpi version
+            # nbit = bit ^ 1
+            # out = (out << 1) | nbit
 
+            out = (out << 1) | bit
+        logger.debug(f'>>> {out:08X}')
         return f"{out:08X}"
 
     async def get_tag(self):
