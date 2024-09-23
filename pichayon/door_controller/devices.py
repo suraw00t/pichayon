@@ -34,6 +34,7 @@ class Device:
         self.last_opened_date = datetime.datetime.now()
 
         self.reader_name = self.settings.get("PICHAYON_DOOR_READER", "ASR1200E")
+        print(self.reader_name)
         self.rfid = None
         self.door_config = {}
         self.key_types = {}
@@ -54,10 +55,12 @@ class Device:
         self.log_manager = log_manager
 
     async def initial(self, key_types):
-        self.rfid = self.get_reader_device(self.reader_name, key_types)
-        await self.lock_door()
-        if self.rfid:
+        try:
+            self.rfid = self.get_reader_device(self.reader_name, key_types)
+            await self.lock_door()
             await self.rfid.connect()
+        except Exception as e:
+            logger.exception(e)
 
     def get_device_id(self):
         try:

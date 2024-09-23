@@ -148,15 +148,17 @@ class DoorControllerServer:
             await asyncio.sleep(0.2)
 
     async def read_rfid(self):
-        await self.device.initial(self.key_types)
-        while self.running:
-            rfif_data = await self.device.rfid.get_tag()
+        try:
+            await self.device.initial(self.key_types)
+            while self.running:
+                rfif_data = await self.device.rfid.get_tag()
 
-            if len(rfif_data) > 0:
-                await self.rfid_queue.put(rfif_data)
-                await asyncio.sleep(1)
-            await asyncio.sleep(0.1)
-            # logger.debug(f'rfid in read rfid>>>{rfid_number}')
+                if len(rfif_data) > 0:
+                    await self.rfid_queue.put(rfif_data)
+                    await asyncio.sleep(1)
+                await asyncio.sleep(0.1)
+        except Exception as e:
+            logger.exception(e)
 
     async def process_rfid(self):
         while self.running:
@@ -166,8 +168,8 @@ class DoorControllerServer:
                 await asyncio.sleep(0.1)
                 continue
 
-            rfif_data = await self.rfid_queue.get()
             try:
+                rfif_data = await self.rfid_queue.get()
                 logger.debug(f"rfid >>> {rfif_data['uid']}")
                 # user = await self.db_manager.get_user_by_rfid(rfid_number)
                 user = await self.db_manager.get_user_by_rfid_with_current_date(
