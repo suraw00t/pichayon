@@ -112,7 +112,8 @@ class WiegandReader(readers.Reader):
                 return False
 
         if data[17:-1].count(1) % 2 == 1:
-            if not odd_parity_bit:
+            # if not odd_parity_bit:
+            if odd_parity_bit:
                 return False
 
         return True
@@ -127,7 +128,6 @@ class WiegandReader(readers.Reader):
             # out = (out << 1) | nbit
 
             out = (out << 1) | bit
-        logger.debug(f'>>> {out:08X}')
         return f"{out:08X}"
 
     async def get_tag(self):
