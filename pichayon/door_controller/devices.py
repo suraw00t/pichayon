@@ -200,7 +200,7 @@ class Device:
 
     async def is_access_time(self):
         current_time = datetime.datetime.now().time()
-        logger.debug(f'{current_time} {self.door_config["begin_access_time"]} - {self.door_config["end_access_time"]}')
+        # logger.debug(f'{current_time} {self.door_config["begin_access_time"]} - {self.door_config["end_access_time"]}')
         if (
  (
             current_time >= self.door_config["begin_access_time"]
