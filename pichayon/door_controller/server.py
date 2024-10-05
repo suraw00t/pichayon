@@ -362,10 +362,9 @@ class DoorControllerServer:
         )
 
        
-
+        await self.device.update_information({})
         while True:
             try:
-                await self.device.update_information({})
                 await self.set_up()
                 await self.register_node()
             except Exception as e:
@@ -373,6 +372,7 @@ class DoorControllerServer:
                 logger.debug('Error Connection: sleep 1')
                 await asyncio.sleep(1)
                 continue
+            break
 
         controller_command_task = loop.create_task(self.process_controller_command())
         process_logging_task = loop.create_task(self.process_log())
