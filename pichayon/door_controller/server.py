@@ -235,13 +235,14 @@ class DoorControllerServer:
                 else:
                     await self.device.force_unlock()
 
+
             if not (await self.device.is_access_time()) and self.device.is_force_unlock:
                 self.device.is_force_unlock = False
                 await self.device.lock_door()
                 await self.device.play_success_access_sound(1)
                 logger.debug("Force unlock is turned off")
 
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.2)
 
     async def listen_door_closed(self):
         is_door_opened = False
@@ -349,26 +350,32 @@ class DoorControllerServer:
             reconnect_time_wait=2,
         )
 
+        await self.log_manager.set_message_client(self.nc)
+        await self.device.set_log_manager(self.log_manager)
+        logger.debug("setup success")
+
+    async def setup_task(self):
         logging.basicConfig(
             format="%(asctime)s - %(name)s:%(levelname)s:%(lineno)d - %(message)s",
             datefmt="%d-%b-%y %H:%M:%S",
             level=logging.DEBUG,
         )
 
-        await self.log_manager.set_message_client(self.nc)
-        await self.device.set_log_manager(self.log_manager)
-        logger.debug("setup success")
-
-    async def setup_task(self):
+       
 
         while True:
             try:
+                await self.device.update_information({})
                 await self.set_up()
                 await self.register_node()
             except Exception as e:
                 logger.exception(e)
+                logger.debug('Error Connection: sleep 1')
                 await asyncio.sleep(1)
                 continue
+
+        controller_command_task = loop.create_task(self.process_controller_command())
+        process_logging_task = loop.create_task(self.process_log())
 
     def run(self):
         loop = asyncio.get_event_loop()
@@ -377,15 +384,15 @@ class DoorControllerServer:
 
         setup_task = loop.create_task(self.setup_task())
 
+        logger.debug("start setup device")
         read_rfid_task = loop.create_task(self.read_rfid())
         process_rfid_task = loop.create_task(self.process_rfid())
-        process_logging_task = loop.create_task(self.process_log())
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
-        controller_command_task = loop.create_task(self.process_controller_command())
         # process_access_time_task = loop.create_task(self.process_access_time())
 
         # process_keypad_task = loop.create_task(self.process_keypad())
+        logger.debug("end setup device")
         try:
             loop.run_forever()
         except Exception as e:
