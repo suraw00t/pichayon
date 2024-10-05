@@ -104,7 +104,9 @@ class WiegandReader(readers.Reader):
 
         even_parity_bit = data[0]
         odd_parity_bit = data[-1]
+
         if data[1:17].count(1) % 2 == 0:
+            # new version
             if not even_parity_bit:
                 return False
 

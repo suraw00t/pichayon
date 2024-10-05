@@ -10,7 +10,6 @@ packages = [{include = "pichayon", from = ".."}]
 python = "^3.9"
 wheel = "^0.40.0"
 nats-py = "^2.3.1"
-rpi-gpio = "^0.7.1"
 pi-rc522 = "^2.2.1"
 tinydb = "^4.8.0"
 tinydb-serialization = "^2.1.0"
@@ -18,6 +17,7 @@ pyserial-asyncio = "^0.6"
 flask = "^2.3.2"
 setuptools-rust = "^1.6.0"
 pycryptodome = "^3.19.0"
+rpi-lgpio = "^0.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
