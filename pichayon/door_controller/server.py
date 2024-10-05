@@ -340,6 +340,7 @@ class DoorControllerServer:
         # self.read_rfid_thread.start()
 
         self.nc = NATS()
+
         await self.nc.connect(
             self.settings["PICHAYON_MESSAGE_NATS_HOST"],
             max_reconnect_attempts=-1,
@@ -356,12 +357,23 @@ class DoorControllerServer:
         await self.device.set_log_manager(self.log_manager)
         logger.debug("setup success")
 
+    def setup_task(self):
+
+        while True:
+            try:
+                await self.set_up()
+                await self.register_node()
+            except Exception as e:
+                logger.exception(e)
+                await asyncio.sleep(1)
+                continue
+
     def run(self):
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
         self.running = True
-        loop.run_until_complete(self.set_up())
-        loop.run_until_complete(self.register_node())
+
+        setup_task = loop.create_task(self.setup_task())
 
         read_rfid_task = loop.create_task(self.read_rfid())
         process_rfid_task = loop.create_task(self.process_rfid())
