@@ -359,7 +359,7 @@ class DoorControllerServer:
         await self.device.set_log_manager(self.log_manager)
         logger.debug("setup success")
 
-    def setup_task(self):
+    async def setup_task(self):
 
         while True:
             try:
