@@ -362,24 +362,20 @@ class DoorControllerServer:
 
         await self.device.update_information({})
 
-        await self.set_up()
-        await self.register_node()
-        await self.request_initial_authorization()
+        while self.running:
+            if self.nc and self.nc.is_connected:
+                await asyncio.sleep(60)
+                continue
 
-        # while self.running:
-        #     if self.nc and self.nc.is_connected:
-        #         await asyncio.sleep(60)
-        #         continue
+            try:
+                await self.set_up()
+                await self.register_node()
+                await self.request_initial_authorization()
 
-        #     try:
-        #         await self.set_up()
-        #         await self.register_node()
-        #         await self.request_initial_authorization()
-
-        #     except Exception as e:
-        #         logger.exception(f'connection error {e}')
-        #         logger.debug("Error Connection: sleep 1s")
-        #         await asyncio.sleep(5)
+            except Exception as e:
+                logger.exception(f"Setup error {e}")
+                logger.debug("Wait 5s")
+                await asyncio.sleep(5)
 
     def run(self):
         loop = asyncio.get_event_loop()
@@ -387,6 +383,7 @@ class DoorControllerServer:
         self.running = True
 
         setup_task = loop.create_task(self.setup_task())
+        controller_command_task = loop.create_task(self.process_controller_command())
 
         logger.debug("start setup device")
         read_rfid_task = loop.create_task(self.read_rfid())
@@ -394,7 +391,6 @@ class DoorControllerServer:
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
         process_logging_task = loop.create_task(self.process_log())
-        controller_command_task = loop.create_task(self.process_controller_command())
 
         # process_access_time_task = loop.create_task(self.process_access_time())
 
