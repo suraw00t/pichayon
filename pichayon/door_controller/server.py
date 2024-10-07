@@ -235,7 +235,6 @@ class DoorControllerServer:
                 else:
                     await self.device.force_unlock()
 
-
             if not (await self.device.is_access_time()) and self.device.is_force_unlock:
                 self.device.is_force_unlock = False
                 await self.device.lock_door()
@@ -361,21 +360,19 @@ class DoorControllerServer:
             level=logging.DEBUG,
         )
 
-       
         await self.device.update_information({})
-        while True:
+        while self.running:
+            if self.nc or self.nc.is_connected:
+                await asyncio.sleep(60)
+                continue
+
             try:
                 await self.set_up()
                 await self.register_node()
             except Exception as e:
                 logger.exception(e)
-                logger.debug('Error Connection: sleep 1')
-                await asyncio.sleep(1)
-                continue
-            break
-
-        controller_command_task = loop.create_task(self.process_controller_command())
-        process_logging_task = loop.create_task(self.process_log())
+                logger.debug("Error Connection: sleep 1s")
+                await asyncio.sleep(5)
 
     def run(self):
         loop = asyncio.get_event_loop()
@@ -389,6 +386,9 @@ class DoorControllerServer:
         process_rfid_task = loop.create_task(self.process_rfid())
         listen_switch_task = loop.create_task(self.listen_open_switch())
         listen_door_closed_task = loop.create_task(self.listen_door_closed())
+        process_logging_task = loop.create_task(self.process_log())
+        controller_command_task = loop.create_task(self.process_controller_command())
+
         # process_access_time_task = loop.create_task(self.process_access_time())
 
         # process_keypad_task = loop.create_task(self.process_keypad())
