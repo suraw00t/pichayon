@@ -40,7 +40,7 @@ class LogManager:
         # logger.debug(f'-> {logs}')
         for log in logs:
             data = dict(device_id=self.device_id, log=log)
-            # logger.debug(f'send {data}')
+
             try:
                 response = await self.message_client.request(
                     "pichayon.door_controller.log", json.dumps(data).encode(), timeout=5

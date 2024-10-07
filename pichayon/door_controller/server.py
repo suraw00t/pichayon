@@ -30,6 +30,7 @@ class DoorControllerServer:
         self.device_id = self.device.get_device_id()
         self.db_manager = database.Manager(self.settings, self.device_id)
 
+        self.nc = None
         self.log_manager = logs.LogManager(
             self.db_manager,
             self.device_id,
@@ -57,6 +58,8 @@ class DoorControllerServer:
         # logger.debug(data)
 
     async def request_initial_authorization(self):
+
+        logger.debug("initial authorization")
         data = dict(
             action="request_initial_data",
             device_id=self.device_id,
@@ -68,9 +71,6 @@ class DoorControllerServer:
         )
 
     async def process_controller_command(self):
-        logger.debug("initial authorization")
-        await self.request_initial_authorization()
-
         logger.debug("start process controller command")
         commands = {
             "initial": self.db_manager.initial_data,
@@ -317,6 +317,8 @@ class DoorControllerServer:
                 await asyncio.sleep(1)
             logger.debug("Register success")
 
+  
+
     async def check_roles(self, user, roles=[]):
         for role in roles:
             if role in user["roles"]:
@@ -362,15 +364,18 @@ class DoorControllerServer:
 
         await self.device.update_information({})
         while self.running:
-            if self.nc or self.nc.is_connected:
+            if self.nc and self.nc.is_connected:
                 await asyncio.sleep(60)
                 continue
 
             try:
                 await self.set_up()
                 await self.register_node()
+                await self.request_initial_authorization()
+
+
             except Exception as e:
-                logger.exception(e)
+                logger.exception(f'connection error {e}')
                 logger.debug("Error Connection: sleep 1s")
                 await asyncio.sleep(5)
 
