@@ -317,8 +317,6 @@ class DoorControllerServer:
                 await asyncio.sleep(1)
             logger.debug("Register success")
 
-  
-
     async def check_roles(self, user, roles=[]):
         for role in roles:
             if role in user["roles"]:
@@ -363,21 +361,25 @@ class DoorControllerServer:
         )
 
         await self.device.update_information({})
-        while self.running:
-            if self.nc and self.nc.is_connected:
-                await asyncio.sleep(60)
-                continue
 
-            try:
-                await self.set_up()
-                await self.register_node()
-                await self.request_initial_authorization()
+        await self.set_up()
+        await self.register_node()
+        await self.request_initial_authorization()
 
+        # while self.running:
+        #     if self.nc and self.nc.is_connected:
+        #         await asyncio.sleep(60)
+        #         continue
 
-            except Exception as e:
-                logger.exception(f'connection error {e}')
-                logger.debug("Error Connection: sleep 1s")
-                await asyncio.sleep(5)
+        #     try:
+        #         await self.set_up()
+        #         await self.register_node()
+        #         await self.request_initial_authorization()
+
+        #     except Exception as e:
+        #         logger.exception(f'connection error {e}')
+        #         logger.debug("Error Connection: sleep 1s")
+        #         await asyncio.sleep(5)
 
     def run(self):
         loop = asyncio.get_event_loop()
