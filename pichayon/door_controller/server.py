@@ -41,6 +41,7 @@ class DoorControllerServer:
         # self.passcode = ''
 
         self.running = False
+        self.max_rfid_read_retry = self.settings.get("MAX_RFID_READ_RETRY", 3)
 
     async def get_ipv4(self):
         import subprocess
@@ -151,11 +152,12 @@ class DoorControllerServer:
         try:
             await self.device.initial(self.key_types)
             while self.running:
-                rfif_data = await self.device.rfid.get_tag()
+                rfid_data = await self.device.rfid.get_tag()
 
-                if len(rfif_data) > 0:
-                    await self.rfid_queue.put(rfif_data)
-                    await asyncio.sleep(1)
+                if len(rfid_data) > 0:
+                    await self.rfid_queue.put(rfid_data)
+                    await asyncio.sleep(0.5)
+
                 await asyncio.sleep(0.1)
         except Exception as e:
             logger.exception(e)
@@ -169,11 +171,11 @@ class DoorControllerServer:
                 continue
 
             try:
-                rfif_data = await self.rfid_queue.get()
-                logger.debug(f"rfid >>> {rfif_data['uid']}")
+                rfid_data = await self.rfid_queue.get()
+                logger.debug(f"rfid >>> {rfid_data['uid']}")
                 # user = await self.db_manager.get_user_by_rfid(rfid_number)
                 user = await self.db_manager.get_user_by_rfid_with_current_date(
-                    rfif_data["uid"]
+                    rfid_data["uid"]
                 )
 
                 message = "success"
@@ -183,18 +185,18 @@ class DoorControllerServer:
                 else:
                     await self.device.play_denied_access_sound()
                     message = "denied"
-                    logger.debug(f"There are no user rfid {rfif_data['uid']}")
+                    logger.debug(f"There are no user rfid {rfid_data['uid']}")
 
                 identity_number = {}
-                if "identity_number" in rfif_data:
-                    identity_number["identity_number"] = rfif_data["identity_number"]
-                    identity_number["expire_date"] = rfif_data["expire_date"]
+                if "identity_number" in rfid_data:
+                    identity_number["identity_number"] = rfid_data["identity_number"]
+                    identity_number["expire_date"] = rfid_data["expire_date"]
 
                 await self.log_manager.put_log(
                     user,
                     type="rfid",
                     action="open-door",
-                    rfid=rfif_data["uid"],
+                    rfid=rfid_data["uid"],
                     message=message,
                     **identity_number,
                 )
